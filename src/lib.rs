@@ -2,7 +2,9 @@
 extern crate cpython;
 
 use cpython::PyResult;
-use wasmer_runtime::{self as runtime, imports, instantiate};
+use generational_arena::{Arena, Index};
+use std::cell::RefCell;
+use wasmer_runtime::{self as runtime, imports, instantiate, Value};
 
 static WASM: &'static [u8] = &[
     // The module above compiled to bytecode goes here.
@@ -24,8 +26,12 @@ py_module_initializer!(libwasm, initlibwasm, PyInit_wasm, |python, module| {
     Ok(())
 });
 
+thread_local! {
+    pub static WASM_INSTANCES: RefCell<Arena<runtime::Instance>> = RefCell::new(Arena::new());
+}
+
 struct WasmInstance {
-    instance: runtime::Instance,
+    index: Index,
 }
 
 py_class!(class Instance |py| {
@@ -34,20 +40,32 @@ py_class!(class Instance |py| {
     def __new__(_cls) -> PyResult<Instance> {
         let imports = imports! {};
         let instance = instantiate(WASM, &imports).unwrap();
+        let index = WASM_INSTANCES.with(|f| f.borrow_mut().insert(instance));
 
         Instance::create_instance(
             py,
             WasmInstance {
-                instance
+                index
             }
         )
     }
 
-    def instance_index(&self) -> PyResult<u8> {
-        /*
-        let instance = self.instance(py).instance;
-        */
+    def invoke_function(&self, function_name: &str) -> PyResult<i32> {
+        let index = self.instance(py).index;
+        let result = WASM_INSTANCES.with(
+            |f| {
+                let b = f.borrow();
+                let instance = b.get(index).unwrap();
+                let values = instance.dyn_func(function_name).unwrap().call(&[Value::I32(1)]).unwrap();
 
-        Ok(42)
+                if let Value::I32(value) = values[0] {
+                    value
+                } else {
+                    0
+                }
+            }
+        );
+
+        Ok(result)
     }
 });

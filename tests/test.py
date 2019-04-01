@@ -1,4 +1,4 @@
 import wasm
 
 a = wasm.Instance()
-print(a.instance_index())
+print(a.invoke_function("add_one"))
