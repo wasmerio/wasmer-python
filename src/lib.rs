@@ -34,6 +34,14 @@ struct WasmInstance {
     index: Index,
 }
 
+impl Drop for WasmInstance {
+    fn drop(&mut self) {
+        WASM_INSTANCES.with(|instances| {
+            instances.borrow_mut().remove(self.index);
+        });
+    }
+}
+
 py_class!(class Instance |py| {
     data instance: WasmInstance;
 
