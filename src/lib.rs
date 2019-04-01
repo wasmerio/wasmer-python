@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate cpython;
 
-use cpython::PyResult;
+use cpython::{PyObject, PyResult, Python, PythonObject, ToPyObject};
 use generational_arena::{Arena, Index};
 use std::cell::RefCell;
 use wasmer_runtime::{self as runtime, imports, instantiate, Value};
@@ -50,22 +50,26 @@ py_class!(class Instance |py| {
         )
     }
 
-    def invoke_function(&self, function_name: &str) -> PyResult<i32> {
+    def invoke_function(&self, function_name: &str) -> PyResult<PyObject> {
         let index = self.instance(py).index;
-        let result = WASM_INSTANCES.with(
-            |f| {
-                let b = f.borrow();
-                let instance = b.get(index).unwrap();
-                let values = instance.dyn_func(function_name).unwrap().call(&[Value::I32(1)]).unwrap();
+        let results = WASM_INSTANCES.with(
+            |instances| {
+                let instances = instances.borrow();
+                let instance = instances.get(index).unwrap();
 
-                if let Value::I32(value) = values[0] {
-                    value
-                } else {
-                    0
-                }
+                instance.dyn_func(function_name).unwrap().call(&[Value::I32(2)]).unwrap()
             }
         );
 
-        Ok(result)
+        Ok(wasm_value_into_python_object(py, &results[0]))
     }
 });
+
+fn wasm_value_into_python_object(py: Python, value: &Value) -> PyObject {
+    match value {
+        Value::I32(value) => value.into_py_object(py).into_object(),
+        Value::I64(value) => value.into_py_object(py).into_object(),
+        Value::F32(value) => value.into_py_object(py).into_object(),
+        Value::F64(value) => value.into_py_object(py).into_object(),
+    }
+}
