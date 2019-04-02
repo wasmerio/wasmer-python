@@ -6,14 +6,24 @@ use generational_arena::{Arena, Index};
 use std::cell::RefCell;
 use wasmer_runtime::{self as runtime, imports, instantiate, Value as WasmValue};
 
+/// `wasmer_runtime::Instance` isn't thread-safe, and it's somewhat
+/// complex to make it entirely thread-safe. Instead, this trick is
+/// used: Create a thread local storage key, that contains an arena,
+/// that itself contains `wasmer_runtime::Instance`s. Each entry is
+/// indexed by a `generational_arena::Index` value. This index is held
+/// by the Python `Instance` object.
 thread_local! {
     pub static WASM_INSTANCES: RefCell<Arena<runtime::Instance>> = RefCell::new(Arena::new());
 }
 
+/// Holds all the Wasm instance information.
 pub struct InnerInstance {
+    /// Index of the Wasm instance in `WASM_INSTANCES`.
     index: Index,
 }
 
+/// When the Python object is dropped, this structure is dropped, and
+/// then, the Wasm instance is removed from `WASM_INSTANCES`.
 impl Drop for InnerInstance {
     fn drop(&mut self) {
         WASM_INSTANCES.with(|instances| {
@@ -22,6 +32,19 @@ impl Drop for InnerInstance {
     }
 }
 
+/// The Python `Instance` class.
+///
+/// # Examples
+///
+/// ```python,ignore
+/// from wasm import Instance, Value
+///
+/// file = open('my_program.wasm', 'rb') # note the mode contains `b` to get bytes, and not UTF-8 characters.
+/// bytes = file.read()
+///
+/// instance = Instance(bytes)
+/// result = instance.call('add_one', [Value::from_i32(1)])
+/// ```
 py_class!(pub class Instance |py| {
     data instance: InnerInstance;
 
