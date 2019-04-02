@@ -9,6 +9,7 @@ mod value;
 use instance::Instance;
 use value::Value;
 
+// Declare the module.
 py_module_initializer!(libwasm, initlibwasm, PyInit_wasm, |python, module| {
     module.add(
         python,
