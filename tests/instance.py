@@ -31,6 +31,6 @@ class TestWasmInstance(unittest.TestCase):
     def test_arity_0(self):
         self.assertEqual(
             Instance(TEST_BYTES)
-                .call('arity_0', []),
+                .call('arity_0'),
             42
         )

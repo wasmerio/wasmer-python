@@ -39,7 +39,7 @@ py_class!(pub class Instance |py| {
         )
     }
 
-    def call(&self, function_name: &str, function_arguments: Vec<Value>) -> PyResult<PyObject> {
+    def call(&self, function_name: &str, function_arguments: Vec<Value> = Vec::new()) -> PyResult<PyObject> {
         let function_arguments: Vec<WasmValue> =
             function_arguments
                 .into_iter()
