@@ -96,10 +96,10 @@ $ just python-run
 $ just python-run file/to/run.py
 ```
 
-Finally, to get help about the example, run:
+Finally, to inspect the extension; run:
 
 ```sh
-$ just help
+$ just inspect
 ```
 
 You are likely to see something like this:

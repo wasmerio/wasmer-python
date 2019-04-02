@@ -27,8 +27,8 @@ python-run file='':
 test:
         @.env/bin/python tests/init.py
 
-# Get help about the `python-ext-wasm` extension.
-help:
+# Inspect the `python-ext-wasm` extension.
+inspect:
 	.env/bin/python -c "help('wasm')"
 
 # Local Variables:
