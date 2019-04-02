@@ -1,3 +1,4 @@
 /.env
+/Cargo.lock
 /target
 /tests/__pycache__/
