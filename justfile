@@ -22,3 +22,16 @@ rust:
 # Run Python.
 python-run file='':
         .env/bin/python {{file}}
+
+# Run the tests.
+test:
+        @.env/bin/python tests/init.py
+
+# Get help about the `python-ext-wasm` extension.
+help:
+	.env/bin/python -c "help('wasm')"
+
+# Local Variables:
+# mode: makefile
+# End:
+# vim: set ft=make :
