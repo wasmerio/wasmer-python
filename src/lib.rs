@@ -3,10 +3,12 @@
 #[macro_use]
 extern crate cpython;
 
+use cpython::PyBytes;
+
 mod instance;
 mod value;
 
-use instance::Instance;
+use instance::{validate, Instance};
 use value::Value;
 
 // Declare the module.
@@ -18,6 +20,7 @@ py_module_initializer!(libwasm, initlibwasm, PyInit_wasm, |python, module| {
     )?;
     module.add_class::<Instance>(python)?;
     module.add_class::<Value>(python)?;
+    module.add(python, "validate", py_fn!(python, validate(bytes: PyBytes)))?;
 
     Ok(())
 });

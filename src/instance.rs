@@ -1,10 +1,12 @@
 //! The `Instance` Python object to build WebAssembly instances.
 
 use crate::value::{get_wasm_value, wasm_value_into_python_object, Value};
-use cpython::{PyBytes, PyObject, PyResult};
+use cpython::{PyBytes, PyObject, PyResult, Python};
 use generational_arena::{Arena, Index};
 use std::cell::RefCell;
-use wasmer_runtime::{self as runtime, imports, instantiate, Value as WasmValue};
+use wasmer_runtime::{
+    self as runtime, imports, instantiate, validate as wasm_validate, Value as WasmValue,
+};
 
 /// `wasmer_runtime::Instance` isn't thread-safe, and it's somewhat
 /// complex to make it entirely thread-safe. Instead, this trick is
@@ -82,3 +84,10 @@ py_class!(pub class Instance |py| {
         Ok(wasm_value_into_python_object(py, &results[0]))
     }
 });
+
+/// The Python `validate` function.
+///
+///
+pub fn validate(py: Python, bytes: PyBytes) -> PyResult<bool> {
+    Ok(wasm_validate(bytes.data(py)))
+}
