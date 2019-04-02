@@ -146,7 +146,7 @@ from wasm import Value
 value_i32 = Value.from_i32(7)
 
 # Integer on 64-bits.
-value_i64 = VAlue.from_i64(7)
+value_i64 = Value.from_i64(7)
 
 # Float on 32-bits.
 value_f32 = Value.from_f32(7.42)
