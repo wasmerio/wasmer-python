@@ -68,7 +68,7 @@ $ .env/bin/python examples/simple.py
 
 ## Usage
 
-The Python extension is written in Rust, with [`rust-cpython]` and
+The Python extension is written in Rust, with [`rust-cpython`] and
 [`pyo3-pack`].
 
 To set up your environment, run only once:
