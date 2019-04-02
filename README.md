@@ -141,6 +141,9 @@ CLASSES
      |  from_i32(...)
      |
      |  from_i64(...)
+
+FUNCTIONS
+    validate(...)
 ```
 
 (yes, you need [`just`]).
