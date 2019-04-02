@@ -16,8 +16,8 @@ sleep:
 # Compile and install the Rust library.
 rust:
         export PYTHON_SYS_EXECUTABLE=$(which python3)
-        cargo build
-        pyo3-pack develop
+        cargo check
+        pyo3-pack develop --release --strip
 
 # Run Python.
 python-run file='':
