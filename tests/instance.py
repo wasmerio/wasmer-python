@@ -1,12 +1,11 @@
-from wasm import Instance, Value
+from wasm import Instance, Value, validate
 import inspect
 import os
 import unittest
 
 here = os.path.dirname(os.path.realpath(__file__))
-file = open(here + '/tests.wasm', 'rb')
-
-TEST_BYTES = file.read()
+TEST_BYTES = open(here + '/tests.wasm', 'rb').read()
+INVALID_TEST_BYTES = open(here + '/invalid.wasm', 'rb').read()
 
 class TestWasmInstance(unittest.TestCase):
     def test_is_a_class(self):
@@ -87,3 +86,9 @@ class TestWasmInstance(unittest.TestCase):
             Instance(TEST_BYTES).call('string'),
             1048576
         )
+
+    def test_validate(self):
+        self.assertTrue(validate(TEST_BYTES))
+
+    def test_validate_invalid(self):
+        self.assertFalse(validate(INVALID_TEST_BYTES))
