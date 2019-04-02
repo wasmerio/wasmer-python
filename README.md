@@ -102,51 +102,7 @@ Finally, to inspect the extension; run:
 $ just inspect
 ```
 
-You are likely to see something like this:
-
-```
-Help on module libwasm:
-
-NAME
-    libwasm - This extension exposes an API to manipulate and to execute WebAssembly binaries.
-
-CLASSES
-    builtins.object
-        Instance
-        Value
-
-    class Instance(builtins.object)
-     |  Methods defined here:
-     |
-     |  call(...)
-     |
-     |  ----------------------------------------------------------------------
-     |  Static methods defined here:
-     |
-     |  __new__(*args, **kwargs) from builtins.type
-     |      Create and return a new object.  See help(type) for accurate signature.
-
-    class Value(builtins.object)
-     |  Methods defined here:
-     |
-     |  to_string(...)
-     |
-     |  ----------------------------------------------------------------------
-     |  Static methods defined here:
-     |
-     |  from_f32(...)
-     |
-     |  from_f64(...)
-     |
-     |  from_i32(...)
-     |
-     |  from_i64(...)
-
-FUNCTIONS
-    validate(...)
-```
-
-(yes, you need [`just`]).
+(Yes, you need [`just`]).
 
 ## Testing
 
@@ -156,6 +112,72 @@ run the following command:
 ```sh
 $ just test
 ```
+
+## API of the `wasm` extension/module
+
+### The `Instance` class
+
+Instantiates a WebAssembly module represented by bytes, and calls
+exported functions on it:
+
+```python
+from wasm import Instance, Value
+
+# Get the Wasm module as bytes.
+bytes = open('my_program.wasm', 'rb').read()
+
+# Instantiates the Wasm module.
+instance = Instance(bytes)
+
+# Call a function on it.
+result = instance.call('sum', [Value.from_i32(1), Value.from_i32(2)])
+
+print(result) # 3
+```
+
+### The `Value` class
+
+Builds WebAssembly values with the correct types:
+
+```python
+from wasm import Value
+
+# Integer on 32-bits.
+value_i32 = Value.from_i32(7)
+
+# Integer on 64-bits.
+value_i64 = VAlue.from_i64(7)
+
+# Float on 32-bits.
+value_f32 = Value.from_f32(7.42)
+
+# Float on 64-bits.
+value_f64 = Value.from_f64(7.42)
+```
+
+The `from_*` static methods must be considered as static constructors.
+
+The `to_string` method allows to get a string representation of a
+`Value` instance:
+
+```python
+print(value_i32) # I32(7)
+```
+
+### The `validate` function
+
+Checks whether the given bytes represent valid WebAssembly bytes:
+
+```python
+from wasm import validate
+
+bytes = open('my_program.wasm', 'rb').read()
+
+if not validate(bytes):
+    print('The program seems corrupted.')
+```
+
+This function returns a boolean.
 
 ## License
 
