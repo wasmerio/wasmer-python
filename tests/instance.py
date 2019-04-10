@@ -14,6 +14,26 @@ class TestWasmInstance(unittest.TestCase):
     def test_can_construct(self):
         self.assertIsInstance(Instance(TEST_BYTES), Instance)
 
+    def test_failed_to_instantiate(self):
+        with self.assertRaises(RuntimeError) as context_manager:
+            Instance(INVALID_TEST_BYTES)
+
+        exception = context_manager.exception
+        self.assertEqual(
+            str(exception),
+            'Failed to instantiate the module:\n    compile error: Validation error "Invalid type"'
+        )
+
+    def test_function_does_not_exist(self):
+        with self.assertRaises(RuntimeError) as context_manager:
+            Instance(TEST_BYTES).call("foo")
+
+        exception = context_manager.exception
+        self.assertEqual(
+            str(exception),
+            'Function `foo` does not exist.'
+        )
+
     def test_basic_sum(self):
         self.assertEqual(
             Instance(TEST_BYTES)
