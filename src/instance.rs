@@ -30,7 +30,10 @@ py_class!(pub class Instance |py| {
     def __new__(_cls, bytes: PyBytes) -> PyResult<Instance> {
         let bytes = bytes.data(py);
         let imports = imports! {};
-        let instance = instantiate(bytes, &imports).unwrap();
+        let instance = match instantiate(bytes, &imports) {
+            Ok(instance) => instance,
+            Err(e) => return Err(new_runtime_error(py, &format!("Failed to instantiate the module:\n    {}", e)))
+        };
 
         Instance::create_instance(py, Shell::new(instance))
     }
@@ -43,7 +46,15 @@ py_class!(pub class Instance |py| {
                 .collect();
 
         let instance = self.instance(py);
-        let results = instance.dyn_func(function_name).unwrap().call(function_arguments.as_slice()).unwrap();
+        let function = match instance.dyn_func(function_name) {
+            Ok(function) => function,
+            Err(_) => return Err(new_runtime_error(py, &format!("Function `{}` does not exist.", function_name)))
+        };
+
+        let results = match function.call(function_arguments.as_slice()) {
+            Ok(results) => results,
+            Err(e) => return Err(new_runtime_error(py, &format!("{}", e)))
+        };
 
         Ok(wasm_value_into_python_object(py, &results[0]))
     }
