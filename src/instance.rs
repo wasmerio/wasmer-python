@@ -1,11 +1,15 @@
 //! The `Instance` Python object to build WebAssembly instances.
 
-use crate::value::{get_wasm_value, wasm_value_into_python_object, Value};
+use crate::{
+    error::new_runtime_error,
+    memory_view::{new_memory_view, MemoryView},
+    value::{get_wasm_value, wasm_value_into_python_object, Value},
+};
 use cpython::{PyBytes, PyObject, PyResult, Python};
 use generational_arena::{Arena, Index};
 use std::cell::RefCell;
 use wasmer_runtime::{
-    self as runtime, imports, instantiate, validate as wasm_validate, Value as WasmValue,
+    self as runtime, imports, instantiate, validate as wasm_validate, Export, Value as WasmValue,
 };
 
 /// `wasmer_runtime::Instance` isn't thread-safe, and it's somewhat
@@ -82,6 +86,37 @@ py_class!(pub class Instance |py| {
         );
 
         Ok(wasm_value_into_python_object(py, &results[0]))
+    }
+
+    def memory_view(&self, offset: usize = 0) -> PyResult<MemoryView> {
+        let index = self.instance(py).index;
+        let memory = WASM_INSTANCES.with(
+            |instances| {
+                let instances = instances.borrow();
+                let instance = instances.get(index).unwrap();
+
+                instance
+                    .exports()
+                    .find_map(
+                        |(_, export)| {
+                            match export {
+                                Export::Memory(memory) => Some(memory),
+                                _ => None
+                            }
+                        }
+                    )
+            }
+        );
+
+        match memory {
+            Some(memory) => {
+                Ok(new_memory_view(py, memory, offset))
+            },
+
+            None => {
+                Err(new_runtime_error(py, "Not memory exported."))
+            }
+        }
     }
 });
 
