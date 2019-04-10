@@ -24,7 +24,7 @@ py_class!(pub class Value |py| {
     data value: WasmValue;
 
     @staticmethod
-    def from_i32(value: i32) -> PyResult<Value> {
+    def i32(value: i32) -> PyResult<Value> {
         Value::create_instance(
             py,
             WasmValue::I32(value)
@@ -32,7 +32,7 @@ py_class!(pub class Value |py| {
     }
 
     @staticmethod
-    def from_i64(value: i64) -> PyResult<Value> {
+    def i64(value: i64) -> PyResult<Value> {
         Value::create_instance(
             py,
             WasmValue::I64(value)
@@ -40,7 +40,7 @@ py_class!(pub class Value |py| {
     }
 
     @staticmethod
-    def from_f32(value: f32) -> PyResult<Value> {
+    def f32(value: f32) -> PyResult<Value> {
         Value::create_instance(
             py,
             WasmValue::F32(value)
@@ -48,7 +48,7 @@ py_class!(pub class Value |py| {
     }
 
     @staticmethod
-    def from_f64(value: f64) -> PyResult<Value> {
+    def f64(value: f64) -> PyResult<Value> {
         Value::create_instance(
             py,
             WasmValue::F64(value)

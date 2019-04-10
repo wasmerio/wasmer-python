@@ -20,8 +20,8 @@ class TestWasmInstance(unittest.TestCase):
                 .call(
                     'sum',
                     [
-                        Value.from_i32(1),
-                        Value.from_i32(2)
+                        Value.i32(1),
+                        Value.i32(2)
                     ]
                 ),
             3
@@ -35,25 +35,25 @@ class TestWasmInstance(unittest.TestCase):
 
     def test_call_i32_i32(self):
         self.assertEqual(
-            Instance(TEST_BYTES).call('i32_i32', [Value.from_i32(7)]),
+            Instance(TEST_BYTES).call('i32_i32', [Value.i32(7)]),
             7
         )
 
     def test_call_i64_i64(self):
         self.assertEqual(
-            Instance(TEST_BYTES).call('i64_i64', [Value.from_i64(7)]),
+            Instance(TEST_BYTES).call('i64_i64', [Value.i64(7)]),
             7
         )
 
     def test_call_f32_f32(self):
         self.assertEqual(
-            Instance(TEST_BYTES).call('f32_f32', [Value.from_f32(7.)]),
+            Instance(TEST_BYTES).call('f32_f32', [Value.f32(7.)]),
             7.
         )
 
     def test_call_f64_f64(self):
         self.assertEqual(
-            Instance(TEST_BYTES).call('f64_f64', [Value.from_f64(7.)]),
+            Instance(TEST_BYTES).call('f64_f64', [Value.f64(7.)]),
             7.
         )
 
@@ -64,10 +64,10 @@ class TestWasmInstance(unittest.TestCase):
                     .call(
                         'i32_i64_f32_f64_f64',
                         [
-                            Value.from_i32(1),
-                            Value.from_i64(2),
-                            Value.from_f32(3.4),
-                            Value.from_f64(5.6)
+                            Value.i32(1),
+                            Value.i64(2),
+                            Value.f32(3.4),
+                            Value.f64(5.6)
                         ]
                     ),
                 6
