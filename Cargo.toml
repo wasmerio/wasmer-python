@@ -1,6 +1,6 @@
 [package]
 name = "python-ext-wasm"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["Ivan Enderlin <ivan.enderlin@hoa-project.net>"]
 edition = "2018"
 
