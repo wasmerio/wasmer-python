@@ -1,4 +1,4 @@
-from wasm import Instance, Value, validate
+from wasm import Instance, MemoryView, Value, validate
 import inspect
 import os
 import unittest
@@ -92,3 +92,6 @@ class TestWasmInstance(unittest.TestCase):
 
     def test_validate_invalid(self):
         self.assertFalse(validate(INVALID_TEST_BYTES))
+
+    def test_memory_view(self):
+        self.assertIsInstance(Instance(TEST_BYTES).memory_view(), MemoryView)
