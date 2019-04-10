@@ -6,6 +6,7 @@ extern crate cpython;
 use cpython::PyBytes;
 use std::{ops::Deref, thread};
 
+mod error;
 mod instance;
 mod value;
 
