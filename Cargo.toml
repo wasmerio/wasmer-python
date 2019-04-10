@@ -11,4 +11,3 @@ crate-type = ["cdylib"]
 [dependencies]
 cpython = { version = "0.2", features = ["extension-module"] }
 wasmer-runtime = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
-generational-arena = "0.2.2"
