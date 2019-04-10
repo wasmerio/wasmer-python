@@ -8,9 +8,11 @@ use std::{ops::Deref, thread};
 
 mod error;
 mod instance;
+mod memory_view;
 mod value;
 
 use instance::{validate, Instance};
+use memory_view::MemoryView;
 use value::Value;
 
 /// A `Shell` is a thread-safe wrapper over a value that will fail if
@@ -60,6 +62,7 @@ py_module_initializer!(libwasm, initlibwasm, PyInit_wasm, |python, module| {
         "__doc__",
         "This extension exposes an API to manipulate and to execute WebAssembly binaries.",
     )?;
+    module.add_class::<MemoryView>(python)?;
     module.add_class::<Instance>(python)?;
     module.add_class::<Value>(python)?;
     module.add(python, "validate", py_fn!(python, validate(bytes: PyBytes)))?;
