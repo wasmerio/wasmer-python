@@ -55,7 +55,7 @@ from wasm import Instance, Value
 
 bytes = open('simple.wasm', 'rb').read()
 instance = Instance(bytes)
-result = instance.call('sum', [Value.from_i32(5), Value.from_i32(37)])
+result = instance.call('sum', [Value.i32(5), Value.i32(37)])
 
 print(result) # 42!
 ```
@@ -130,7 +130,7 @@ bytes = open('my_program.wasm', 'rb').read()
 instance = Instance(bytes)
 
 # Call a function on it.
-result = instance.call('sum', [Value.from_i32(1), Value.from_i32(2)])
+result = instance.call('sum', [Value.i32(1), Value.i32(2)])
 
 print(result) # 3
 ```
@@ -143,19 +143,20 @@ Builds WebAssembly values with the correct types:
 from wasm import Value
 
 # Integer on 32-bits.
-value_i32 = Value.from_i32(7)
+value_i32 = Value.i32(7)
 
 # Integer on 64-bits.
-value_i64 = Value.from_i64(7)
+value_i64 = Value.i64(7)
 
 # Float on 32-bits.
-value_f32 = Value.from_f32(7.42)
+value_f32 = Value.f32(7.42)
 
 # Float on 64-bits.
-value_f64 = Value.from_f64(7.42)
+value_f64 = Value.f64(7.42)
 ```
 
-The `from_*` static methods must be considered as static constructors.
+The `Value.[if](32|64)` static methods must be considered as static
+constructors.
 
 The `to_string` method allows to get a string representation of a
 `Value` instance:
