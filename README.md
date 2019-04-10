@@ -165,6 +165,36 @@ The `to_string` method allows to get a string representation of a
 print(value_i32) # I32(7)
 ```
 
+### The `MemoryView` class
+
+Represents a view over a memory buffer of an instance:
+
+``` python
+from wasm import Instance
+
+# Get the Wasm module as bytes.
+bytes = open('my_program.wasm', 'rb').read()
+
+# Instantiates the Wasm module.
+instance = Instance(bytes)
+
+# Call a function that returns a pointer to a string for instance.
+pointer = instance.call('return_string')
+
+# Get the memory view, with the offset set to `pointer` (default is 0).
+memory = instance.memory_view(pointer)
+
+# Read the string pointed by the pointer.
+nth = 0;
+string = ''
+
+while (0 != memory.get(nth)):
+    string += chr(memory.get(nth))
+    nth += 1
+
+print(string) # Hello, World!
+```
+
 ### The `validate` function
 
 Checks whether the given bytes represent valid WebAssembly bytes:
