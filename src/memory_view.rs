@@ -5,7 +5,8 @@ use cpython::{PyObject, PyResult, Python};
 use std::mem::size_of;
 use wasmer_runtime::memory::Memory;
 
-/// The `Buffer` Python object represents a WebAssembly value.
+/// The `MemoryView` Python object represents a view over the memory
+/// of a WebAssembly instance.
 ///
 /// # Examples
 ///

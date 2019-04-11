@@ -15,12 +15,12 @@ use instance::{validate, Instance};
 use memory_view::MemoryView;
 use value::Value;
 
-/// A `Shell` is a thread-safe wrapper over a value that will fail if
-/// used in another thread. Why? All data used by Python must be
-/// thread, but some WebAssembly data cannot be thread-safe. The
-/// program will compile and Python will be able to use it, but Python
-/// must not pass the data between thread. The documentation will
-/// specify it.
+/// A `Shell` is a thread-safe wrapper over a value `T` that will fail
+/// if used in another thread. Why? All data used by Python must be
+/// thread-safe. However some WebAssembly data cannot be thread-safe,
+/// like unshared memory. With a `Shell`, the program will compile and
+/// Python will be able to use the value `T`, but it must not be
+/// passed between threads. The documentation will specify it.
 pub struct Shell<T> {
     /// The thread ID where the datum has been created.
     thread_id: thread::ThreadId,
