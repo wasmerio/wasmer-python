@@ -10,7 +10,7 @@ use wasmer_runtime::memory::Memory;
 /// # Examples
 ///
 /// ```python,ignore
-/// from wasm import Instance
+/// from wasmer import Instance
 ///
 /// instance = Instance(bytes)
 /// memory = instance.memory_view()

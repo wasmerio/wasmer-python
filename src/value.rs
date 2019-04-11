@@ -8,12 +8,12 @@ use wasmer_runtime::Value as WasmValue;
 /// # Examples
 ///
 /// ```python,ignore
-/// import wasm
+/// from wasmer import Value
 ///
-/// value1 = wasm.Value.from_i32(42)
-/// value2 = wasm.Value.from_i64(42)
-/// value3 = wasm.Value.from_f32(4.2)
-/// value4 = wasm.Value.from_f64(4.2)
+/// value1 = Value.from_i32(42)
+/// value2 = Value.from_i64(42)
+/// value3 = Value.from_f32(4.2)
+/// value4 = Value.from_f64(4.2)
 ///
 /// print(value1.to_string()) // "I32(42)"
 /// print(value2.to_string()) // "I64(42)"

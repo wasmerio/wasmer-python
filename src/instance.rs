@@ -16,7 +16,7 @@ use wasmer_runtime::{
 /// # Examples
 ///
 /// ```python,ignore
-/// from wasm import Instance, Value
+/// from wasmer import Instance, Value
 ///
 /// file = open('my_program.wasm', 'rb') # note the mode contains `b` to get bytes, and not UTF-8 characters.
 /// bytes = file.read()
