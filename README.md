@@ -123,9 +123,21 @@ The `to_string` method allows to get a string representation of a
 print(value_i32) # I32(7)
 ```
 
-### The `MemoryView` class
+### The `*MemoryView` classes
 
-Represents a view over a memory buffer of an instance:
+These classes represent views over a memory buffer of an instance.
+
+| Class | View buffer as a sequence of… | Bytes per element |
+|-|-|-|
+| `Int8MemoryView` | `int8` | 1 |
+| `Uint8MemoryView` | `uint8` | 1 |
+| `Int16MemoryView` | `int16` | 2 |
+| `Uint16MemoryView` | `uint16` | 2 |
+| `Int32MemoryView` | `int32` | 4 |
+| `Uint32MemoryView` | `uint32` | 4 |
+
+All these classes share the same implementation. Taking the example of
+`Uint8MemoryView`:
 
 ``` python
 from wasmer import Instance
@@ -140,7 +152,7 @@ instance = Instance(wasm_bytes)
 pointer = instance.call('return_string')
 
 # Get the memory view, with the offset set to `pointer` (default is 0).
-memory = instance.memory_view(pointer)
+memory = instance.uint8_memory_view(pointer)
 
 # Read the string pointed by the pointer.
 nth = 0;
