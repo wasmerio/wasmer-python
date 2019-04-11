@@ -2,7 +2,7 @@
 prelude:
         pip3 install pyo3-pack
         cargo install pyo3-pack
-        pip3 install --user virtualenv
+        pip3 install virtualenv
         virtualenv -p $(which python3) .env
 
 # Setup the environment to develop the extension.

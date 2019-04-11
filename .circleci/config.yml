@@ -12,29 +12,62 @@ jobs:
       - run:
           name: Install just
           command: |
-            cargo install just
+            test -f /usr/local/cargo/bin/just || cargo install just
       - run:
           name: Install pyenv
           command: |
-            curl https://pyenv.run | bash
+            # Only install pyenv if it doesn't exist
+            test -d /home/circleci/.pyenv || curl https://pyenv.run | bash
       - run:
           name: Install python versions
           command: |
             export PATH="/home/circleci/.pyenv/bin:$PATH"
-            pyenv install 3.5.7
-            pyenv install 3.6.8
-            pyenv install 3.7.3
-      - run:
-          name: Prelude
-          command: |
-            just prelude
+            test -d /home/circleci/.pyenv || pyenv install 3.5.7
+            test -d /home/circleci/.pyenv || pyenv install 3.6.8
+            test -d /home/circleci/.pyenv || pyenv install 3.7.3
       - save_cache:
           paths:
+            - /usr/local/cargo/bin
             - /usr/local/cargo/registry
             - target/release/.fingerprint
             - target/release/build
             - target/release/deps
+            - /home/circleci/.pyenv
           key: v1-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
+      - restore_cache:
+          keys:
+            - v1-linux-deps-{{ arch }}-{{ checksum "Cargo.lock" }}
+            - v1-linux-deps-{{ arch }}
+      - run:
+          name: Prelude
+          command: |
+            export PATH="/home/circleci/.pyenv/bin:$PATH"
+            export PATH="/usr/local/cargo/bin:$PATH"
+            export PATH="/home/circleci/.pyenv/versions/3.7.3/bin/:$PATH"
+            just prelude
+      - run:
+          name: Compile the extension
+          command: |
+            export PATH="/home/circleci/.pyenv/bin:$PATH"
+            export PATH="/usr/local/cargo/bin:$PATH"
+            export PATH="/home/circleci/.pyenv/versions/3.7.3/bin/:$PATH"
+            source .env/bin/activate
+            just rust
+      - save_cache:
+          paths:
+            - .env
+            - target/release/.fingerprint
+            - target/release/build
+            - target/release/deps
+          key: v1-linux-deps-{{ arch }}-{{ checksum "Cargo.lock" }}
+      - run:
+          name: Test the extension
+          command: |
+            export PATH="/home/circleci/.pyenv/bin:$PATH"
+            export PATH="/usr/local/cargo/bin:$PATH"
+            export PATH="/home/circleci/.pyenv/versions/3.7.3/bin/:$PATH"
+            source .env/bin/activate
+            just test
 
 workflows:
   version: 2
