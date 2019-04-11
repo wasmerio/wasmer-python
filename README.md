@@ -1,4 +1,22 @@
-# 🐍+🦀+🕸 = Python `ext-wasm`
+<p align="center">
+  <a href="https://wasmer.io" target="_blank" rel="noopener noreferrer">
+    <img width="400" src="https://raw.githubusercontent.com/wasmerio/wasmer/master/logo.png" alt="Wasmer logo">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://spectrum.chat/wasmer">
+    <img src="https://withspectrum.github.io/badge/badge.svg" alt="Join the Wasmer Community">
+  </a>
+  <a href="https://pypi.org/project/python-ext-wasm/">
+      <img src="https://img.shields.io/pypi/format/python-ext-wasm.svg" alt="Pypi" />
+  </a>
+  <a href="https://github.com/wasmerio/wasmer/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/wasmerio/wasmer.svg" alt="License">
+  </a>
+</p>
+
+# 🐍+🦀+🕸  The Python extension to run WebAssembly
 
 _This is only experimental right now_.
 
@@ -63,10 +81,20 @@ print(result) # 42!
 And then, finally, enjoy by running:
 
 ```sh
-$ .env/bin/python examples/simple.py
+$ python examples/simple.py
 ```
 
-## Usage
+## Installation
+
+With [Pypi]:
+
+```shell
+$ pip install python-ext-wasm
+```
+
+There is a limited set of wheels published so far. More are coming.
+
+### Development
 
 The Python extension is written in Rust, with [`rust-cpython`] and
 [`pyo3-pack`].
@@ -216,6 +244,7 @@ The entire project is under the BSD-3-Clause license. Please read the
 `LICENSE` file.
 
 
+[Pypi]: https://pypi.org/
 [`rust-cpython`]: https://github.com/dgrunwald/rust-cpython
 [`pyo3-pack`]: https://github.com/PyO3/pyo3-pack
 [`virtualenv`]: https://virtualenv.pypa.io/
