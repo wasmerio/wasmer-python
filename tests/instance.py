@@ -1,4 +1,4 @@
-from wasm import Instance, MemoryView, Value, validate
+from wasmer import Instance, MemoryView, Value, validate
 import inspect
 import os
 import unittest

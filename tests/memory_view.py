@@ -1,4 +1,4 @@
-from wasm import Instance, MemoryView
+from wasmer import Instance, MemoryView
 import inspect
 import os
 import unittest

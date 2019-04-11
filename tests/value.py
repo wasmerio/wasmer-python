@@ -1,4 +1,4 @@
-from wasm import Value
+from wasmer import Value
 import inspect
 import unittest
 

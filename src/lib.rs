@@ -56,11 +56,11 @@ impl<T> Deref for Shell<T> {
 }
 
 // Declare the module.
-py_module_initializer!(libwasm, initlibwasm, PyInit_wasm, |python, module| {
+py_module_initializer!(libwasmer, initlibwasmer, PyInit_wasmer, |python, module| {
     module.add(
         python,
         "__doc__",
-        "This extension exposes an API to manipulate and to execute WebAssembly binaries.",
+        "This extension allows to manipulate and to execute WebAssembly binaries.",
     )?;
     module.add_class::<MemoryView>(python)?;
     module.add_class::<Instance>(python)?;

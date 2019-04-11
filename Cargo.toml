@@ -1,5 +1,5 @@
 [package]
-name = "python-ext-wasm"
+name = "wasmer"
 version = "0.1.2"
 authors = ["Ivan Enderlin <ivan.enderlin@hoa-project.net>"]
 edition = "2018"
@@ -10,7 +10,7 @@ keywords = ["python", "extension", "webassembly"]
 categories = ["wasm"]
 
 [lib]
-name = "wasm"
+name = "wasmer"
 crate-type = ["cdylib"]
 
 [dependencies]

@@ -1,4 +1,4 @@
-from wasm import Instance, Value
+from wasmer import Instance, Value
 import os
 
 __dir__ = os.path.dirname(os.path.realpath(__file__))

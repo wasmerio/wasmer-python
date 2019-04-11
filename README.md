@@ -69,7 +69,7 @@ Then, we can excecute it in Python (!) with the `examples/simple.py`
 file:
 
 ```python
-from wasm import Instance, Value
+from wasmer import Instance, Value
 
 bytes = open('simple.wasm', 'rb').read()
 instance = Instance(bytes)
@@ -89,7 +89,7 @@ $ python examples/simple.py
 With [Pypi]:
 
 ```shell
-$ pip install python-ext-wasm
+$ pip install wasmer
 ```
 
 There is a limited set of wheels published so far. More are coming.
@@ -149,7 +149,7 @@ Instantiates a WebAssembly module represented by bytes, and calls
 exported functions on it:
 
 ```python
-from wasm import Instance, Value
+from wasmer import Instance, Value
 
 # Get the Wasm module as bytes.
 bytes = open('my_program.wasm', 'rb').read()
@@ -168,7 +168,7 @@ print(result) # 3
 Builds WebAssembly values with the correct types:
 
 ```python
-from wasm import Value
+from wasmer import Value
 
 # Integer on 32-bits.
 value_i32 = Value.i32(7)
@@ -198,7 +198,7 @@ print(value_i32) # I32(7)
 Represents a view over a memory buffer of an instance:
 
 ``` python
-from wasm import Instance
+from wasmer import Instance
 
 # Get the Wasm module as bytes.
 bytes = open('my_program.wasm', 'rb').read()
@@ -228,7 +228,7 @@ print(string) # Hello, World!
 Checks whether the given bytes represent valid WebAssembly bytes:
 
 ```python
-from wasm import validate
+from wasmer import validate
 
 bytes = open('my_program.wasm', 'rb').read()
 
