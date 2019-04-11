@@ -1,54 +1,36 @@
-<p align="center">
-  <a href="https://wasmer.io" target="_blank" rel="noopener noreferrer">
-    <img width="400" src="https://raw.githubusercontent.com/wasmerio/wasmer/master/logo.png" alt="Wasmer logo">
+<h1>
+  <a href="https://wasmer.io" target="_blank" rel="noopener noreferrer" valign="middle">
+    <img height="64" src="https://raw.githubusercontent.com/wasmerio/wasmer/master/logo.png" alt="Wasmer logo" valign="middle">
   </a>
-</p>
-
-<p align="center">
+  &nbsp;
   <a href="https://spectrum.chat/wasmer">
-    <img src="https://withspectrum.github.io/badge/badge.svg" alt="Join the Wasmer Community">
+    <img src="https://withspectrum.github.io/badge/badge.svg" alt="Join the Wasmer Community" valign="middle">
   </a>
-  <a href="https://pypi.org/project/python-ext-wasm/">
-      <img src="https://img.shields.io/pypi/format/python-ext-wasm.svg" alt="Pypi" />
+  <a href="https://pypi.org/project/wasmer/">
+      <img src="https://img.shields.io/pypi/format/wasmer.svg" alt="Pypi" valign="middle"/>
   </a>
   <a href="https://github.com/wasmerio/wasmer/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/wasmerio/wasmer.svg" alt="License">
+    <img src="https://img.shields.io/github/license/wasmerio/wasmer.svg" alt="License" valign="middle">
   </a>
-</p>
+</h1>
 
-# 🐍+🦀+🕸  The Python extension to run WebAssembly
 
-_This is only experimental right now_.
+Wasmer is a Python library for executing WebAssembly files.
 
-The goal of the project is to be able to run WebAssembly binary from
-Python directly.
+* **Easy to use:** wasmer API mimics the standard WebAssembly API.
+* **Fast:** wasmer executes the WebAssembly modules at **native speed**.
+* **Safe:** all calls to WebAssembly will be fast, but more importantly, completely safe and sandboxed.
 
-## What is WebAssembly?
+## Install
 
-Quoting [the WebAssembly site](https://webassembly.org/):
+For instaling wasmer, just run this command in your shell:
 
-> WebAssembly (abbreviated Wasm) is a binary instruction format for a
-> stack-based virtual machine. Wasm is designed as a portable target
-> for compilation of high-level languages like C/C++/Rust, enabling
-> deployment on the web for client and server applications.
+```shell
+$ pip install wasmer
+```
 
-About speed:
+*Note: There is a limited set of wheels published so far. More are coming.*
 
-> WebAssembly aims to execute at native speed by taking advantage of
-> [common hardware
-> capabilities](https://webassembly.org/docs/portability/#assumptions-for-efficient-execution)
-> available on a wide range of platforms.
-
-About safety:
-
-> WebAssembly describes a memory-safe, sandboxed [execution
-> environment](https://webassembly.org/docs/semantics/#linear-memory) […].
-
-## Goals
-
-This extension has some goals in minds. Let's list some of them:
-
-_[under writing]_
 
 ## Example
 
@@ -62,17 +44,17 @@ pub extern fn sum(x: i32, y: i32) -> i32 {
 }
 ```
 
-After compilation to Wasm, we end up with a `examples/simple.wasm`
+After compilation to Wasm, we will have a [`examples/simple.wasm`](https://github.com/wasmerio/python-ext-wasm/blob/master/examples/simple.wasm)
 binary file.
+You can download it [here](https://github.com/wasmerio/python-ext-wasm/blob/master/examples/simple.wasm). 
 
-Then, we can excecute it in Python (!) with the `examples/simple.py`
-file:
+Then, we can excecute it in Python:
 
 ```python
 from wasmer import Instance, Value
 
-bytes = open('simple.wasm', 'rb').read()
-instance = Instance(bytes)
+wasm_bytes = open('simple.wasm', 'rb').read()
+instance = Instance(wasm_bytes)
 result = instance.call('sum', [Value.i32(5), Value.i32(37)])
 
 print(result) # 42!
@@ -84,17 +66,105 @@ And then, finally, enjoy by running:
 $ python examples/simple.py
 ```
 
-## Installation
+## API of the `wasm` extension/module
 
-With [Pypi]:
+### The `Instance` class
 
-```shell
-$ pip install wasmer
+Instantiates a WebAssembly module represented by bytes, and calls
+exported functions on it:
+
+```python
+from wasmer import Instance, Value
+
+# Get the Wasm module as bytes.
+wasm_bytes = open('my_program.wasm', 'rb').read()
+
+# Instantiates the Wasm module.
+instance = Instance(wasm_bytes)
+
+# Call a function on it.
+result = instance.call('sum', [Value.i32(1), Value.i32(2)])
+
+print(result) # 3
 ```
 
-There is a limited set of wheels published so far. More are coming.
+### The `Value` class
 
-### Development
+Builds WebAssembly values with the correct types:
+
+```python
+from wasmer import Value
+
+# Integer on 32-bits.
+value_i32 = Value.i32(7)
+
+# Integer on 64-bits.
+value_i64 = Value.i64(7)
+
+# Float on 32-bits.
+value_f32 = Value.f32(7.42)
+
+# Float on 64-bits.
+value_f64 = Value.f64(7.42)
+```
+
+The `Value.[if](32|64)` static methods must be considered as static
+constructors.
+
+The `to_string` method allows to get a string representation of a
+`Value` instance:
+
+```python
+print(value_i32) # I32(7)
+```
+
+### The `MemoryView` class
+
+Represents a view over a memory buffer of an instance:
+
+``` python
+from wasmer import Instance
+
+# Get the Wasm module as bytes.
+wasm_bytes = open('my_program.wasm', 'rb').read()
+
+# Instantiates the Wasm module.
+instance = Instance(wasm_bytes)
+
+# Call a function that returns a pointer to a string for instance.
+pointer = instance.call('return_string')
+
+# Get the memory view, with the offset set to `pointer` (default is 0).
+memory = instance.memory_view(pointer)
+
+# Read the string pointed by the pointer.
+nth = 0;
+string = ''
+
+while (0 != memory.get(nth)):
+    string += chr(memory.get(nth))
+    nth += 1
+
+print(string) # Hello, World!
+```
+
+### The `validate` function
+
+Checks whether the given bytes represent valid WebAssembly bytes:
+
+```python
+from wasmer import validate
+
+wasm_bytes = open('my_program.wasm', 'rb').read()
+
+if not validate(wasm_bytes):
+    print('The program seems corrupted.')
+```
+
+This function returns a boolean.
+
+
+## Development
 
 The Python extension is written in Rust, with [`rust-cpython`] and
 [`pyo3-pack`].
@@ -141,102 +211,27 @@ run the following command:
 $ just test
 ```
 
-## API of the `wasm` extension/module
 
-### The `Instance` class
+## What is WebAssembly?
 
-Instantiates a WebAssembly module represented by bytes, and calls
-exported functions on it:
+Quoting [the WebAssembly site](https://webassembly.org/):
 
-```python
-from wasmer import Instance, Value
+> WebAssembly (abbreviated Wasm) is a binary instruction format for a
+> stack-based virtual machine. Wasm is designed as a portable target
+> for compilation of high-level languages like C/C++/Rust, enabling
+> deployment on the web for client and server applications.
 
-# Get the Wasm module as bytes.
-bytes = open('my_program.wasm', 'rb').read()
+About speed:
 
-# Instantiates the Wasm module.
-instance = Instance(bytes)
+> WebAssembly aims to execute at native speed by taking advantage of
+> [common hardware
+> capabilities](https://webassembly.org/docs/portability/#assumptions-for-efficient-execution)
+> available on a wide range of platforms.
 
-# Call a function on it.
-result = instance.call('sum', [Value.i32(1), Value.i32(2)])
+About safety:
 
-print(result) # 3
-```
-
-### The `Value` class
-
-Builds WebAssembly values with the correct types:
-
-```python
-from wasmer import Value
-
-# Integer on 32-bits.
-value_i32 = Value.i32(7)
-
-# Integer on 64-bits.
-value_i64 = Value.i64(7)
-
-# Float on 32-bits.
-value_f32 = Value.f32(7.42)
-
-# Float on 64-bits.
-value_f64 = Value.f64(7.42)
-```
-
-The `Value.[if](32|64)` static methods must be considered as static
-constructors.
-
-The `to_string` method allows to get a string representation of a
-`Value` instance:
-
-```python
-print(value_i32) # I32(7)
-```
-
-### The `MemoryView` class
-
-Represents a view over a memory buffer of an instance:
-
-``` python
-from wasmer import Instance
-
-# Get the Wasm module as bytes.
-bytes = open('my_program.wasm', 'rb').read()
-
-# Instantiates the Wasm module.
-instance = Instance(bytes)
-
-# Call a function that returns a pointer to a string for instance.
-pointer = instance.call('return_string')
-
-# Get the memory view, with the offset set to `pointer` (default is 0).
-memory = instance.memory_view(pointer)
-
-# Read the string pointed by the pointer.
-nth = 0;
-string = ''
-
-while (0 != memory.get(nth)):
-    string += chr(memory.get(nth))
-    nth += 1
-
-print(string) # Hello, World!
-```
-
-### The `validate` function
-
-Checks whether the given bytes represent valid WebAssembly bytes:
-
-```python
-from wasmer import validate
-
-bytes = open('my_program.wasm', 'rb').read()
-
-if not validate(bytes):
-    print('The program seems corrupted.')
-```
-
-This function returns a boolean.
+> WebAssembly describes a memory-safe, sandboxed [execution
+> environment](https://webassembly.org/docs/semantics/#linear-memory) […].
 
 ## License
 

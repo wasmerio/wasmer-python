@@ -3,8 +3,8 @@ import os
 
 __dir__ = os.path.dirname(os.path.realpath(__file__))
 
-bytes = open(__dir__ + '/memory.wasm', 'rb').read()
-instance = Instance(bytes)
+wasm_bytes = open(__dir__ + '/memory.wasm', 'rb').read()
+instance = Instance(wasm_bytes)
 pointer = instance.call('return_hello')
 
 memory = instance.memory_view(pointer)
