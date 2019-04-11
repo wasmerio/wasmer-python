@@ -50,6 +50,17 @@ class TestWasmMemoryView(unittest.TestCase):
             None
         )
 
+    def test_set_out_of_range(self):
+        with self.assertRaises(RuntimeError) as context_manager:
+            memory = Instance(TEST_BYTES).uint8_memory_view()
+            memory.set(memory.length() + 1, 42)
+
+        exception = context_manager.exception
+        self.assertEqual(
+            str(exception),
+            'Out of bound: Absolute index 1114113 is larger than the memory size 1114112.'
+        )
+
     def test_hello_world(self):
         instance = Instance(TEST_BYTES)
         pointer = instance.call('string')

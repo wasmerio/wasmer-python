@@ -41,10 +41,24 @@ macro_rules! memory_view {
 
             def set(&self, index: usize, value: $wasm_type) -> PyResult<PyObject> {
                 let offset = *self.offset(py);
+                let view = self.memory(py).view::<$wasm_type>();
 
-                self.memory(py).view::<$wasm_type>()[offset + index].set(value);
+                if view.len() <= offset + index {
+                    Err(
+                        new_runtime_error(
+                            py,
+                            &format!(
+                                "Out of bound: Absolute index {} is larger than the memory size {}.",
+                                offset + index,
+                                view.len()
+                            )
+                        )
+                    )
+                } else {
+                    view[offset + index].set(value);
 
-                Ok(Python::None(py))
+                    Ok(Python::None(py))
+                }
             }
         });
 
