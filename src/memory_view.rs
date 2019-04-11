@@ -1,6 +1,6 @@
 //! The `Buffer` Python object to build WebAssembly values.
 
-use crate::Shell;
+use crate::{error::new_runtime_error, Shell};
 use cpython::{PyObject, PyResult, Python};
 use std::mem::size_of;
 use wasmer_runtime::memory::Memory;
@@ -21,14 +21,26 @@ macro_rules! memory_view {
 
             def get(&self, index: usize) -> PyResult<$wasm_type> {
                 let offset = *self.offset(py);
-                let index = index / size_of::<$wasm_type>();
+                let view = self.memory(py).view::<$wasm_type>();
 
-                Ok(self.memory(py).view::<$wasm_type>()[offset + index].get() as $wasm_type)
+                if view.len() <= offset + index {
+                    Err(
+                        new_runtime_error(
+                            py,
+                            &format!(
+                                "Out of bound: Absolute index {} is larger than the memory size {}.",
+                                offset + index,
+                                view.len()
+                            )
+                        )
+                    )
+                } else {
+                    Ok(view[offset + index].get())
+                }
             }
 
             def set(&self, index: usize, value: $wasm_type) -> PyResult<PyObject> {
                 let offset = *self.offset(py);
-                let index = index / size_of::<$wasm_type>();
 
                 self.memory(py).view::<$wasm_type>()[offset + index].set(value);
 

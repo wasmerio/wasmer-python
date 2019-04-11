@@ -33,6 +33,17 @@ class TestWasmMemoryView(unittest.TestCase):
 
         self.assertEqual(memory.get(index), value)
 
+    def test_get_out_of_range(self):
+        with self.assertRaises(RuntimeError) as context_manager:
+            memory = Instance(TEST_BYTES).uint8_memory_view()
+            memory.get(memory.length() + 1)
+
+        exception = context_manager.exception
+        self.assertEqual(
+            str(exception),
+            'Out of bound: Absolute index 1114113 is larger than the memory size 1114112.'
+        )
+
     def test_set_returns_none(self):
         self.assertEqual(
             Instance(TEST_BYTES).uint8_memory_view().set(7, 42),
@@ -51,3 +62,22 @@ class TestWasmMemoryView(unittest.TestCase):
             nth += 1
 
         self.assertEqual(string, 'Hello, World!')
+
+    def test_memory_views_share_the_same_buffer(self):
+        instance = Instance(TEST_BYTES)
+        int8 = instance.int8_memory_view()
+        int16 = instance.int16_memory_view()
+        int32 = instance.int32_memory_view()
+
+        int8.set(0, 0b00000001)
+        int8.set(1, 0b00000100)
+        int8.set(2, 0b00010000)
+        int8.set(3, 0b01000000)
+
+        self.assertEqual(int8.get(0), 0b00000001)
+        self.assertEqual(int8.get(1), 0b00000100)
+        self.assertEqual(int8.get(2), 0b00010000)
+        self.assertEqual(int8.get(3), 0b01000000)
+        self.assertEqual(int16.get(0), 0b00000100_00000001)
+        self.assertEqual(int16.get(1), 0b01000000_00010000)
+        self.assertEqual(int32.get(0), 0b01000000_00010000_00000100_00000001)
