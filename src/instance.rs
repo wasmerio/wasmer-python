@@ -2,13 +2,14 @@
 
 use crate::{
     error::new_runtime_error,
-    memory_view::{new_memory_view, MemoryView},
+    memory_view,
     value::{get_wasm_value, wasm_value_into_python_object, Value},
     Shell,
 };
 use cpython::{PyBytes, PyObject, PyResult, Python};
 use wasmer_runtime::{
-    self as runtime, imports, instantiate, validate as wasm_validate, Export, Value as WasmValue,
+    self as runtime, imports, instantiate, validate as wasm_validate, Export, Memory,
+    Value as WasmValue,
 };
 
 /// The Python `Instance` class.
@@ -59,29 +60,52 @@ py_class!(pub class Instance |py| {
         Ok(wasm_value_into_python_object(py, &results[0]))
     }
 
-    def memory_view(&self, offset: usize = 0) -> PyResult<MemoryView> {
-        let memory =
-            self
-                .instance(py)
-                .exports()
-                .find_map(
-                    |(_, export)| {
-                        match export {
-                            Export::Memory(memory) => Some(memory),
-                            _ => None
-                        }
-                    }
-                );
+    def uint8_memory_view(&self, offset: usize = 0) -> PyResult<memory_view::Uint8MemoryView> {
+        get_instance_memory(&self, py)
+            .map_or_else(
+                || Err(new_runtime_error(py, "No memory exported.")),
+                |memory| Ok(memory_view::new_uint8_memory_view(py, memory, offset))
+            )
+    }
 
-        match memory {
-            Some(memory) => {
-                Ok(new_memory_view(py, memory, offset))
-            },
+    def int8_memory_view(&self, offset: usize = 0) -> PyResult<memory_view::Int8MemoryView> {
+        get_instance_memory(&self, py)
+            .map_or_else(
+                || Err(new_runtime_error(py, "No memory exported.")),
+                |memory| Ok(memory_view::new_int8_memory_view(py, memory, offset))
+            )
+    }
 
-            None => {
-                Err(new_runtime_error(py, "Not memory exported."))
-            }
-        }
+    def uint16_memory_view(&self, offset: usize = 0) -> PyResult<memory_view::Uint16MemoryView> {
+        get_instance_memory(&self, py)
+            .map_or_else(
+                || Err(new_runtime_error(py, "No memory exported.")),
+                |memory| Ok(memory_view::new_uint16_memory_view(py, memory, offset))
+            )
+    }
+
+    def int16_memory_view(&self, offset: usize = 0) -> PyResult<memory_view::Int16MemoryView> {
+        get_instance_memory(&self, py)
+            .map_or_else(
+                || Err(new_runtime_error(py, "No memory exported.")),
+                |memory| Ok(memory_view::new_int16_memory_view(py, memory, offset))
+            )
+    }
+
+    def uint32_memory_view(&self, offset: usize = 0) -> PyResult<memory_view::Uint32MemoryView> {
+        get_instance_memory(&self, py)
+            .map_or_else(
+                || Err(new_runtime_error(py, "No memory exported.")),
+                |memory| Ok(memory_view::new_uint32_memory_view(py, memory, offset))
+            )
+    }
+
+    def int32_memory_view(&self, offset: usize = 0) -> PyResult<memory_view::Int32MemoryView> {
+        get_instance_memory(&self, py)
+            .map_or_else(
+                || Err(new_runtime_error(py, "No memory exported.")),
+                |memory| Ok(memory_view::new_int32_memory_view(py, memory, offset))
+            )
     }
 });
 
@@ -90,4 +114,14 @@ py_class!(pub class Instance |py| {
 ///
 pub fn validate(py: Python, bytes: PyBytes) -> PyResult<bool> {
     Ok(wasm_validate(bytes.data(py)))
+}
+
+fn get_instance_memory(instance: &Instance, py: Python) -> Option<Memory> {
+    instance
+        .instance(py)
+        .exports()
+        .find_map(|(_, export)| match export {
+            Export::Memory(memory) => Some(memory),
+            _ => None,
+        })
 }

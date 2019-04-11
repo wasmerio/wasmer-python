@@ -5,46 +5,47 @@ use cpython::{PyObject, PyResult, Python};
 use std::mem::size_of;
 use wasmer_runtime::memory::Memory;
 
-/// The `MemoryView` Python object represents a view over the memory
-/// of a WebAssembly instance.
-///
-/// # Examples
-///
-/// ```python,ignore
-/// from wasmer import Instance
-///
-/// instance = Instance(bytes)
-/// memory = instance.memory_view()
-/// memory.set(7, 42)
-/// print(memory.get(7)) // 42!
-/// ```
-py_class!(pub class MemoryView |py| {
-    data memory: Shell<Memory>;
-    data offset: usize;
+macro_rules! memory_view {
+    ($class_name:ident over $wasm_type:ty, with $constructor_name:ident) => {
+        /// A `MemoryView` Python object represents a view over the memory
+        /// of a WebAssembly instance.
+        py_class!(pub class $class_name |py| {
+            data memory: Shell<Memory>;
+            data offset: usize;
 
-    def length(&self) -> PyResult<usize> {
-        let offset = *self.offset(py);
+            def length(&self) -> PyResult<usize> {
+                let offset = *self.offset(py);
 
-        Ok(self.memory(py).view::<u8>()[offset..].len() / size_of::<u8>())
-    }
+                Ok(self.memory(py).view::<$wasm_type>()[offset..].len() / size_of::<$wasm_type>())
+            }
 
-    def get(&self, index: usize) -> PyResult<u8> {
-        let offset = *self.offset(py);
-        let index = index / size_of::<u8>();
+            def get(&self, index: usize) -> PyResult<$wasm_type> {
+                let offset = *self.offset(py);
+                let index = index / size_of::<$wasm_type>();
 
-        Ok(self.memory(py).view::<u8>()[offset + index].get() as u8)
-    }
+                Ok(self.memory(py).view::<$wasm_type>()[offset + index].get() as $wasm_type)
+            }
 
-    def set(&self, index: usize, value: u8) -> PyResult<PyObject> {
-        let offset = *self.offset(py);
-        let index = index / size_of::<u8>();
+            def set(&self, index: usize, value: $wasm_type) -> PyResult<PyObject> {
+                let offset = *self.offset(py);
+                let index = index / size_of::<$wasm_type>();
 
-        self.memory(py).view::<u8>()[offset + index].set(value);
+                self.memory(py).view::<$wasm_type>()[offset + index].set(value);
 
-        Ok(Python::None(py))
-    }
-});
+                Ok(Python::None(py))
+            }
+        });
 
-pub fn new_memory_view(py: Python, memory: Memory, offset: usize) -> MemoryView {
-    MemoryView::create_instance(py, Shell::new(memory), offset).unwrap()
+        /// Construct a `MemoryView` Python object.
+        pub fn $constructor_name(py: Python, memory: Memory, offset: usize) -> $class_name {
+            $class_name::create_instance(py, Shell::new(memory), offset).unwrap()
+        }
+    };
 }
+
+memory_view!(Uint8MemoryView over u8, with new_uint8_memory_view);
+memory_view!(Int8MemoryView over i8, with new_int8_memory_view);
+memory_view!(Uint16MemoryView over u16, with new_uint16_memory_view);
+memory_view!(Int16MemoryView over i16, with new_int16_memory_view);
+memory_view!(Uint32MemoryView over u32, with new_uint32_memory_view);
+memory_view!(Int32MemoryView over i32, with new_int32_memory_view);

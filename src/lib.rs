@@ -12,7 +12,6 @@ mod memory_view;
 mod value;
 
 use instance::{validate, Instance};
-use memory_view::MemoryView;
 use value::Value;
 
 /// A `Shell` is a thread-safe wrapper over a value `T` that will fail
@@ -62,7 +61,12 @@ py_module_initializer!(libwasmer, initlibwasmer, PyInit_wasmer, |python, module|
         "__doc__",
         "This extension allows to manipulate and to execute WebAssembly binaries.",
     )?;
-    module.add_class::<MemoryView>(python)?;
+    module.add_class::<memory_view::Uint8MemoryView>(python)?;
+    module.add_class::<memory_view::Int8MemoryView>(python)?;
+    module.add_class::<memory_view::Uint16MemoryView>(python)?;
+    module.add_class::<memory_view::Int16MemoryView>(python)?;
+    module.add_class::<memory_view::Uint32MemoryView>(python)?;
+    module.add_class::<memory_view::Int32MemoryView>(python)?;
     module.add_class::<Instance>(python)?;
     module.add_class::<Value>(python)?;
     module.add(python, "validate", py_fn!(python, validate(bytes: PyBytes)))?;
