@@ -14,23 +14,27 @@
   </a>
 </h1>
 
+Wasmer is a Python library for executing WebAssembly binaries:
 
-Wasmer is a Python library for executing WebAssembly files.
-
-* **Easy to use:** wasmer API mimics the standard WebAssembly API.
-* **Fast:** wasmer executes the WebAssembly modules at **native speed**.
-* **Safe:** all calls to WebAssembly will be fast, but more importantly, completely safe and sandboxed.
+  * **Easy to use:** wasmer API mimics the standard WebAssembly API,
+  * **Fast:** wasmer executes the WebAssembly modules at **native
+    speed**,
+  * **Safe:** all calls to WebAssembly will be fast, but more
+    importantly, completely safe and sandboxed.
 
 ## Install
 
-For instaling wasmer, just run this command in your shell:
+To install the `wasmer` Python library, just run this command in your
+shell:
 
-```shell
+```sh
 $ pip install wasmer
 ```
 
-*Note: There is a limited set of wheels published so far. More are coming.*
+**Note**: There is a limited set of wheels published so far. More are
+coming.
 
+[View the `wasmer` on Pypi](https://pypi.org/project/wasmer/).
 
 ## Example
 
@@ -44,9 +48,10 @@ pub extern fn sum(x: i32, y: i32) -> i32 {
 }
 ```
 
-After compilation to Wasm, we will have a [`examples/simple.wasm`](https://github.com/wasmerio/python-ext-wasm/blob/master/examples/simple.wasm)
-binary file.
-You can download it [here](https://github.com/wasmerio/python-ext-wasm/blob/master/examples/simple.wasm). 
+After compilation to Wasm, we obtain the
+[`examples/simple.wasm`](https://github.com/wasmerio/python-ext-wasm/blob/master/examples/simple.wasm)
+binary file. ([Download
+it](https://github.com/wasmerio/python-ext-wasm/blob/master/examples/simple.wasm)).
 
 Then, we can excecute it in Python:
 
@@ -163,7 +168,6 @@ if not validate(wasm_bytes):
 
 This function returns a boolean.
 
-
 ## Development
 
 The Python extension is written in Rust, with [`rust-cpython`] and
@@ -210,7 +214,6 @@ run the following command:
 ```sh
 $ just test
 ```
-
 
 ## What is WebAssembly?
 
