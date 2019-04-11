@@ -1,54 +1,36 @@
-<p align="center">
-  <a href="https://wasmer.io" target="_blank" rel="noopener noreferrer">
-    <img width="400" src="https://raw.githubusercontent.com/wasmerio/wasmer/master/logo.png" alt="Wasmer logo">
+<h1>
+  <a href="https://wasmer.io" target="_blank" rel="noopener noreferrer" valign="middle">
+    <img height="64" src="https://raw.githubusercontent.com/wasmerio/wasmer/master/logo.png" alt="Wasmer logo" valign="middle">
   </a>
-</p>
-
-<p align="center">
+  &nbsp;
   <a href="https://spectrum.chat/wasmer">
-    <img src="https://withspectrum.github.io/badge/badge.svg" alt="Join the Wasmer Community">
+    <img src="https://withspectrum.github.io/badge/badge.svg" alt="Join the Wasmer Community" valign="middle">
   </a>
-  <a href="https://pypi.org/project/python-ext-wasm/">
-      <img src="https://img.shields.io/pypi/format/python-ext-wasm.svg" alt="Pypi" />
+  <a href="https://pypi.org/project/wasmer/">
+      <img src="https://img.shields.io/pypi/format/wasmer.svg" alt="Pypi" valign="middle"/>
   </a>
   <a href="https://github.com/wasmerio/wasmer/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/wasmerio/wasmer.svg" alt="License">
+    <img src="https://img.shields.io/github/license/wasmerio/wasmer.svg" alt="License" valign="middle">
   </a>
-</p>
+</h1>
 
-# 🐍+🦀+🕸  The Python extension to run WebAssembly
 
-_This is only experimental right now_.
+Wasmer is a Python library for executing WebAssembly files.
 
-The goal of the project is to be able to run WebAssembly binary from
-Python directly.
+* **Easy to use:** wasmer API mimics the standard WebAssembly API.
+* **Fast:** wasmer executes the WebAssembly modules at **native speed**.
+* **Safe:** all calls to WebAssembly will be fast, but more importantly, completely safe and sandboxed.
 
-## What is WebAssembly?
+## Install
 
-Quoting [the WebAssembly site](https://webassembly.org/):
+For instaling wasmer, just run this command in your shell:
 
-> WebAssembly (abbreviated Wasm) is a binary instruction format for a
-> stack-based virtual machine. Wasm is designed as a portable target
-> for compilation of high-level languages like C/C++/Rust, enabling
-> deployment on the web for client and server applications.
+```shell
+$ pip install wasmer
+```
 
-About speed:
+*Note: There is a limited set of wheels published so far. More are coming.*
 
-> WebAssembly aims to execute at native speed by taking advantage of
-> [common hardware
-> capabilities](https://webassembly.org/docs/portability/#assumptions-for-efficient-execution)
-> available on a wide range of platforms.
-
-About safety:
-
-> WebAssembly describes a memory-safe, sandboxed [execution
-> environment](https://webassembly.org/docs/semantics/#linear-memory) […].
-
-## Goals
-
-This extension has some goals in minds. Let's list some of them:
-
-_[under writing]_
 
 ## Example
 
@@ -62,11 +44,11 @@ pub extern fn sum(x: i32, y: i32) -> i32 {
 }
 ```
 
-After compilation to Wasm, we end up with a `examples/simple.wasm`
+After compilation to Wasm, we will have a [`examples/simple.wasm`](https://github.com/wasmerio/python-ext-wasm/blob/master/examples/simple.wasm)
 binary file.
+You can download it [here](https://github.com/wasmerio/python-ext-wasm/blob/master/examples/simple.wasm). 
 
-Then, we can excecute it in Python (!) with the `examples/simple.py`
-file:
+Then, we can excecute it in Python:
 
 ```python
 from wasmer import Instance, Value
@@ -82,63 +64,6 @@ And then, finally, enjoy by running:
 
 ```sh
 $ python examples/simple.py
-```
-
-## Installation
-
-With [Pypi]:
-
-```shell
-$ pip install wasmer
-```
-
-There is a limited set of wheels published so far. More are coming.
-
-### Development
-
-The Python extension is written in Rust, with [`rust-cpython`] and
-[`pyo3-pack`].
-
-To set up your environment, run only once:
-
-```sh
-$ just prelude
-```
-
-It will install `pyo3-pack` for Python and for Rust. It will also
-install [`virtualenv`].
-
-Then, simply run:
-
-```sh
-$ .env/bin/activate
-$ just rust
-$ just python-run examples/simple.py
-```
-
-If you need to interact with Python, or run a specific file, use the
-following commands:
-
-```sh
-$ just python-run
-$ just python-run file/to/run.py
-```
-
-Finally, to inspect the extension; run:
-
-```sh
-$ just inspect
-```
-
-(Yes, you need [`just`]).
-
-## Testing
-
-Once the extension is compiled and installed (just run `just rust`),
-run the following command:
-
-```sh
-$ just test
 ```
 
 ## API of the `wasm` extension/module
@@ -237,6 +162,76 @@ if not validate(bytes):
 ```
 
 This function returns a boolean.
+
+
+## Development
+
+The Python extension is written in Rust, with [`rust-cpython`] and
+[`pyo3-pack`].
+
+To set up your environment, run only once:
+
+```sh
+$ just prelude
+```
+
+It will install `pyo3-pack` for Python and for Rust. It will also
+install [`virtualenv`].
+
+Then, simply run:
+
+```sh
+$ .env/bin/activate
+$ just rust
+$ just python-run examples/simple.py
+```
+
+If you need to interact with Python, or run a specific file, use the
+following commands:
+
+```sh
+$ just python-run
+$ just python-run file/to/run.py
+```
+
+Finally, to inspect the extension; run:
+
+```sh
+$ just inspect
+```
+
+(Yes, you need [`just`]).
+
+## Testing
+
+Once the extension is compiled and installed (just run `just rust`),
+run the following command:
+
+```sh
+$ just test
+```
+
+
+## What is WebAssembly?
+
+Quoting [the WebAssembly site](https://webassembly.org/):
+
+> WebAssembly (abbreviated Wasm) is a binary instruction format for a
+> stack-based virtual machine. Wasm is designed as a portable target
+> for compilation of high-level languages like C/C++/Rust, enabling
+> deployment on the web for client and server applications.
+
+About speed:
+
+> WebAssembly aims to execute at native speed by taking advantage of
+> [common hardware
+> capabilities](https://webassembly.org/docs/portability/#assumptions-for-efficient-execution)
+> available on a wide range of platforms.
+
+About safety:
+
+> WebAssembly describes a memory-safe, sandboxed [execution
+> environment](https://webassembly.org/docs/semantics/#linear-memory) […].
 
 ## License
 
