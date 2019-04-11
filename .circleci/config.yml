@@ -1,0 +1,43 @@
+version: 2
+jobs:
+  release:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
+            - v1-linux-{{ arch }}
+      - run:
+          name: Install just
+          command: |
+            cargo install just
+      - run:
+          name: Install pyenv
+          command: |
+            curl https://pyenv.run | bash
+      - run:
+          name: Install python versions
+          command: |
+            export PATH="/home/circleci/.pyenv/bin:$PATH"
+            pyenv install 3.5.7
+            pyenv install 3.6.8
+            pyenv install 3.7.3
+      - run:
+          name: Prelude
+          command: |
+            just prelude
+      - save_cache:
+          paths:
+            - /usr/local/cargo/registry
+            - target/release/.fingerprint
+            - target/release/build
+            - target/release/deps
+          key: v1-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - release
