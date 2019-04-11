@@ -53,8 +53,8 @@ Then, we can excecute it in Python:
 ```python
 from wasmer import Instance, Value
 
-bytes = open('simple.wasm', 'rb').read()
-instance = Instance(bytes)
+wasm_bytes = open('simple.wasm', 'rb').read()
+instance = Instance(wasm_bytes)
 result = instance.call('sum', [Value.i32(5), Value.i32(37)])
 
 print(result) # 42!
@@ -77,10 +77,10 @@ exported functions on it:
 from wasmer import Instance, Value
 
 # Get the Wasm module as bytes.
-bytes = open('my_program.wasm', 'rb').read()
+wasm_bytes = open('my_program.wasm', 'rb').read()
 
 # Instantiates the Wasm module.
-instance = Instance(bytes)
+instance = Instance(wasm_bytes)
 
 # Call a function on it.
 result = instance.call('sum', [Value.i32(1), Value.i32(2)])
@@ -126,10 +126,10 @@ Represents a view over a memory buffer of an instance:
 from wasmer import Instance
 
 # Get the Wasm module as bytes.
-bytes = open('my_program.wasm', 'rb').read()
+wasm_bytes = open('my_program.wasm', 'rb').read()
 
 # Instantiates the Wasm module.
-instance = Instance(bytes)
+instance = Instance(wasm_bytes)
 
 # Call a function that returns a pointer to a string for instance.
 pointer = instance.call('return_string')
@@ -155,9 +155,9 @@ Checks whether the given bytes represent valid WebAssembly bytes:
 ```python
 from wasmer import validate
 
-bytes = open('my_program.wasm', 'rb').read()
+wasm_bytes = open('my_program.wasm', 'rb').read()
 
-if not validate(bytes):
+if not validate(wasm_bytes):
     print('The program seems corrupted.')
 ```
 
