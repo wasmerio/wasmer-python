@@ -29,7 +29,7 @@ test:
 
 # Inspect the `python-ext-wasm` extension.
 inspect:
-	.env/bin/python -c "help('wasm')"
+	.env/bin/python -c "help('wasmer')"
 
 # Local Variables:
 # mode: makefile
