@@ -137,7 +137,18 @@ These classes represent views over a memory buffer of an instance.
 | `Uint32MemoryView` | `uint32` | 4 |
 
 All these classes share the same implementation. Taking the example of
-`Uint8MemoryView`:
+`Uint8MemoryView`, the class looks like this:
+
+```python
+class Uint8MemoryView:
+    BYTES_PER_ELEMENT = 1
+
+    def __len__()
+    def __getitem__(index)
+    def __setitem__(index, value)
+```
+
+Let's see it in action:
 
 ``` python
 from wasmer import Instance
