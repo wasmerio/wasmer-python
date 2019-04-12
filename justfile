@@ -17,7 +17,7 @@ sleep:
 rust:
         export PYTHON_SYS_EXECUTABLE=$(which python3)
         cargo check
-        pyo3-pack develop --release --strip
+        pyo3-pack develop --binding_crate pyo3 --release --strip
 
 # Run Python.
 python-run file='':

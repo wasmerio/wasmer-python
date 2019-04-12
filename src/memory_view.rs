@@ -1,35 +1,49 @@
 //! The `Buffer` Python object to build WebAssembly values.
 
-use crate::{error::new_runtime_error, Shell};
-use cpython::{PyResult, Python};
 use std::mem::size_of;
+use pyo3::{
+    prelude::*,
+    class::PySequenceProtocol,
+    exceptions::IndexError,
+};
 use wasmer_runtime::memory::Memory;
 
 macro_rules! memory_view {
-    ($class_name:ident over $wasm_type:ty [$bytes_per_element:expr], with $constructor_name:ident) => {
-        /// A `MemoryView` Python object represents a view over the memory
-        /// of a WebAssembly instance.
-        py_class!(pub class $class_name |py| {
-            static BYTES_PER_ELEMENT = $bytes_per_element;
+    ($class_name:ident over $wasm_type:ty | $bytes_per_element:expr) => {
+        #[pyclass]
+        pub struct $class_name {
+            pub memory: Memory,
+            pub offset: usize,
+        }
 
-            data memory: Shell<Memory>;
-            data offset: usize;
+        #[pymethods]
+        impl $class_name {
+            #[getter]
+            fn bytes_per_element(&self) -> PyResult<u8> {
+                Ok($bytes_per_element)
+            }
+        }
 
-            def __len__(&self) -> PyResult<usize> {
-                let offset = *self.offset(py);
-
-                Ok(self.memory(py).view::<$wasm_type>()[offset..].len() / size_of::<$wasm_type>())
+        #[pyproto]
+        impl PySequenceProtocol for $class_name {
+            fn __len__(&self) -> PyResult<usize> {
+                Ok(self.memory.view::<$wasm_type>()[self.offset..].len() / size_of::<$wasm_type>())
             }
 
-            def __getitem__(&self, index: usize) -> PyResult<$wasm_type> {
-                let offset = *self.offset(py);
-                let view = self.memory(py).view::<$wasm_type>();
+            fn __getitem__(&self, index: isize) -> PyResult<$wasm_type> {
+                let offset = self.offset;
+                let view = self.memory.view::<$wasm_type>();
+
+                if index < 0 {
+                    return Err(IndexError::py_err("Out of bound: Index cannot be negative."))
+                }
+
+                let index = index as usize;
 
                 if view.len() <= offset + index {
                     Err(
-                        new_runtime_error(
-                            py,
-                            &format!(
+                        IndexError::py_err(
+                            format!(
                                 "Out of bound: Absolute index {} is larger than the memory size {}.",
                                 offset + index,
                                 view.len()
@@ -41,15 +55,21 @@ macro_rules! memory_view {
                 }
             }
 
-            def __setitem__(&self, index: usize, value: $wasm_type) -> PyResult<()> {
-                let offset = *self.offset(py);
-                let view = self.memory(py).view::<$wasm_type>();
+            /*
+            fn __setitem__(&mut self, index: isize, value: u8) -> PyResult<()> {
+                let offset = self.offset;
+                let view = self.memory.view::<u8>();
+
+                if index < 0 {
+                    return Err(IndexError::py_err("Out of bound: Index cannot be negative."))
+                }
+
+                let index = index as usize;
 
                 if view.len() <= offset + index {
                     Err(
-                        new_runtime_error(
-                            py,
-                            &format!(
+                        IndexError::py_err(
+                            format!(
                                 "Out of bound: Absolute index {} is larger than the memory size {}.",
                                 offset + index,
                                 view.len()
@@ -62,18 +82,14 @@ macro_rules! memory_view {
                     Ok(())
                 }
             }
-        });
-
-        /// Construct a `MemoryView` Python object.
-        pub fn $constructor_name(py: Python, memory: Memory, offset: usize) -> $class_name {
-            $class_name::create_instance(py, Shell::new(memory), offset).unwrap()
+            */
         }
-    };
+    }
 }
 
-memory_view!(Uint8MemoryView over u8 [1], with new_uint8_memory_view);
-memory_view!(Int8MemoryView over i8 [1], with new_int8_memory_view);
-memory_view!(Uint16MemoryView over u16 [2], with new_uint16_memory_view);
-memory_view!(Int16MemoryView over i16 [2], with new_int16_memory_view);
-memory_view!(Uint32MemoryView over u32 [4], with new_uint32_memory_view);
-memory_view!(Int32MemoryView over i32 [4], with new_int32_memory_view);
+memory_view!(Uint8MemoryView over u8|1);
+memory_view!(Int8MemoryView over i8|1);
+memory_view!(Uint16MemoryView over u16|2);
+memory_view!(Int16MemoryView over i16|2);
+memory_view!(Uint32MemoryView over u32|4);
+memory_view!(Int32MemoryView over i32|4);
