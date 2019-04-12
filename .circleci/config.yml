@@ -68,7 +68,16 @@ jobs:
             export PATH="/home/circleci/.pyenv/versions/3.7.3/bin/:$PATH"
             source .env/bin/activate
             just test
-
+      - run:
+          name: Publish the extension
+          command: |
+            export PATH="/home/circleci/.pyenv/bin:$PATH"
+            export PATH="/usr/local/cargo/bin:$PATH"
+            export PATH="/home/circleci/.pyenv/versions/3.7.3/bin/:$PATH"
+            export PATH="/home/circleci/.pyenv/versions/3.6.8/bin/:$PATH"
+            export PATH="/home/circleci/.pyenv/versions/3.5.7/bin/:$PATH"
+            source .env/bin/activate
+            pyo3-pack publish -i python3.7 python3.6 python3.5 -u wasmer
 workflows:
   version: 2
   main:
