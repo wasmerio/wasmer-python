@@ -13,7 +13,7 @@ macro_rules! memory_view {
             data memory: Shell<Memory>;
             data offset: usize;
 
-            def length(&self) -> PyResult<usize> {
+            def __len__(&self) -> PyResult<usize> {
                 let offset = *self.offset(py);
 
                 Ok(self.memory(py).view::<$wasm_type>()[offset..].len() / size_of::<$wasm_type>())

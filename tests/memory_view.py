@@ -21,7 +21,7 @@ class TestWasmMemoryView(unittest.TestCase):
 
     def test_length(self):
         self.assertEqual(
-            Instance(TEST_BYTES).uint8_memory_view().length(),
+            len(Instance(TEST_BYTES).uint8_memory_view()),
             1114112
         )
 
@@ -36,7 +36,7 @@ class TestWasmMemoryView(unittest.TestCase):
     def test_get_out_of_range(self):
         with self.assertRaises(RuntimeError) as context_manager:
             memory = Instance(TEST_BYTES).uint8_memory_view()
-            memory.get(memory.length() + 1)
+            memory.get(len(memory) + 1)
 
         exception = context_manager.exception
         self.assertEqual(
@@ -53,7 +53,7 @@ class TestWasmMemoryView(unittest.TestCase):
     def test_set_out_of_range(self):
         with self.assertRaises(RuntimeError) as context_manager:
             memory = Instance(TEST_BYTES).uint8_memory_view()
-            memory.set(memory.length() + 1, 42)
+            memory.set(len(memory) + 1, 42)
 
         exception = context_manager.exception
         self.assertEqual(
