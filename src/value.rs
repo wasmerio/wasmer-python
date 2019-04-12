@@ -15,10 +15,10 @@ use wasmer_runtime::Value as WasmValue;
 /// value3 = Value.from_f32(4.2)
 /// value4 = Value.from_f64(4.2)
 ///
-/// print(value1.to_string()) // "I32(42)"
-/// print(value2.to_string()) // "I64(42)"
-/// print(value3.to_string()) // "F32(4.2)"
-/// print(value4.to_string()) // "F64(4.2)"
+/// print(repr(value1)) // "I32(42)"
+/// print(repr(value2)) // "I64(42)"
+/// print(repr(value3)) // "F32(4.2)"
+/// print(repr(value4)) // "F64(4.2)"
 /// ```
 py_class!(pub class Value |py| {
     data value: WasmValue;
@@ -55,7 +55,7 @@ py_class!(pub class Value |py| {
         )
     }
 
-    def to_string(&self) -> PyResult<String> {
+    def __repr__(&self) -> PyResult<String> {
         Ok(format!("{:?}", self.value(py)))
     }
 });
