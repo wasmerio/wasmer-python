@@ -19,7 +19,7 @@ macro_rules! memory_view {
                 Ok(self.memory(py).view::<$wasm_type>()[offset..].len() / size_of::<$wasm_type>())
             }
 
-            def get(&self, index: usize) -> PyResult<$wasm_type> {
+            def __getitem__(&self, index: usize) -> PyResult<$wasm_type> {
                 let offset = *self.offset(py);
                 let view = self.memory(py).view::<$wasm_type>();
 

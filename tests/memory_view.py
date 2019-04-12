@@ -31,12 +31,12 @@ class TestWasmMemoryView(unittest.TestCase):
         value = 42
         memory.set(index, value)
 
-        self.assertEqual(memory.get(index), value)
+        self.assertEqual(memory[index], value)
 
     def test_get_out_of_range(self):
         with self.assertRaises(RuntimeError) as context_manager:
             memory = Instance(TEST_BYTES).uint8_memory_view()
-            memory.get(len(memory) + 1)
+            memory[len(memory) + 1]
 
         exception = context_manager.exception
         self.assertEqual(
@@ -68,8 +68,8 @@ class TestWasmMemoryView(unittest.TestCase):
         nth = 0
         string = ''
 
-        while (0 != memory.get(nth)):
-            string += chr(memory.get(nth))
+        while (0 != memory[nth]):
+            string += chr(memory[nth])
             nth += 1
 
         self.assertEqual(string, 'Hello, World!')
@@ -85,10 +85,10 @@ class TestWasmMemoryView(unittest.TestCase):
         int8.set(2, 0b00010000)
         int8.set(3, 0b01000000)
 
-        self.assertEqual(int8.get(0), 0b00000001)
-        self.assertEqual(int8.get(1), 0b00000100)
-        self.assertEqual(int8.get(2), 0b00010000)
-        self.assertEqual(int8.get(3), 0b01000000)
-        self.assertEqual(int16.get(0), 0b00000100_00000001)
-        self.assertEqual(int16.get(1), 0b01000000_00010000)
-        self.assertEqual(int32.get(0), 0b01000000_00010000_00000100_00000001)
+        self.assertEqual(int8[0], 0b00000001)
+        self.assertEqual(int8[1], 0b00000100)
+        self.assertEqual(int8[2], 0b00010000)
+        self.assertEqual(int8[3], 0b01000000)
+        self.assertEqual(int16[0], 0b00000100_00000001)
+        self.assertEqual(int16[1], 0b01000000_00010000)
+        self.assertEqual(int32[0], 0b01000000_00010000_00000100_00000001)
