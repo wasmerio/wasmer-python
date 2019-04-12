@@ -116,11 +116,11 @@ value_f64 = Value.f64(7.42)
 The `Value.[if](32|64)` static methods must be considered as static
 constructors.
 
-The `to_string` method allows to get a string representation of a
+The `__repr__` method allows to get a string representation of a
 `Value` instance:
 
 ```python
-print(value_i32) # I32(7)
+print(repr(value_i32)) # I32(7)
 ```
 
 ### The `*MemoryView` classes
@@ -158,8 +158,8 @@ memory = instance.uint8_memory_view(pointer)
 nth = 0;
 string = ''
 
-while (0 != memory.get(nth)):
-    string += chr(memory.get(nth))
+while (0 != memory[nth]):
+    string += chr(memory[nth])
     nth += 1
 
 print(string) # Hello, World!

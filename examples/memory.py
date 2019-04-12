@@ -11,8 +11,8 @@ memory = instance.uint8_memory_view(pointer)
 nth = 0;
 string = '';
 
-while (0 != memory.get(nth)):
-    string += chr(memory.get(nth))
+while (0 != memory[nth]):
+    string += chr(memory[nth])
     nth += 1
 
 print('"' + string + '"') # "Hello, World!"
