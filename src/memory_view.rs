@@ -6,10 +6,12 @@ use std::mem::size_of;
 use wasmer_runtime::memory::Memory;
 
 macro_rules! memory_view {
-    ($class_name:ident over $wasm_type:ty, with $constructor_name:ident) => {
+    ($class_name:ident over $wasm_type:ty [$bytes_per_element:expr], with $constructor_name:ident) => {
         /// A `MemoryView` Python object represents a view over the memory
         /// of a WebAssembly instance.
         py_class!(pub class $class_name |py| {
+            static BYTES_PER_ELEMENT = $bytes_per_element;
+
             data memory: Shell<Memory>;
             data offset: usize;
 
@@ -69,9 +71,9 @@ macro_rules! memory_view {
     };
 }
 
-memory_view!(Uint8MemoryView over u8, with new_uint8_memory_view);
-memory_view!(Int8MemoryView over i8, with new_int8_memory_view);
-memory_view!(Uint16MemoryView over u16, with new_uint16_memory_view);
-memory_view!(Int16MemoryView over i16, with new_int16_memory_view);
-memory_view!(Uint32MemoryView over u32, with new_uint32_memory_view);
-memory_view!(Int32MemoryView over i32, with new_int32_memory_view);
+memory_view!(Uint8MemoryView over u8 [1], with new_uint8_memory_view);
+memory_view!(Int8MemoryView over i8 [1], with new_int8_memory_view);
+memory_view!(Uint16MemoryView over u16 [2], with new_uint16_memory_view);
+memory_view!(Int16MemoryView over i16 [2], with new_int16_memory_view);
+memory_view!(Uint32MemoryView over u32 [4], with new_uint32_memory_view);
+memory_view!(Int32MemoryView over i32 [4], with new_int32_memory_view);
