@@ -15,6 +15,14 @@ class TestWasmMemoryView(unittest.TestCase):
         self.assertTrue(inspect.isclass(Uint32MemoryView))
         self.assertTrue(inspect.isclass(Int32MemoryView))
 
+    def test_bytes_per_element(self):
+        self.assertEqual(Uint8MemoryView.BYTES_PER_ELEMENT, 1)
+        self.assertEqual(Int8MemoryView.BYTES_PER_ELEMENT, 1)
+        self.assertEqual(Uint16MemoryView.BYTES_PER_ELEMENT, 2)
+        self.assertEqual(Int16MemoryView.BYTES_PER_ELEMENT, 2)
+        self.assertEqual(Uint32MemoryView.BYTES_PER_ELEMENT, 4)
+        self.assertEqual(Int32MemoryView.BYTES_PER_ELEMENT, 4)
+
     @unittest.expectedFailure
     def test_cannot_construct(self):
         self.assertIsInstance(Uint8MemoryView(0), Uint8MemoryView)
