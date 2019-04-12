@@ -1,7 +1,7 @@
 //! The `Buffer` Python object to build WebAssembly values.
 
 use crate::{error::new_runtime_error, Shell};
-use cpython::{PyObject, PyResult, Python};
+use cpython::{PyResult, Python};
 use std::mem::size_of;
 use wasmer_runtime::memory::Memory;
 
@@ -39,7 +39,7 @@ macro_rules! memory_view {
                 }
             }
 
-            def set(&self, index: usize, value: $wasm_type) -> PyResult<PyObject> {
+            def __setitem__(&self, index: usize, value: $wasm_type) -> PyResult<()> {
                 let offset = *self.offset(py);
                 let view = self.memory(py).view::<$wasm_type>();
 
@@ -57,7 +57,7 @@ macro_rules! memory_view {
                 } else {
                     view[offset + index].set(value);
 
-                    Ok(Python::None(py))
+                    Ok(())
                 }
             }
         });
