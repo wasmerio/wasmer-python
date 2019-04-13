@@ -9,12 +9,14 @@ import wasmer
 here = os.path.dirname(os.path.realpath(__file__))
 TEST_BYTES = open(here + '/nbody.wasm', 'rb').read()
 
+N = 5000
+
 def test_benchmark_nbody_with_wasmer(benchmark):
     instance = wasmer.Instance(TEST_BYTES)
     nbody = instance.exports.main
 
     def bench():
-        return nbody(5000000)
+        return nbody(N)
 
     assert benchmark(bench)
 
@@ -23,7 +25,7 @@ def test_benchmark_nbody_with_ppci(benchmark):
     nbody = instance.exports.main
 
     def bench():
-        return nbody(5000000)
+        return nbody(N)
 
     assert benchmark(bench)
 
@@ -116,7 +118,7 @@ def test_benchmark_nbody_with_pure_python(benchmark):
             e -= (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
         for (r, [vx, vy, vz], m) in bodies:
             e += m * (vx * vx + vy * vy + vz * vz) / 2.
-        print("%.9f" % e)
+        return e
 
     def offset_momentum(ref, bodies=SYSTEM, px=0.0, py=0.0, pz=0.0):
         for (r, [vx, vy, vz], m) in bodies:
@@ -132,9 +134,9 @@ def test_benchmark_nbody_with_pure_python(benchmark):
         offset_momentum(BODIES[ref])
         report_energy()
         advance(0.01, n)
-        report_energy()
+        return report_energy()
 
     def bench():
-        return nbody(5000000)
+        return nbody(N)
 
     assert benchmark(bench)
