@@ -2,10 +2,11 @@
 
 use crate::{memory_view, value::Value};
 use pyo3::{
-    exceptions::RuntimeError,
+    class::basic::PyObjectProtocol,
+    exceptions::{LookupError, RuntimeError},
     prelude::*,
-    types::{PyAny, PyBytes, PyDict, PyFloat, PyLong, PyTuple},
-    PyNativeType, PyTryFrom,
+    types::{PyAny, PyBytes, PyFloat, PyLong, PyTuple},
+    PyNativeType, PyTryFrom, ToPyObject,
 };
 use std::rc::Rc;
 use wasmer_runtime::{self as runtime, imports, instantiate, Export, Memory, Value as WasmValue};
@@ -92,9 +93,36 @@ impl ExportedFunction {
 }
 
 #[pyclass]
+pub struct ExportedFunctions {
+    instance: Rc<runtime::Instance>,
+    functions: Vec<String>,
+}
+
+#[pyproto]
+impl PyObjectProtocol for ExportedFunctions {
+    fn __getattr__(&self, key: String) -> PyResult<ExportedFunction> {
+        if self.functions.contains(&key) {
+            Ok(ExportedFunction {
+                function_name: key,
+                instance: self.instance.clone(),
+            })
+        } else {
+            Err(LookupError::py_err(format!(
+                "Function `{}` does not exist.",
+                key
+            )))
+        }
+    }
+
+    fn __repr__(&self) -> PyResult<String> {
+        Ok(format!("{:?}", self.functions))
+    }
+}
+
+#[pyclass]
 pub struct Instance {
     instance: Rc<runtime::Instance>,
-    exports: PyObject,
+    exports: Py<ExportedFunctions>,
 }
 
 #[pymethods]
@@ -114,27 +142,24 @@ impl Instance {
         };
 
         let py = object.py();
-        let dict = PyDict::new(py);
+        let mut exported_functions = Vec::new();
 
         for (export_name, export) in instance.exports() {
             if let Export::Function { .. } = export {
-                dict.set_item(
-                    export_name.clone(),
-                    Py::new(
-                        py,
-                        ExportedFunction {
-                            function_name: export_name,
-                            instance: instance.clone(),
-                        },
-                    )?,
-                )?;
+                exported_functions.push(export_name);
             }
         }
 
         object.init({
             Self {
-                instance,
-                exports: dict.to_object(py),
+                instance: instance.clone(),
+                exports: Py::new(
+                    py,
+                    ExportedFunctions {
+                        instance: instance.clone(),
+                        functions: exported_functions,
+                    },
+                )?,
             }
         });
 
@@ -142,11 +167,8 @@ impl Instance {
     }
 
     #[getter]
-    fn exports(&self) -> PyResult<&PyDict> {
-        let gil = Python::acquire_gil();
-        let py = gil.python();
-
-        Ok(self.exports.cast_as::<PyDict>(py)?)
+    fn exports(&self) -> PyResult<&Py<ExportedFunctions>> {
+        Ok(&self.exports)
     }
 
     #[args(offset = 0)]

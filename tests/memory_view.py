@@ -65,7 +65,7 @@ class TestWasmMemoryView(unittest.TestCase):
 
     def test_hello_world(self):
         instance = Instance(TEST_BYTES)
-        pointer = instance.exports['string']()
+        pointer = instance.exports.string()
         memory = instance.uint8_memory_view(pointer)
         nth = 0
         string = ''
