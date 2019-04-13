@@ -56,7 +56,7 @@ it](https://github.com/wasmerio/python-ext-wasm/blob/master/examples/simple.wasm
 Then, we can excecute it in Python:
 
 ```python
-from wasmer import Instance, Value
+from wasmer import Instance
 
 wasm_bytes = open('simple.wasm', 'rb').read()
 instance = Instance(wasm_bytes)
