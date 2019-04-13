@@ -31,13 +31,13 @@ def test_length():
         1114112
     )
 
-#def test_get(self):
-#    memory = Instance(TEST_BYTES).uint8_memory_view()
-#    index = 7
-#    value = 42
-#    memory[index] = value
+def test_get():
+    memory = Instance(TEST_BYTES).uint8_memory_view()
+    index = 7
+    value = 42
+    memory[index] = value
 
-#    assert memory[index] ==  value
+    assert memory[index] ==  value
 
 def test_get_out_of_range():
     with pytest.raises(IndexError) as context_manager:
@@ -49,19 +49,19 @@ def test_get_out_of_range():
         'Out of bound: Absolute index 1114113 is larger than the memory size 1114112.'
     )
 
-#def test_set_out_of_range(self):
-#    with self.assertRaises(IndexError) as context_manager:
-#        memory = Instance(TEST_BYTES).uint8_memory_view()
-#        memory[len(memory) + 1] = 42
+def test_set_out_of_range():
+    with pytest.raises(IndexError) as context_manager:
+        memory = Instance(TEST_BYTES).uint8_memory_view()
+        memory[len(memory) + 1] = 42
 
-#    exception = context_manager.value
-#    assert str(exception) == (
-#        'Out of bound: Absolute index 1114113 is larger than the memory size 1114112.'
-#    )
+    exception = context_manager.value
+    assert str(exception) == (
+        'Out of bound: Absolute index 1114113 is larger than the memory size 1114112.'
+    )
 
 def test_hello_world():
     instance = Instance(TEST_BYTES)
-    pointer = instance.exports['string']()
+    pointer = instance.exports.string()
     memory = instance.uint8_memory_view(pointer)
     nth = 0
     string = ''

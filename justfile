@@ -3,7 +3,6 @@ prelude:
         pip3 install virtualenv
         virtualenv -p $(which python3) .env
         source .env/bin/activate
-
         pip3 install pyo3-pack pytest pytest-benchmark
 
 # Setup the environment to develop the extension.
@@ -26,7 +25,7 @@ python-run file='': wakeup
 
 # Run the tests.
 test: wakeup
-        py.test tests
+        @py.test tests
 
 # Inspect the `python-ext-wasm` extension.
 inspect: wakeup
