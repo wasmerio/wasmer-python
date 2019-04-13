@@ -79,7 +79,7 @@ Instantiates a WebAssembly module represented by bytes, and calls
 exported functions on it:
 
 ```python
-from wasmer import Instance, Value
+from wasmer import Instance
 
 # Get the Wasm module as bytes.
 wasm_bytes = open('my_program.wasm', 'rb').read()
