@@ -1,10 +1,10 @@
 # Install the environment to develop the extension.
 prelude:
+        pip3 install virtualenv
         virtualenv -p $(which python3) .env
         source .env/bin/activate
 
         pip3 install pyo3-pack pytest pytest-benchmark
-        pip3 install virtualenv
 
 # Setup the environment to develop the extension.
 wakeup:
