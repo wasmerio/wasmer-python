@@ -60,7 +60,7 @@ from wasmer import Instance, Value
 
 wasm_bytes = open('simple.wasm', 'rb').read()
 instance = Instance(wasm_bytes)
-result = instance.call('sum', [Value.i32(5), Value.i32(37)])
+result = instance.exports['sum'](5, 37)
 
 print(result) # 42!
 ```
@@ -88,10 +88,18 @@ wasm_bytes = open('my_program.wasm', 'rb').read()
 instance = Instance(wasm_bytes)
 
 # Call a function on it.
-result = instance.call('sum', [Value.i32(1), Value.i32(2)])
+result = instance.exports['sum'](1, 2)
 
 print(result) # 3
 ```
+
+All exported functions are accessible in the `exports`
+dictionnary. Each value of this dictionnary is a function. Arguments
+of these functions are automatically casted to WebAssembly value. If
+one wants to explicitely pass a value of a particular type, it is
+possible to use the `Value` class,
+e.g. `instance.exports['sum'](Value.i32(1), Value.i32(2))`. Note that
+for most usecases, this is not necessary.
 
 ### The `Value` class
 
@@ -141,7 +149,8 @@ All these classes share the same implementation. Taking the example of
 
 ```python
 class Uint8MemoryView:
-    BYTES_PER_ELEMENT = 1
+    @property
+    def bytes_per_element()
 
     def __len__()
     def __getitem__(index)
@@ -160,7 +169,7 @@ wasm_bytes = open('my_program.wasm', 'rb').read()
 instance = Instance(wasm_bytes)
 
 # Call a function that returns a pointer to a string for instance.
-pointer = instance.call('return_string')
+pointer = instance.exports['return_string']()
 
 # Get the memory view, with the offset set to `pointer` (default is 0).
 memory = instance.uint8_memory_view(pointer)
