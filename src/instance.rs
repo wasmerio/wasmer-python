@@ -10,10 +10,12 @@
 use crate::memory_view;
 use pyo3::{
     prelude::*,
-    types::{PyAny, PyBytes},
+    types::{PyAny, PyBytes, PyTuple, PyDict},
     PyTryFrom,
     exceptions::RuntimeError,
+    PyNativeType,
 };
+use std::rc::Rc;
 use wasmer_runtime::{
     self as runtime,
     imports,
@@ -23,8 +25,25 @@ use wasmer_runtime::{
 };
 
 #[pyclass]
+pub struct ExportedFunction {
+    function_name: String,
+    instance: Rc<runtime::Instance>,
+}
+
+#[pymethods]
+impl ExportedFunction {
+     #[call]
+     #[args(args="*")]
+     fn __call__(&self, args: &PyTuple) -> PyResult<String> {
+         println!("exported function has been called {:?}", args);
+         Ok(self.function_name.clone())
+     }
+}
+
+#[pyclass]
 pub struct Instance {
-    instance: runtime::Instance,
+    instance: Rc<runtime::Instance>,
+    exports: PyObject,
 }
 
 #[pymethods]
@@ -34,17 +53,41 @@ impl Instance {
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
         let imports = imports! {};
         let instance = match instantiate(bytes, &imports) {
-            Ok(instance) => instance,
+            Ok(instance) => Rc::new(instance),
             Err(e) => return Err(RuntimeError::py_err(format!("Failed to instantiate the module:\n    {}", e))),
         };
 
+        let py = object.py();
+
+        let dict = PyDict::new(py);
+        let function_name = String::from("sum");
+        dict.set_item(
+            function_name.clone(),
+            Py::new(
+                py,
+                ExportedFunction {
+                    function_name,
+                    instance: instance.clone()
+                }
+            )?
+        )?;
+
         object.init({
             Self {
-                instance
+                instance,
+                exports: dict.to_object(py),
             }
         });
 
         Ok(())
+    }
+
+    #[getter]
+    fn exports(&self) -> PyResult<&PyDict> {
+        let gil = Python::acquire_gil();
+        let py = gil.python();
+
+        Ok(self.exports.cast_as::<PyDict>(py)?)
     }
 
 //    fn call(&self, function_name: &str, function_arguments: Value) -> PyResult<usize> {
