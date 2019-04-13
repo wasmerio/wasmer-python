@@ -25,85 +25,66 @@ class TestWasmInstance(unittest.TestCase):
         )
 
     def test_function_does_not_exist(self):
-        with self.assertRaises(RuntimeError) as context_manager:
-            Instance(TEST_BYTES).call("foo")
+        with self.assertRaises(KeyError) as context_manager:
+            Instance(TEST_BYTES).exports['foo']
 
         exception = context_manager.exception
         self.assertEqual(
             str(exception),
-            'Function `foo` does not exist.'
+            "'foo'"
         )
 
     def test_basic_sum(self):
         self.assertEqual(
-            Instance(TEST_BYTES)
-                .call(
-                    'sum',
-                    [
-                        Value.i32(1),
-                        Value.i32(2)
-                    ]
-                ),
+            Instance(TEST_BYTES).exports['sum'](1, 2),
             3
         )
 
     def test_call_arity_0(self):
         self.assertEqual(
-            Instance(TEST_BYTES).call('arity_0'),
+            Instance(TEST_BYTES).exports['arity_0'](),
             42
         )
 
     def test_call_i32_i32(self):
         self.assertEqual(
-            Instance(TEST_BYTES).call('i32_i32', [Value.i32(7)]),
+            Instance(TEST_BYTES).exports['i32_i32'](7),
             7
         )
 
     def test_call_i64_i64(self):
         self.assertEqual(
-            Instance(TEST_BYTES).call('i64_i64', [Value.i64(7)]),
+            Instance(TEST_BYTES).exports['i64_i64'](7),
             7
         )
 
     def test_call_f32_f32(self):
         self.assertEqual(
-            Instance(TEST_BYTES).call('f32_f32', [Value.f32(7.)]),
+            Instance(TEST_BYTES).exports['f32_f32'](7.),
             7.
         )
 
     def test_call_f64_f64(self):
         self.assertEqual(
-            Instance(TEST_BYTES).call('f64_f64', [Value.f64(7.)]),
+            Instance(TEST_BYTES).exports['f64_f64'](7.),
             7.
         )
 
     def test_call_i32_i64_f32_f64_f64(self):
         self.assertEqual(
-            round(
-                Instance(TEST_BYTES)
-                    .call(
-                        'i32_i64_f32_f64_f64',
-                        [
-                            Value.i32(1),
-                            Value.i64(2),
-                            Value.f32(3.4),
-                            Value.f64(5.6)
-                        ]
-                    ),
-                6
-            ),
+            round(Instance(TEST_BYTES).exports['i32_i64_f32_f64_f64'](1, 2, 3.4, 5.6), 6),
             1 + 2 + 3.4 + 5.6
         )
 
     def test_call_bool_casted_to_i32(self):
         self.assertEqual(
-            Instance(TEST_BYTES).call('bool_casted_to_i32'),
+            Instance(TEST_BYTES).exports['bool_casted_to_i32'](),
             1
         )
 
     def test_call_string(self):
         self.assertEqual(
-            Instance(TEST_BYTES).call('string'),
+            Instance(TEST_BYTES).exports['string'](),
             1048576
         )
 
