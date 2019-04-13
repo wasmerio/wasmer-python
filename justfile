@@ -14,22 +14,22 @@ sleep:
         deactivate
 
 # Compile and install the Rust library.
-rust: wakeup
+rust:
         export PYTHON_SYS_EXECUTABLE=$(which python3)
         cargo check
         pyo3-pack develop --binding_crate pyo3 --release --strip
 
 # Run Python.
-python-run file='': wakeup
-        python {{file}}
+python-run file='':
+        @python {{file}}
 
 # Run the tests.
-test: wakeup
+test:
         @py.test tests
 
 # Inspect the `python-ext-wasm` extension.
-inspect: wakeup
-	python -c "help('wasmer')"
+inspect:
+	@python -c "help('wasmer')"
 
 # Local Variables:
 # mode: makefile
