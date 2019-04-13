@@ -1,11 +1,7 @@
 //! The `Buffer` Python object to build WebAssembly values.
 
+use pyo3::{class::PySequenceProtocol, exceptions::IndexError, prelude::*};
 use std::mem::size_of;
-use pyo3::{
-    prelude::*,
-    class::PySequenceProtocol,
-    exceptions::IndexError,
-};
 use wasmer_runtime::memory::Memory;
 
 macro_rules! memory_view {
@@ -35,21 +31,19 @@ macro_rules! memory_view {
                 let view = self.memory.view::<$wasm_type>();
 
                 if index < 0 {
-                    return Err(IndexError::py_err("Out of bound: Index cannot be negative."))
+                    return Err(IndexError::py_err(
+                        "Out of bound: Index cannot be negative.",
+                    ));
                 }
 
                 let index = index as usize;
 
                 if view.len() <= offset + index {
-                    Err(
-                        IndexError::py_err(
-                            format!(
-                                "Out of bound: Absolute index {} is larger than the memory size {}.",
-                                offset + index,
-                                view.len()
-                            )
-                        )
-                    )
+                    Err(IndexError::py_err(format!(
+                        "Out of bound: Absolute index {} is larger than the memory size {}.",
+                        offset + index,
+                        view.len()
+                    )))
                 } else {
                     Ok(view[offset + index].get())
                 }
@@ -61,21 +55,19 @@ macro_rules! memory_view {
                 let view = self.memory.view::<u8>();
 
                 if index < 0 {
-                    return Err(IndexError::py_err("Out of bound: Index cannot be negative."))
+                    return Err(IndexError::py_err(
+                        "Out of bound: Index cannot be negative.",
+                    ));
                 }
 
                 let index = index as usize;
 
                 if view.len() <= offset + index {
-                    Err(
-                        IndexError::py_err(
-                            format!(
-                                "Out of bound: Absolute index {} is larger than the memory size {}.",
-                                offset + index,
-                                view.len()
-                            )
-                        )
-                    )
+                    Err(IndexError::py_err(format!(
+                        "Out of bound: Absolute index {} is larger than the memory size {}.",
+                        offset + index,
+                        view.len()
+                    )))
                 } else {
                     view[offset + index].set(value);
 
@@ -84,7 +76,7 @@ macro_rules! memory_view {
             }
             */
         }
-    }
+    };
 }
 
 memory_view!(Uint8MemoryView over u8|1);

@@ -1,10 +1,9 @@
-//#![deny(warnings)]
+#![deny(warnings)]
 
 use pyo3::{
     prelude::*,
-    PyTryFrom,
-    wrap_pyfunction,
     types::{PyAny, PyBytes},
+    wrap_pyfunction, PyTryFrom,
 };
 use wasmer_runtime::validate as wasm_validate;
 
@@ -31,14 +30,14 @@ fn wasmer(_py: Python, module: &PyModule) -> PyResult<()> {
     Ok(())
 }
 
-#[pyfunction]
 /// validate(bytes, /)
 /// --
 ///
 /// Check a WebAssembly module is valid.
+#[pyfunction]
 pub fn validate(bytes: &PyAny) -> PyResult<bool> {
     match <PyBytes as PyTryFrom>::try_from(bytes) {
         Ok(bytes) => Ok(wasm_validate(bytes.as_bytes())),
-        _ => Ok(false)
+        _ => Ok(false),
     }
 }
