@@ -1,9 +1,10 @@
 # Install the environment to develop the extension.
 prelude:
-        pip3 install pyo3-pack
-        cargo install pyo3-pack
         pip3 install virtualenv
         virtualenv -p $(which python3) .env
+        source .env/bin/activate
+
+        pip3 install pyo3-pack pytest pytest-benchmark
 
 # Setup the environment to develop the extension.
 wakeup:
@@ -14,22 +15,22 @@ sleep:
         deactivate
 
 # Compile and install the Rust library.
-rust:
+rust: wakeup
         export PYTHON_SYS_EXECUTABLE=$(which python3)
         cargo check
         pyo3-pack develop --binding_crate pyo3 --release --strip
 
 # Run Python.
-python-run file='':
-        .env/bin/python {{file}}
+python-run file='': wakeup
+        python {{file}}
 
 # Run the tests.
-test:
-        @.env/bin/python tests/init.py
+test: wakeup
+        py.test tests
 
 # Inspect the `python-ext-wasm` extension.
-inspect:
-	.env/bin/python -c "help('wasmer')"
+inspect: wakeup
+	python -c "help('wasmer')"
 
 # Local Variables:
 # mode: makefile
