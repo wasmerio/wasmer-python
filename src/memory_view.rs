@@ -1,6 +1,6 @@
 //! The `Buffer` Python object to build WebAssembly values.
 
-use pyo3::{class::PySequenceProtocol, exceptions::IndexError, prelude::*};
+use pyo3::{class::PyMappingProtocol, exceptions::IndexError, prelude::*};
 use std::mem::size_of;
 use wasmer_runtime::memory::Memory;
 
@@ -21,7 +21,7 @@ macro_rules! memory_view {
         }
 
         #[pyproto]
-        impl PySequenceProtocol for $class_name {
+        impl PyMappingProtocol for $class_name {
             fn __len__(&self) -> PyResult<usize> {
                 Ok(self.memory.view::<$wasm_type>()[self.offset..].len() / size_of::<$wasm_type>())
             }
@@ -49,7 +49,6 @@ macro_rules! memory_view {
                 }
             }
 
-            /*
             fn __setitem__(&mut self, index: isize, value: u8) -> PyResult<()> {
                 let offset = self.offset;
                 let view = self.memory.view::<u8>();
@@ -74,7 +73,6 @@ macro_rules! memory_view {
                     Ok(())
                 }
             }
-            */
         }
     };
 }
