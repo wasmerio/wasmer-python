@@ -124,19 +124,22 @@ impl Instance {
         };
 
         let py = object.py();
-
         let dict = PyDict::new(py);
-        let function_name = String::from("sum");
-        dict.set_item(
-            function_name.clone(),
-            Py::new(
-                py,
-                ExportedFunction {
-                    function_name,
-                    instance: instance.clone()
-                }
-            )?
-        )?;
+
+        for (export_name, export) in instance.exports() {
+            if let Export::Function { .. } = export {
+                dict.set_item(
+                    export_name.clone(),
+                    Py::new(
+                        py,
+                        ExportedFunction {
+                            function_name: export_name,
+                            instance: instance.clone()
+                        }
+                    )?
+                )?;
+            }
+        }
 
         object.init({
             Self {
