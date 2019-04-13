@@ -1,5 +1,6 @@
 /.benchmarks
 /.env
 /.pytest_cache/
+/benchmarks/__pycache__/
 /target
 /tests/__pycache__/

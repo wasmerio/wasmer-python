@@ -1,35 +1,35 @@
 # Install the environment to develop the extension.
 prelude:
-        pip3 install virtualenv
-        virtualenv -p $(which python3) .env
-        source .env/bin/activate
-        pip3 install pyo3-pack pytest pytest-benchmark
+	pip3 install virtualenv
+	virtualenv -p $(which python3) .env
+	source .env/bin/activate
+	pip3 install pyo3-pack pytest pytest-benchmark
 
 # Setup the environment to develop the extension.
 wakeup:
-        source .env/bin/activate
+	source .env/bin/activate
 
 # Unset the development environment.
 sleep:
-        deactivate
+	deactivate
 
 # Compile and install the Rust library.
 rust:
-        export PYTHON_SYS_EXECUTABLE=$(which python3)
-        cargo check
-        pyo3-pack develop --binding_crate pyo3 --release --strip
+	export PYTHON_SYS_EXECUTABLE=$(which python3)
+	cargo check
+	pyo3-pack develop --binding_crate pyo3 --release --strip
 
 # Run Python.
 python-run file='':
-        @python {{file}}
+	@python {{file}}
 
 # Run the tests.
 test:
-        @py.test tests --benchmark-skip
+	@py.test tests
 
-# Benchmark the tests.
-bench:
-        @py.test tests --benchmark-only
+# Run the benchmarks.
+benchmark:
+	@py.test benchmarks
 
 # Inspect the `python-ext-wasm` extension.
 inspect:
