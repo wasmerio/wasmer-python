@@ -25,7 +25,11 @@ python-run file='':
 
 # Run the tests.
 test:
-        @py.test tests
+        @py.test tests --benchmark-skip
+
+# Benchmark the tests.
+bench:
+        @py.test tests --benchmark-only
 
 # Inspect the `python-ext-wasm` extension.
 inspect:
