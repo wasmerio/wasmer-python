@@ -130,24 +130,24 @@ The `__repr__` method allows to get a string representation of a
 print(repr(value_i32)) # I32(7)
 ```
 
-### The `*MemoryView` classes
+### The `*Array` classes
 
 These classes represent views over a memory buffer of an instance.
 
 | Class | View buffer as a sequence of… | Bytes per element |
 |-|-|-|
-| `Int8MemoryView` | `int8` | 1 |
-| `Uint8MemoryView` | `uint8` | 1 |
-| `Int16MemoryView` | `int16` | 2 |
-| `Uint16MemoryView` | `uint16` | 2 |
-| `Int32MemoryView` | `int32` | 4 |
-| `Uint32MemoryView` | `uint32` | 4 |
+| `Int8Array` | `int8` | 1 |
+| `Uint8Array` | `uint8` | 1 |
+| `Int16Array` | `int16` | 2 |
+| `Uint16Array` | `uint16` | 2 |
+| `Int32Array` | `int32` | 4 |
+| `Uint32Array` | `uint32` | 4 |
 
 All these classes share the same implementation. Taking the example of
-`Uint8MemoryView`, the class looks like this:
+`Uint8Array`, the class looks like this:
 
 ```python
-class Uint8MemoryView:
+class Uint8Array:
     @property
     def bytes_per_element()
 
@@ -171,7 +171,7 @@ instance = Instance(wasm_bytes)
 pointer = instance.exports.return_string()
 
 # Get the memory view, with the offset set to `pointer` (default is 0).
-memory = instance.uint8_memory_view(pointer)
+memory = instance.memory.uint8_view(pointer)
 
 # Read the string pointed by the pointer.
 nth = 0;
