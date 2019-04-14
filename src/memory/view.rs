@@ -1,6 +1,11 @@
 //! The `Buffer` Python object to build WebAssembly values.
 
-use pyo3::{class::PyMappingProtocol, exceptions::IndexError, prelude::*};
+use pyo3::{
+    class::PyMappingProtocol,
+    exceptions::{IndexError, ValueError},
+    prelude::*,
+    types::{PyAny, PySlice},
+};
 use std::{mem::size_of, rc::Rc};
 use wasmer_runtime::memory::Memory;
 
@@ -26,26 +31,61 @@ macro_rules! memory_view {
                 Ok(self.memory.view::<$wasm_type>()[self.offset..].len() / size_of::<$wasm_type>())
             }
 
-            fn __getitem__(&self, index: isize) -> PyResult<$wasm_type> {
+            fn __getitem__(&self, index: &PyAny) -> PyResult<PyObject> {
                 let offset = self.offset;
+                let range = if let Ok(slice) = index.cast_as::<PySlice>() {
+                    let slice = slice.indices(1024)?; // 1024 is totally arbitrary.
+                                                      // We could set the maximum length to the size of the memory.
+
+                    if slice.start < 0 {
+                        return Err(IndexError::py_err(
+                            "Out of bound: Index cannot be negative.",
+                        ));
+                    } else if slice.start >= slice.stop {
+                        return Err(ValueError::py_err("Slice cannot be empty."));
+                    } else if slice.step > 1 {
+                        return Err(ValueError::py_err(format!(
+                            "Slice must have a step of `1` for now; given `{}`.",
+                            slice.step
+                        )));
+                    }
+
+                    (offset + slice.start as usize)..(offset + slice.stop as usize)
+                } else if let Ok(index) = index.extract::<isize>() {
+                    if index < 0 {
+                        return Err(IndexError::py_err(
+                            "Out of bound: Index cannot be negative.",
+                        ));
+                    }
+
+                    (offset + index as usize)..(offset + index as usize + 1)
+                } else {
+                    return Err(ValueError::py_err(
+                        "Only integers and slices are valid to represent an index.",
+                    ));
+                };
+
                 let view = self.memory.view::<$wasm_type>();
 
-                if index < 0 {
-                    return Err(IndexError::py_err(
-                        "Out of bound: Index cannot be negative.",
-                    ));
+                if view.len() <= range.end {
+                    return Err(IndexError::py_err(format!(
+                        "Out of bound: Maximum index {} is larger than the memory size {}.",
+                        range.end,
+                        view.len()
+                    )));
                 }
 
-                let index = index as usize;
+                let gil = GILGuard::acquire();
+                let py = gil.python();
 
-                if view.len() <= offset + index {
-                    Err(IndexError::py_err(format!(
-                        "Out of bound: Absolute index {} is larger than the memory size {}.",
-                        offset + index,
-                        view.len()
-                    )))
+                if range.end - range.start == 1 {
+                    Ok(view[range.start].get().into_object(py))
                 } else {
-                    Ok(view[offset + index].get())
+                    Ok(view[range]
+                        .iter()
+                        .map(|cell| cell.get())
+                        .collect::<Vec<$wasm_type>>()
+                        .into_object(py))
                 }
             }
 
