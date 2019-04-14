@@ -68,4 +68,4 @@ def test_validate_invalid():
     assert not validate(INVALID_TEST_BYTES)
 
 def test_memory_view():
-    assert isinstance(Instance(TEST_BYTES).uint8_memory_view(), Uint8Array)
+    assert isinstance(Instance(TEST_BYTES).memory.uint8_view(), Uint8Array)

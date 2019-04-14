@@ -1,4 +1,4 @@
-from wasmer import Instance, Value, Uint8MemoryView
+from wasmer import Instance
 import os
 
 __dir__ = os.path.dirname(os.path.realpath(__file__))
