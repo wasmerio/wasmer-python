@@ -11,8 +11,14 @@ memory = instance.memory.uint8_view(pointer)
 nth = 0;
 string = '';
 
-while (0 != memory[nth]):
-    string += chr(memory[nth])
+while True:
+    char = memory[nth]
+
+    if char == 0:
+        break;
+
+    string += chr(char)
     nth += 1
 
 print('"' + string + '"') # "Hello, World!"
+print('"' + ''.join(map(chr, memory[0:13])) + '"')
