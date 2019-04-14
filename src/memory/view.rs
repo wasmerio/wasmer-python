@@ -32,20 +32,19 @@ macro_rules! memory_view {
             }
 
             fn __getitem__(&self, index: &PyAny) -> PyResult<PyObject> {
+                let view = self.memory.view::<$wasm_type>();
                 let offset = self.offset;
                 let range = if let Ok(slice) = index.cast_as::<PySlice>() {
-                    let slice = slice.indices(1024)?; // 1024 is totally arbitrary.
-                                                      // We could set the maximum length to the size of the memory.
+                    let slice = slice.indices(view.len() as i64)?;
 
-                    if slice.start < 0 {
-                        return Err(IndexError::py_err(
-                            "Out of bound: Index cannot be negative.",
-                        ));
-                    } else if slice.start >= slice.stop {
-                        return Err(ValueError::py_err("Slice cannot be empty."));
+                    if slice.start >= slice.stop {
+                        return Err(IndexError::py_err(format!(
+                            "Slice `{}:{}` cannot be empty.",
+                            slice.start, slice.stop
+                        )));
                     } else if slice.step > 1 {
-                        return Err(ValueError::py_err(format!(
-                            "Slice must have a step of `1` for now; given `{}`.",
+                        return Err(IndexError::py_err(format!(
+                            "Slice must have a step of 1 for now; given {}.",
                             slice.step
                         )));
                     }
@@ -65,12 +64,10 @@ macro_rules! memory_view {
                     ));
                 };
 
-                let view = self.memory.view::<$wasm_type>();
-
-                if view.len() <= range.end {
+                if view.len() <= (range.end - 1) {
                     return Err(IndexError::py_err(format!(
                         "Out of bound: Maximum index {} is larger than the memory size {}.",
-                        range.end,
+                        range.end - 1,
                         view.len()
                     )));
                 }
