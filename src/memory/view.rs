@@ -1,14 +1,14 @@
 //! The `Buffer` Python object to build WebAssembly values.
 
 use pyo3::{class::PyMappingProtocol, exceptions::IndexError, prelude::*};
-use std::mem::size_of;
+use std::{mem::size_of, rc::Rc};
 use wasmer_runtime::memory::Memory;
 
 macro_rules! memory_view {
     ($class_name:ident over $wasm_type:ty | $bytes_per_element:expr) => {
         #[pyclass]
         pub struct $class_name {
-            pub memory: Memory,
+            pub memory: Rc<Memory>,
             pub offset: usize,
         }
 

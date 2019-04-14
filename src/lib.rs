@@ -19,13 +19,14 @@ use value::Value;
 fn wasmer(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_wrapped(wrap_pyfunction!(validate))?;
     module.add_class::<Instance>()?;
-    module.add_class::<memory::view::Uint8Array>()?;
+    module.add_class::<Value>()?;
+    module.add_class::<memory::Memory>()?;
+    module.add_class::<memory::view::Int16Array>()?;
+    module.add_class::<memory::view::Int32Array>()?;
     module.add_class::<memory::view::Int8Array>()?;
     module.add_class::<memory::view::Uint16Array>()?;
-    module.add_class::<memory::view::Int16Array>()?;
     module.add_class::<memory::view::Uint32Array>()?;
-    module.add_class::<memory::view::Int32Array>()?;
-    module.add_class::<Value>()?;
+    module.add_class::<memory::view::Uint8Array>()?;
 
     Ok(())
 }
