@@ -16,10 +16,10 @@
 
 Wasmer is a Python library for executing WebAssembly binaries:
 
-  * **Easy to use:** wasmer API mimics the standard WebAssembly API,
-  * **Fast:** wasmer executes the WebAssembly modules at **native
+  * **Easy to use**: The `wasmer` API mimics the standard WebAssembly API,
+  * **Fast**: `wasmer` executes the WebAssembly modules at **native
     speed**,
-  * **Safe:** all calls to WebAssembly will be fast, but more
+  * **Safe**: All calls to WebAssembly will be fast, but more
     importantly, completely safe and sandboxed.
 
 ## Install
@@ -39,7 +39,7 @@ coming.
 ## Example
 
 There is a toy program in `examples/simple.rs`, written in Rust (or
-any other language that compiles to Wasm):
+any other language that compiles to WebAssembly):
 
 ```rust
 #[no_mangle]
@@ -48,9 +48,9 @@ pub extern fn sum(x: i32, y: i32) -> i32 {
 }
 ```
 
-After compilation to Wasm, we obtain the
+After compilation to WebAssembly, the
 [`examples/simple.wasm`](https://github.com/wasmerio/python-ext-wasm/blob/master/examples/simple.wasm)
-binary file. ([Download
+binary file is generated. ([Download
 it](https://github.com/wasmerio/python-ext-wasm/blob/master/examples/simple.wasm)).
 
 Then, we can excecute it in Python:
@@ -100,6 +100,15 @@ it is possible to use the `Value` class,
 e.g. `instance.exports.sum(Value.i32(1), Value.i32(2))`. Note that for
 most usecases, this is not necessary.
 
+The `memory` getter exposes the `Memory` class representing the memory
+of that particular instance, e.g.:
+
+```python
+view = instance.memory.uint8_view()
+```
+
+See below for more information.
+
 ### The `Value` class
 
 Builds WebAssembly values with the correct types:
@@ -130,7 +139,26 @@ The `__repr__` method allows to get a string representation of a
 print(repr(value_i32)) # I32(7)
 ```
 
-### The `*Array` classes
+### The `Memory` class
+
+A WebAssembly instance has its own memory, represented by the `Memory`
+class. It is accessible by the `Instance.memory` getter.
+
+The `Memory` class offers methods to create views of the memory
+internal buffer, e.g. `uint8_view`, `int8_view`, `uint16_view`
+etc. All these methods accept one argument: `offset`, to subset the
+memory buffer at a particular offset. These methods return
+respectively a `*Array` object, i.e. `uint8_view` returns a
+`Uint8Array` object etc.
+
+```python
+offset = 7
+view = instance.memory.uint8_view(offset)
+
+print(view[0])
+```
+
+#### The `*Array` classes
 
 These classes represent views over a memory buffer of an instance.
 
@@ -152,7 +180,7 @@ class Uint8Array:
     def bytes_per_element()
 
     def __len__()
-    def __getitem__(index)
+    def __getitem__(index|slice)
     def __setitem__(index, value)
 ```
 
@@ -177,11 +205,80 @@ memory = instance.memory.uint8_view(pointer)
 nth = 0;
 string = ''
 
-while (0 != memory[nth]):
-    string += chr(memory[nth])
+while True:
+    char = memory[nth]
+    
+    if char == 0:
+        break
+
+    string += chr(char)
     nth += 1
 
 print(string) # Hello, World!
+```
+
+A slice can be used as index of the `__getitem__` method, which is
+useful when we already know the size of the data we want to read, e.g.:
+
+```python
+print(''.join(map(chr, memory[0:13]))) # Hello, World!
+```
+
+Notice that `*Array` treat bytes in little-endian, as required by the
+WebAssembly specification, [Chapter Structure, Section Instructions,
+Sub-Section Memory
+Instructions](https://webassembly.github.io/spec/core/syntax/instructions.html#memory-instructions):
+
+> All values are read and written in [little
+> endian](https://en.wikipedia.org/wiki/Endianness#Little-endian) byte
+> order.
+
+Each view shares the same memory buffer internally. Let's have some fun:
+
+``` python
+int8 = instance.memory.int8_view()
+int16 = instance.memory.int16_view()
+int32 = instance.memory.int32_view()
+
+               b₁
+            ┌┬┬┬┬┬┬┐
+int8[0] = 0b00000001
+               b₂
+            ┌┬┬┬┬┬┬┐
+int8[1] = 0b00000100
+               b₃
+            ┌┬┬┬┬┬┬┐
+int8[2] = 0b00010000
+               b₄
+            ┌┬┬┬┬┬┬┐
+int8[3] = 0b01000000
+
+// No surprise with the following assertions.
+                       b₁
+                    ┌┬┬┬┬┬┬┐
+assert int8[0] == 0b00000001
+                       b₂
+                    ┌┬┬┬┬┬┬┐
+assert int8[1] == 0b00000100
+                       b₃
+                    ┌┬┬┬┬┬┬┐
+assert int8[2] == 0b00010000
+                       b₄
+                    ┌┬┬┬┬┬┬┐
+assert int8[3] == 0b01000000
+
+// The `int16` view reads 2 bytes.
+                        b₂       b₁
+                     ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐
+assert int16[0] == 0b00000100_00000001
+                        b₄       b₃
+                     ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐
+assert int16[1] == 0b01000000_00010000
+
+// The `int32` view reads 4 bytes.
+                        b₄       b₃       b₂       b₁
+                     ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐
+assert int32[0] == 0b01000000_00010000_00000100_00000001;
 ```
 
 ### The `validate` function
