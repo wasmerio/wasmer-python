@@ -1,4 +1,4 @@
-from wasmer import Instance, Uint8MemoryView, Int8MemoryView, Uint16MemoryView, Int16MemoryView, Uint32MemoryView, Int32MemoryView
+from wasmer import Instance, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array
 import inspect
 import os
 import pytest
@@ -7,12 +7,12 @@ here = os.path.dirname(os.path.realpath(__file__))
 TEST_BYTES = open(here + '/tests.wasm', 'rb').read()
 
 def test_is_a_class():
-    assert inspect.isclass(Uint8MemoryView)
-    assert inspect.isclass(Int8MemoryView)
-    assert inspect.isclass(Uint16MemoryView)
-    assert inspect.isclass(Int16MemoryView)
-    assert inspect.isclass(Uint32MemoryView)
-    assert inspect.isclass(Int32MemoryView)
+    assert inspect.isclass(Uint8Array)
+    assert inspect.isclass(Int8Array)
+    assert inspect.isclass(Uint16Array)
+    assert inspect.isclass(Int16Array)
+    assert inspect.isclass(Uint32Array)
+    assert inspect.isclass(Int32Array)
 
 def test_bytes_per_element():
     assert Instance(TEST_BYTES).uint8_memory_view().bytes_per_element ==  1
@@ -24,7 +24,7 @@ def test_bytes_per_element():
 
 @pytest.mark.xfail()
 def test_cannot_construct():
-    assert isinstance(Uint8MemoryView(0), Uint8MemoryView)
+    assert isinstance(Uint8Array(0), Uint8Array)
 
 def test_length():
     assert len(Instance(TEST_BYTES).uint8_memory_view()) == (

@@ -1,6 +1,6 @@
 //! The `Instance` Python object to build WebAssembly instances.
 
-use crate::{memory_view, value::Value};
+use crate::{memory::view, value::Value};
 use pyo3::{
     class::basic::PyObjectProtocol,
     exceptions::{LookupError, RuntimeError},
@@ -172,74 +172,50 @@ impl Instance {
     }
 
     #[args(offset = 0)]
-    fn uint8_memory_view(
-        &self,
-        py: Python,
-        offset: usize,
-    ) -> PyResult<Py<memory_view::Uint8MemoryView>> {
+    fn uint8_memory_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Uint8Array>> {
         get_instance_memory(&self).map_or_else(
             || Err(RuntimeError::py_err("No memory exported.")),
-            |memory| Py::new(py, memory_view::Uint8MemoryView { memory, offset }),
+            |memory| Py::new(py, view::Uint8Array { memory, offset }),
         )
     }
 
     #[args(offset = 0)]
-    fn int8_memory_view(
-        &self,
-        py: Python,
-        offset: usize,
-    ) -> PyResult<Py<memory_view::Int8MemoryView>> {
+    fn int8_memory_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Int8Array>> {
         get_instance_memory(&self).map_or_else(
             || Err(RuntimeError::py_err("No memory exported.")),
-            |memory| Py::new(py, memory_view::Int8MemoryView { memory, offset }),
+            |memory| Py::new(py, view::Int8Array { memory, offset }),
         )
     }
 
     #[args(offset = 0)]
-    fn uint16_memory_view(
-        &self,
-        py: Python,
-        offset: usize,
-    ) -> PyResult<Py<memory_view::Uint16MemoryView>> {
+    fn uint16_memory_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Uint16Array>> {
         get_instance_memory(&self).map_or_else(
             || Err(RuntimeError::py_err("No memory exported.")),
-            |memory| Py::new(py, memory_view::Uint16MemoryView { memory, offset }),
+            |memory| Py::new(py, view::Uint16Array { memory, offset }),
         )
     }
 
     #[args(offset = 0)]
-    fn int16_memory_view(
-        &self,
-        py: Python,
-        offset: usize,
-    ) -> PyResult<Py<memory_view::Int16MemoryView>> {
+    fn int16_memory_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Int16Array>> {
         get_instance_memory(&self).map_or_else(
             || Err(RuntimeError::py_err("No memory exported.")),
-            |memory| Py::new(py, memory_view::Int16MemoryView { memory, offset }),
+            |memory| Py::new(py, view::Int16Array { memory, offset }),
         )
     }
 
     #[args(offset = 0)]
-    fn uint32_memory_view(
-        &self,
-        py: Python,
-        offset: usize,
-    ) -> PyResult<Py<memory_view::Uint32MemoryView>> {
+    fn uint32_memory_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Uint32Array>> {
         get_instance_memory(&self).map_or_else(
             || Err(RuntimeError::py_err("No memory exported.")),
-            |memory| Py::new(py, memory_view::Uint32MemoryView { memory, offset }),
+            |memory| Py::new(py, view::Uint32Array { memory, offset }),
         )
     }
 
     #[args(offset = 0)]
-    fn int32_memory_view(
-        &self,
-        py: Python,
-        offset: usize,
-    ) -> PyResult<Py<memory_view::Int32MemoryView>> {
+    fn int32_memory_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Int32Array>> {
         get_instance_memory(&self).map_or_else(
             || Err(RuntimeError::py_err("No memory exported.")),
-            |memory| Py::new(py, memory_view::Int32MemoryView { memory, offset }),
+            |memory| Py::new(py, view::Int32Array { memory, offset }),
         )
     }
 }

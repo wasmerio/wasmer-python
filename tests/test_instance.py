@@ -1,4 +1,4 @@
-from wasmer import Instance, Uint8MemoryView, Value, validate
+from wasmer import Instance, Uint8Array, Value, validate
 import inspect
 import os
 import pytest
@@ -68,4 +68,4 @@ def test_validate_invalid():
     assert not validate(INVALID_TEST_BYTES)
 
 def test_memory_view():
-    assert isinstance(Instance(TEST_BYTES).uint8_memory_view(), Uint8MemoryView)
+    assert isinstance(Instance(TEST_BYTES).uint8_memory_view(), Uint8Array)
