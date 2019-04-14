@@ -32,22 +32,71 @@ def test_length():
         1114112
     )
 
-def test_get():
+def test_get_index():
     memory = Instance(TEST_BYTES).memory.uint8_view()
     index = 7
     value = 42
     memory[index] = value
 
-    assert memory[index] ==  value
+    assert memory[index] == value
 
-def test_get_out_of_range():
+def test_get_integer_out_of_range_too_large():
     with pytest.raises(IndexError) as context_manager:
         memory = Instance(TEST_BYTES).memory.uint8_view()
         memory[len(memory) + 1]
 
     exception = context_manager.value
     assert str(exception) == (
-        'Out of bound: Absolute index 1114113 is larger than the memory size 1114112.'
+        'Out of bound: Maximum index 1114113 is larger than the memory size 1114112.'
+    )
+
+def test_get_integer_out_of_range_negative():
+    with pytest.raises(IndexError) as context_manager:
+        memory = Instance(TEST_BYTES).memory.uint8_view()
+        memory[-1]
+
+    exception = context_manager.value
+    assert str(exception) == (
+        'Out of bound: Index cannot be negative.'
+    )
+
+def test_get_slice():
+    memory = Instance(TEST_BYTES).memory.uint8_view()
+    index = 7
+    memory[index    ] = 1
+    memory[index + 1] = 2
+    memory[index + 2] = 3
+
+    assert memory[index:index + 3] == [1, 2, 3]
+
+def test_get_slice_out_of_range_empty():
+    with pytest.raises(IndexError) as context_manager:
+        memory = Instance(TEST_BYTES).memory.uint8_view()
+        memory[2:1]
+
+    exception = context_manager.value
+    assert str(exception) == (
+        'Slice `2:1` cannot be empty.'
+    )
+
+def test_get_slice_out_of_range_invalid_step():
+    with pytest.raises(IndexError) as context_manager:
+        memory = Instance(TEST_BYTES).memory.uint8_view()
+        memory[1:7:2]
+
+    exception = context_manager.value
+    assert str(exception) == (
+        'Slice must have a step of 1 for now; given 2.'
+    )
+
+def test_get_invalid_index():
+    with pytest.raises(ValueError) as context_manager:
+        memory = Instance(TEST_BYTES).memory.uint8_view()
+        memory['a']
+
+    exception = context_manager.value
+    assert str(exception) == (
+        'Only integers and slices are valid to represent an index.'
     )
 
 def test_set_out_of_range():
