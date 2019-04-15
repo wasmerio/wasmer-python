@@ -18,9 +18,9 @@ jobs:
           name: Install Python versions 3.5.7, 3.6.8, and 3.7.3
           command: |
             export PATH="/home/circleci/.pyenv/bin:$PATH"
-            test -d /home/circleci/.pyenv || pyenv install 3.5.7
-            test -d /home/circleci/.pyenv || pyenv install 3.6.8
-            test -d /home/circleci/.pyenv || pyenv install 3.7.3
+            test -d /home/circleci/.pyenv && pyenv install 3.5.7
+            test -d /home/circleci/.pyenv && pyenv install 3.6.8
+            test -d /home/circleci/.pyenv && pyenv install 3.7.3
       - run:
           name: Prelude
           command: |
