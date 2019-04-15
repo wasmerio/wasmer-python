@@ -1,5 +1,6 @@
 # Install the environment to develop the extension.
 prelude:
+	#!/usr/bin/env bash
 	pip3 install virtualenv
 	virtualenv -p $(which python3) .env
 	source .env/bin/activate
@@ -7,6 +8,7 @@ prelude:
 
 # Setup the environment to develop the extension.
 wakeup:
+	#!/usr/bin/env bash
 	source .env/bin/activate
 
 # Unset the development environment.
