@@ -8,8 +8,8 @@ jobs:
       - run: rustup default nightly
       - restore_cache:
           keys:
-            - v1-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
-            - v1-linux-{{ arch }}
+            - v2-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
+            - v2-linux-{{ arch }}
       - run:
           name: Install just
           command: |
@@ -32,7 +32,7 @@ jobs:
             - target/release/build
             - target/release/deps
             - /home/circleci/.pyenv
-          key: v1-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
+          key: v2-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
       - run:
           name: Prelude
           command: |
