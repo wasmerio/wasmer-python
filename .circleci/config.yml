@@ -5,10 +5,6 @@ jobs:
       - image: circleci/rust:latest
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
-            - v1-linux-{{ arch }}
       - run: rustup default nightly
       - run:
           name: Install just
@@ -40,13 +36,6 @@ jobs:
             export PATH="/home/circleci/.pyenv/versions/3.7.3/bin/:$PATH"
             source .env/bin/activate
             just rust
-      - save_cache:
-          paths:
-            - .env
-            - target/release/.fingerprint
-            - target/release/build
-            - target/release/deps
-          key: v1-linux-deps-{{ arch }}-{{ checksum "Cargo.lock" }}
       - run:
           name: Test the extension
           command: |
