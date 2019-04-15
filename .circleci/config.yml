@@ -6,6 +6,10 @@ jobs:
     steps:
       - checkout
       - run: rustup default nightly
+      - restore_cache:
+          keys:
+            - v1-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
+            - v1-linux-{{ arch }}
       - run:
           name: Install just
           command: |
@@ -18,9 +22,18 @@ jobs:
           name: Install Python versions 3.5.7, 3.6.8, and 3.7.3
           command: |
             export PATH="/home/circleci/.pyenv/bin:$PATH"
-            test -d /home/circleci/.pyenv && pyenv install 3.5.7
-            test -d /home/circleci/.pyenv && pyenv install 3.6.8
-            test -d /home/circleci/.pyenv && pyenv install 3.7.3
+            test -d /home/circleci/.pyenv/versions/3.5.7/bin || pyenv install 3.5.7
+            test -d /home/circleci/.pyenv/versions/3.6.8/bin || pyenv install 3.6.8
+            test -d /home/circleci/.pyenv/versions/3.7.3/bin || pyenv install 3.7.3
+      - save_cache:
+          paths:
+            - /usr/local/cargo/bin
+            - /usr/local/cargo/registry
+            - target/release/.fingerprint
+            - target/release/build
+            - target/release/deps
+            - /home/circleci/.pyenv
+          key: v1-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
       - run:
           name: Prelude
           command: |
