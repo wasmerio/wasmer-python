@@ -1,23 +1,39 @@
 version: 2.1
+
+# List of all jobs.
 jobs:
+  # Build the project.
+  # All the tools are put in the cache, so that it's easier for other
+  # jobs to do stuff.
   build:
     docker:
       - image: circleci/rust:latest
     steps:
+      # Update the project.
       - checkout
+
+      # Use Rust nightly.
       - run: rustup default nightly
+
+      # If the cache exists, loads it.
       - restore_cache:
           keys:
             - v2-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
             - v2-linux-{{ arch }}
+
+      # Install `just` used to manage the project.
       - run:
           name: Install just
           command: |
             test -f /usr/local/cargo/bin/just || cargo install just
+
+      # Install `pyenv` to easily install different Python versions.
       - run:
           name: Install pyenv
           command: |
             test -d /home/circleci/.pyenv || curl https://pyenv.run | bash
+
+      # Install different Python versions.
       - run:
           name: Install Python versions 3.5.7, 3.6.8, and 3.7.3
           command: |
@@ -25,6 +41,8 @@ jobs:
             test -d /home/circleci/.pyenv/versions/3.5.7/bin || pyenv install 3.5.7
             test -d /home/circleci/.pyenv/versions/3.6.8/bin || pyenv install 3.6.8
             test -d /home/circleci/.pyenv/versions/3.7.3/bin || pyenv install 3.7.3
+
+      # Save everything in the cache (except the `just` binary).
       - save_cache:
           paths:
             - /usr/local/cargo/registry
@@ -33,6 +51,8 @@ jobs:
             - target/release/deps
             - /home/circleci/.pyenv
           key: v2-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
+
+      # Run the prelude.
       - run:
           name: Prelude
           command: |
@@ -40,6 +60,8 @@ jobs:
             export PATH="/usr/local/cargo/bin:$PATH"
             export PATH="/home/circleci/.pyenv/versions/3.7.3/bin/:$PATH"
             just prelude
+
+      # Compile the Python extension.
       - run:
           name: Compile the extension
           command: |
@@ -48,6 +70,8 @@ jobs:
             export PATH="/home/circleci/.pyenv/versions/3.7.3/bin/:$PATH"
             source .env/bin/activate
             just rust
+
+      # Run the extension test suites.
       - run:
           name: Test the extension
           command: |
@@ -56,18 +80,28 @@ jobs:
             export PATH="/home/circleci/.pyenv/versions/3.7.3/bin/:$PATH"
             source .env/bin/activate
             just test
+
+  # Deploy the project.
+  # This job needs the `build` cache.
   deploy:
     docker:
       - image: circleci/rust:latest
     steps:
+      # Update the project.
       - checkout
+
+      # Use Rust nightly.
       - run: rustup default nightly
+
+      # If the cache exists, loads it.
       - restore_cache:
           keys:
             - v2-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
             - v2-linux-{{ arch }}
+
+      # Generate Python wheels for different versions, and publish them on pypi.org.
       - run:
-          name: Publish the extension
+          name: Publish the extension on Pypi.org
           command: |
             export PATH="/home/circleci/.pyenv/bin:$PATH"
             export PATH="/usr/local/cargo/bin:$PATH"
@@ -77,16 +111,23 @@ jobs:
             source .env/bin/activate
             pyo3-pack publish -i python3.7 python3.6 python3.5 -u wasmer
 
+
+# List of workflows.
 workflows:
   version: 2
+
+  # The build and deploy workflow.
   build-and-deploy:
     jobs:
+      # Run the `build` job for all branches and all tags.
       - build:
           filters:
             branches:
               only: /.*/
             tags:
               only: /.*/
+      # Run the `deploy` job only for all tags, not for branches.
+      # The `deploy` job depends on the `build` branch (and its cache).
       - deploy:
           requires:
             - build
