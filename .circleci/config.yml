@@ -27,7 +27,6 @@ jobs:
             test -d /home/circleci/.pyenv/versions/3.7.3/bin || pyenv install 3.7.3
       - save_cache:
           paths:
-            - /usr/local/cargo/bin
             - /usr/local/cargo/registry
             - target/release/.fingerprint
             - target/release/build
