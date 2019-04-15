@@ -99,6 +99,21 @@ jobs:
             - v2-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
             - v2-linux-{{ arch }}
 
+      # Install `just` used to manage the project.
+      - run:
+          name: Install just
+          command: |
+            test -f /usr/local/cargo/bin/just || cargo install just
+
+      # Run the prelude.
+      - run:
+          name: Prelude
+          command: |
+            export PATH="/home/circleci/.pyenv/bin:$PATH"
+            export PATH="/usr/local/cargo/bin:$PATH"
+            export PATH="/home/circleci/.pyenv/versions/3.7.3/bin/:$PATH"
+            just prelude
+
       # Generate Python wheels for different versions, and publish them on pypi.org.
       - run:
           name: Publish the extension on Pypi.org
