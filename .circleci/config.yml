@@ -1,6 +1,6 @@
-version: 2
+version: 2.1
 jobs:
-  release:
+  build:
     docker:
       - image: circleci/rust:latest
     steps:
@@ -56,6 +56,16 @@ jobs:
             export PATH="/home/circleci/.pyenv/versions/3.7.3/bin/:$PATH"
             source .env/bin/activate
             just test
+  deploy:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - checkout
+      - run: rustup default nightly
+      - restore_cache:
+          keys:
+            - v2-linux-{{ arch }}-{{ checksum "Cargo.lock" }}
+            - v2-linux-{{ arch }}
       - run:
           name: Publish the extension
           command: |
@@ -66,8 +76,22 @@ jobs:
             export PATH="/home/circleci/.pyenv/versions/3.5.7/bin/:$PATH"
             source .env/bin/activate
             pyo3-pack publish -i python3.7 python3.6 python3.5 -u wasmer
+
 workflows:
   version: 2
-  main:
+  build-and-deploy:
     jobs:
-      - release
+      - build:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
