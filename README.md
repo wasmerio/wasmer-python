@@ -366,8 +366,8 @@ About safety:
 
 ## License
 
-The entire project is under the BSD-3-Clause license. Please read the
-`LICENSE` file.
+The entire project is under the BSD-3-Clause license. Please read [the
+`LICENSE` file][license].
 
 
 [Pypi]: https://pypi.org/
@@ -375,3 +375,4 @@ The entire project is under the BSD-3-Clause license. Please read the
 [`pyo3-pack`]: https://github.com/PyO3/pyo3-pack
 [`virtualenv`]: https://virtualenv.pypa.io/
 [`just`]: https://github.com/casey/just/
+[license]: https://github.com/wasmerio/wasmer/blob/master/LICENSE
