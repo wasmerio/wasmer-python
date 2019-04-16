@@ -51,7 +51,7 @@ pub extern fn sum(x: i32, y: i32) -> i32 {
 After compilation to WebAssembly, the
 [`examples/simple.wasm`](https://github.com/wasmerio/python-ext-wasm/blob/master/examples/simple.wasm)
 binary file is generated. ([Download
-it](https://github.com/wasmerio/python-ext-wasm/blob/master/examples/simple.wasm)).
+it](https://github.com/wasmerio/python-ext-wasm/raw/master/examples/simple.wasm)).
 
 Then, we can excecute it in Python:
 
