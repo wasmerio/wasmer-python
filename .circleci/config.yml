@@ -2,10 +2,10 @@ version: 2.1
 
 # List of all jobs.
 jobs:
-  # Build the project.
+  # Build and test the project.
   # All the tools are put in the cache, so that it's easier for other
   # jobs to do stuff.
-  build:
+  build-and-test:
     docker:
       - image: circleci/rust:latest
     steps:
@@ -82,7 +82,7 @@ jobs:
             just test
 
   # Deploy the project.
-  # This job needs the `build` cache.
+  # This job needs the `build-and-test` cache.
   deploy:
     docker:
       - image: circleci/rust:latest
@@ -134,18 +134,18 @@ workflows:
   # The build and deploy workflow.
   build-and-deploy:
     jobs:
-      # Run the `build` job for all branches and all tags.
-      - build:
+      # Run the `build-and-test` job for all branches and all tags.
+      - build-and-test:
           filters:
             branches:
               only: /.*/
             tags:
               only: /.*/
       # Run the `deploy` job only for all tags, not for branches.
-      # The `deploy` job depends on the `build` branch (and its cache).
+      # The `deploy` job depends on the `build-and-test` branch (and its cache).
       - deploy:
           requires:
-            - build
+            - build-and-test
           filters:
             tags:
               only: /.*/
