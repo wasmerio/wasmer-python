@@ -9,6 +9,9 @@
   <a href="https://pypi.org/project/wasmer/">
       <img src="https://img.shields.io/pypi/format/wasmer.svg" alt="Pypi" valign="middle"/>
   </a>
+  <a href="https://pypi.org/project/wasmer/">
+      <img src="https://pepy.tech/badge/wasmer" alt="Number of downloads on Pypi" valign="middle"/>
+  </a>
   <a href="https://github.com/wasmerio/wasmer/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/wasmerio/wasmer.svg" alt="License" valign="middle">
   </a>
