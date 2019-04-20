@@ -20,8 +20,8 @@
 Wasmer is a Python library for executing WebAssembly binaries:
 
   * **Easy to use**: The `wasmer` API mimics the standard WebAssembly API,
-  * **Fast**: `wasmer` executes the WebAssembly modules at **native
-    speed**,
+  * **Fast**: `wasmer` executes the WebAssembly modules as fast as
+    possible, close to **native speed**,
   * **Safe**: All calls to WebAssembly will be fast, but more
     importantly, completely safe and sandboxed.
 
