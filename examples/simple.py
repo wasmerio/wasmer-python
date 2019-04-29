@@ -8,4 +8,4 @@ instance = Instance(wasm_bytes)
 
 result = instance.exports.sum(1, 2)
 
-print(result) # 42!
+print(result) # 3!
