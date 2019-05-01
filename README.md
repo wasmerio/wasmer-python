@@ -299,7 +299,7 @@ This function returns a boolean.
 
 # Development
 
-The Python extension is written in Rust, with [`rust-cpython`] and
+The Python extension is written in Rust, with [`pyo3`] and
 [`pyo3-pack`].
 
 To set up your environment, run only once:
@@ -373,6 +373,7 @@ The entire project is under the BSD-3-Clause license. Please read [the
 
 [Pypi]: https://pypi.org/
 [`rust-cpython`]: https://github.com/dgrunwald/rust-cpython
+[`pyo3`]: https://github.com/PyO3/pyo3
 [`pyo3-pack`]: https://github.com/PyO3/pyo3-pack
 [`virtualenv`]: https://virtualenv.pypa.io/
 [`just`]: https://github.com/casey/just/
