@@ -189,7 +189,7 @@ class Uint8Array:
 
 Let's see it in action:
 
-``` python
+```python
 from wasmer import Instance
 
 # Get the Wasm module as bytes.
@@ -238,7 +238,7 @@ Instructions](https://webassembly.github.io/spec/core/syntax/instructions.html#m
 
 Each view shares the same memory buffer internally. Let's have some fun:
 
-``` python
+```python
 int8 = instance.memory.int8_view()
 int16 = instance.memory.int16_view()
 int32 = instance.memory.int32_view()
@@ -281,7 +281,7 @@ assert int16[1] == 0b01000000_00010000
 // The `int32` view reads 4 bytes.
                         b₄       b₃       b₂       b₁
                      ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐
-assert int32[0] == 0b01000000_00010000_00000100_00000001;
+assert int32[0] == 0b01000000_00010000_00000100_00000001
 ```
 
 ### The `validate` function
