@@ -1,21 +1,19 @@
-<h1>
-  <a href="https://wasmer.io" target="_blank" rel="noopener noreferrer" valign="middle">
-    <img height="64" src="https://raw.githubusercontent.com/wasmerio/wasmer/master/logo.png" alt="Wasmer logo" valign="middle">
+<p align="center">
+  <a href="https://wasmer.io" target="_blank" rel="noopener noreferrer">
+    <img width="400" src="https://raw.githubusercontent.com/wasmerio/wasmer/master/logo.png" alt="Wasmer logo">
   </a>
-  &nbsp;
+</p>
+
+<p align="center">
   <a href="https://spectrum.chat/wasmer">
-    <img src="https://withspectrum.github.io/badge/badge.svg" alt="Join the Wasmer Community" valign="middle">
-  </a>
+    <img src="https://withspectrum.github.io/badge/badge.svg" alt="Join the Wasmer Community" valign="middle"></a>
   <a href="https://pypi.org/project/wasmer/">
-      <img src="https://img.shields.io/pypi/format/wasmer.svg" alt="Pypi" valign="middle"/>
-  </a>
+      <img src="https://img.shields.io/pypi/format/wasmer.svg" alt="Pypi" valign="middle"/></a>
   <a href="https://pypi.org/project/wasmer/">
-      <img src="https://pepy.tech/badge/wasmer" alt="Number of downloads on Pypi" valign="middle"/>
-  </a>
+      <img src="https://pepy.tech/badge/wasmer" alt="Number of downloads on Pypi" valign="middle"/></a>
   <a href="https://github.com/wasmerio/wasmer/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/wasmerio/wasmer.svg" alt="License" valign="middle">
-  </a>
-</h1>
+    <img src="https://img.shields.io/github/license/wasmerio/wasmer.svg" alt="License" valign="middle"></a>
+</p>
 
 Wasmer is a Python library for executing WebAssembly binaries:
 
@@ -25,7 +23,7 @@ Wasmer is a Python library for executing WebAssembly binaries:
   * **Safe**: All calls to WebAssembly will be fast, but more
     importantly, completely safe and sandboxed.
 
-## Install
+# Install
 
 To install the `wasmer` Python library, just run this command in your
 shell:
@@ -39,7 +37,7 @@ coming.
 
 [View the `wasmer` on Pypi](https://pypi.org/project/wasmer/).
 
-## Example
+# Example
 
 There is a toy program in `examples/simple.rs`, written in Rust (or
 any other language that compiles to WebAssembly):
@@ -74,9 +72,9 @@ And then, finally, enjoy by running:
 $ python examples/simple.py
 ```
 
-## API of the `wasm` extension/module
+# API of the `wasmer` extension/module
 
-### The `Instance` class
+## The `Instance` class
 
 Instantiates a WebAssembly module represented by bytes, and calls
 exported functions on it:
@@ -112,7 +110,7 @@ view = instance.memory.uint8_view()
 
 See below for more information.
 
-### The `Value` class
+## The `Value` class
 
 Builds WebAssembly values with the correct types:
 
@@ -142,7 +140,7 @@ The `__repr__` method allows to get a string representation of a
 print(repr(value_i32)) # I32(7)
 ```
 
-### The `Memory` class
+## The `Memory` class
 
 A WebAssembly instance has its own memory, represented by the `Memory`
 class. It is accessible by the `Instance.memory` getter.
@@ -161,7 +159,7 @@ view = instance.memory.uint8_view(offset)
 print(view[0])
 ```
 
-#### The `*Array` classes
+### The `*Array` classes
 
 These classes represent views over a memory buffer of an instance.
 
@@ -284,7 +282,7 @@ assert int16[1] == 0b01000000_00010000
 assert int32[0] == 0b01000000_00010000_00000100_00000001
 ```
 
-### The `validate` function
+## The `validate` function
 
 Checks whether the given bytes represent valid WebAssembly bytes:
 
@@ -299,7 +297,7 @@ if not validate(wasm_bytes):
 
 This function returns a boolean.
 
-## Development
+# Development
 
 The Python extension is written in Rust, with [`rust-cpython`] and
 [`pyo3-pack`].
@@ -337,7 +335,7 @@ $ just inspect
 
 (Yes, you need [`just`]).
 
-## Testing
+# Testing
 
 Once the extension is compiled and installed (just run `just rust`),
 run the following command:
@@ -346,7 +344,7 @@ run the following command:
 $ just test
 ```
 
-## What is WebAssembly?
+# What is WebAssembly?
 
 Quoting [the WebAssembly site](https://webassembly.org/):
 
@@ -367,7 +365,7 @@ About safety:
 > WebAssembly describes a memory-safe, sandboxed [execution
 > environment](https://webassembly.org/docs/semantics/#linear-memory) […].
 
-## License
+# License
 
 The entire project is under the BSD-3-Clause license. Please read [the
 `LICENSE` file][license].
