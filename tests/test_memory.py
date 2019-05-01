@@ -120,7 +120,7 @@ def test_hello_world():
         string += chr(memory[nth])
         nth += 1
 
-    assert string, 'Hello ==  World!'
+    assert string, 'Hello, World!'
 
 def test_memory_views_share_the_same_buffer():
     instance = Instance(TEST_BYTES)
