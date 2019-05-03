@@ -1,3 +1,4 @@
+import wasmer
 from wasmer import Instance, Uint8Array, Value, validate
 import inspect
 import os
@@ -12,6 +13,9 @@ def value_with_type(value):
 
 def test_is_a_class():
     assert inspect.isclass(Instance)
+
+def test_version():
+    assert isinstance(wasmer.__version__, str)
 
 def test_can_construct():
     assert isinstance(Instance(TEST_BYTES), Instance)
