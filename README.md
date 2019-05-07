@@ -315,7 +315,7 @@ Then, simply run:
 
 ```sh
 $ .env/bin/activate
-$ just rust
+$ just build
 $ just python-run examples/simple.py
 ```
 
@@ -337,7 +337,7 @@ $ just inspect
 
 # Testing
 
-Once the extension is compiled and installed (just run `just rust`),
+Once the extension is compiled and installed (just run `just build`),
 run the following command:
 
 ```sh

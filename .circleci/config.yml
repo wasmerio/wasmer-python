@@ -69,7 +69,7 @@ jobs:
             export PATH="/usr/local/cargo/bin:$PATH"
             export PATH="/home/circleci/.pyenv/versions/3.7.3/bin/:$PATH"
             source .env/bin/activate
-            just rust
+            just build
 
       # Run the extension test suites.
       - run:

@@ -15,8 +15,8 @@ wakeup:
 sleep:
 	deactivate
 
-# Compile and install the Rust library.
-rust:
+# Compile and install the Python library.
+build:
 	export PYTHON_SYS_EXECUTABLE=$(which python3)
 	cargo check
 	pyo3-pack develop --binding_crate pyo3 --release --strip
