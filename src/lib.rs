@@ -18,6 +18,7 @@ use value::Value;
 #[pymodule]
 fn wasmer(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_wrapped(wrap_pyfunction!(validate))?;
+    module.add("__version__", env!("CARGO_PKG_VERSION"))?;
     module.add_class::<Instance>()?;
     module.add_class::<Value>()?;
     module.add_class::<memory::Memory>()?;
