@@ -138,7 +138,9 @@ workflows:
       - build-and-test:
           filters:
             branches:
-              only: /.*/
+              only:
+                - trying
+                - staging
             tags:
               only: /.*/
       # Run the `deploy` job only for all tags, not for branches.
