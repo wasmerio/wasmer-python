@@ -1,5 +1,10 @@
-//! The `Instance` Python object to build WebAssembly instances.
-
+//! The `Instance` Python object to build WebAssembly instances,
+//! used via `wasmer_runtime.Instance`
+//!
+//! *Reminder*:
+//! > `WebAssembly.Instance` object is a stateful, executable instance of a
+//! > `WebAssembly.Module`. Instance objects contain all the Exported
+//! > WebAssembly functions that allow calling into WebAssembly code
 use crate::{memory::Memory, value::Value};
 use pyo3::{
     class::basic::PyObjectProtocol,
@@ -13,16 +18,25 @@ use wasmer_runtime::{self as runtime, imports, instantiate, Export, Value as Was
 use wasmer_runtime_core::types::Type;
 
 #[pyclass]
+/// Representation of an exported single function leveraging `pyo3`.
+/// It is implemented using `pyo3` Python class that defines __call__
 pub struct ExportedFunction {
-    function_name: String,
+    /// Rust References Counting, for attached `wasmer_runtime.Instance`
     instance: Rc<runtime::Instance>,
+    /// Functions names as exported in the Python namespace
+    function_name: String,
 }
 
 #[pymethods]
+/// Methods attached to the single function
 impl ExportedFunction {
     #[call]
     #[args(arguments = "*")]
+    /// Function class shall declare __call__.
+    /// `pyo3::prelude::Python` is a zero-size marker struct that is required
+    /// for most Python operations; indicates that the GIL is currently held.
     fn __call__(&self, py: Python, arguments: &PyTuple) -> PyResult<PyObject> {
+        // retrieve the function representation that can be called safely
         let function = match self.instance.dyn_func(&self.function_name) {
             Ok(function) => function,
             Err(_) => {
@@ -33,8 +47,10 @@ impl ExportedFunction {
             }
         };
 
+        // process function signature in `wasmer_runtime::DynFunc`
         let signature = function.signature();
         let parameters = signature.params();
+        // match number of arguments against signature
         let number_of_parameters = parameters.len() as isize;
         let number_of_arguments = arguments.len() as isize;
         let diff: isize = number_of_parameters - number_of_arguments;
@@ -54,8 +70,10 @@ impl ExportedFunction {
             )));
         }
 
+        // safely allocate arguments as `wasmer_runtime.Value`
         let mut function_arguments = Vec::<WasmValue>::with_capacity(number_of_parameters as usize);
 
+        // cast from `PyAny` to `T` using `pyo3::types::PyAny::downcast_ref`
         for (parameter, argument) in parameters.iter().zip(arguments.iter()) {
             let value = match argument.downcast_ref::<Value>() {
                 Ok(value) => value.value.clone(),
@@ -78,6 +96,7 @@ impl ExportedFunction {
             function_arguments.push(value);
         }
 
+        // finally, call the function with `wasmer_runtime::DynFunc::call`
         let results = match function.call(function_arguments.as_slice()) {
             Ok(results) => results,
             Err(e) => return Err(RuntimeError::py_err(format!("{}", e))),
@@ -93,13 +112,20 @@ impl ExportedFunction {
 }
 
 #[pyclass]
+/// Representation of exported **collection** of functions,
+/// equivalent to a Python module-namespace
 pub struct ExportedFunctions {
+    /// Rust References Counting, for attached `wasmer_runtime.Instance`
     instance: Rc<runtime::Instance>,
+    /// Functions names as exported in the Python namespace
     functions: Vec<String>,
 }
 
 #[pyproto]
+/// A `pyo3` protocol to handle the ExportedFunctions namespace.
 impl PyObjectProtocol for ExportedFunctions {
+    /// Return the right function with a dedicated `wasmer_runtime.Instance`
+    /// Comparable to `module.function_name` in Python
     fn __getattr__(&self, key: String) -> PyResult<ExportedFunction> {
         if self.functions.contains(&key) {
             Ok(ExportedFunction {
@@ -120,14 +146,24 @@ impl PyObjectProtocol for ExportedFunctions {
 }
 
 #[pyclass]
+/// A struct that binds a collection of exported functions (a namespace) to
+/// `wasmer_runtime.Memory`
+/// as used from Python code, see example:
+/// ```python
+/// from wasmer import Instance
+/// instance = Instance(wasm_bytes)
+/// ```
 pub struct Instance {
+    /// PyO3 safe wrapper around `ffi::PyObject`, for exported functions
     exports: Py<ExportedFunctions>,
+    /// Pyo3 safe wrapper around `ffi::PyObject`, for memory
     memory: Py<Memory>,
 }
 
 #[pymethods]
 impl Instance {
     #[new]
+    /// Constructor. Take a look to `pyo3::type_object::PyRawObject`
     fn new(object: &PyRawObject, bytes: &PyAny) -> PyResult<()> {
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
         let imports = imports! {};
@@ -158,6 +194,7 @@ impl Instance {
             })
             .ok_or_else(|| RuntimeError::py_err("No memory exported."))?;
 
+        // initialize the new `ffi::PyObject`, with the required namespace
         object.init({
             Self {
                 exports: Py::new(
@@ -175,11 +212,13 @@ impl Instance {
     }
 
     #[getter]
+    /// Return exported functions bound to `wasmer_runtime.Memory`
     fn exports(&self) -> PyResult<&Py<ExportedFunctions>> {
         Ok(&self.exports)
     }
 
     #[getter]
+    /// Return the `wasmer_runtime.Memory` object allocated for namespace
     fn memory(&self) -> PyResult<&Py<Memory>> {
         Ok(&self.memory)
     }
