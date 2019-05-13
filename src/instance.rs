@@ -111,12 +111,16 @@ impl ExportedFunction {
         };
 
         // Map the WebAssembly first result to a Python value.
-        Ok(match results[0] {
-            WasmValue::I32(result) => result.to_object(py),
-            WasmValue::I64(result) => result.to_object(py),
-            WasmValue::F32(result) => result.to_object(py),
-            WasmValue::F64(result) => result.to_object(py),
-        })
+        if results.len() > 0 {
+            Ok(match results[0] {
+                WasmValue::I32(result) => result.to_object(py),
+                WasmValue::I64(result) => result.to_object(py),
+                WasmValue::F32(result) => result.to_object(py),
+                WasmValue::F64(result) => result.to_object(py),
+            })
+        } else {
+            Ok(py.None())
+        }
     }
 }
 
