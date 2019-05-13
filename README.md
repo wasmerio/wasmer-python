@@ -85,7 +85,7 @@ from wasmer import Instance
 # Get the Wasm module as bytes.
 wasm_bytes = open('my_program.wasm', 'rb').read()
 
-# Instantiates the Wasm module.
+# Instantiate the Wasm module.
 instance = Instance(wasm_bytes)
 
 # Call a function on it.
@@ -193,7 +193,7 @@ from wasmer import Instance
 # Get the Wasm module as bytes.
 wasm_bytes = open('my_program.wasm', 'rb').read()
 
-# Instantiates the Wasm module.
+# Instantiate the Wasm module.
 instance = Instance(wasm_bytes)
 
 # Call a function that returns a pointer to a string for instance.

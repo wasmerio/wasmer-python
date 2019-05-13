@@ -42,3 +42,6 @@ pub extern fn bool_casted_to_i32() -> bool {
 pub extern fn string() -> *const u8 {
     b"Hello, World!\0".as_ptr()
 }
+
+#[no_mangle]
+pub extern fn void() {}

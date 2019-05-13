@@ -65,6 +65,9 @@ def test_call_bool_casted_to_i32():
 def test_call_string():
     assert Instance(TEST_BYTES).exports.string() == 1048576
 
+def test_call_void():
+    assert Instance(TEST_BYTES).exports.void() == None
+
 def test_validate():
     assert validate(TEST_BYTES)
 
