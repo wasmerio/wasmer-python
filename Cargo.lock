@@ -643,14 +643,14 @@ dependencies = [
 
 [[package]]
 name = "pyo3"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "inventory 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.2.55 (registry+https://github.com/rust-lang/crates.io-index)",
  "mashup 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.2.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "pyo3cls 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pyo3cls 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 1.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "spin 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "version_check 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -658,7 +658,7 @@ dependencies = [
 
 [[package]]
 name = "pyo3-derive-backend"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -668,11 +668,11 @@ dependencies = [
 
 [[package]]
 name = "pyo3cls"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "pyo3-derive-backend 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pyo3-derive-backend 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 0.6.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 0.15.34 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1066,7 +1066,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "wasmer"
 version = "0.2.0"
 dependencies = [
- "pyo3 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pyo3 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasmer-runtime 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasmer-runtime-core 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1284,9 +1284,9 @@ dependencies = [
 "checksum proc-macro-hack 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)" = "2c725b36c99df7af7bf9324e9c999b9e37d92c8f8caf106d82e1d7953218d2d8"
 "checksum proc-macro-hack-impl 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)" = "2b753ad9ed99dd8efeaa7d2fb8453c8f6bc3e54b97966d35f1bc77ca6865254a"
 "checksum proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)" = "cf3d2011ab5c909338f7887f4fc896d35932e29146c12c8d01da6b22a80ba759"
-"checksum pyo3 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "cb313941bd4d3f422151b2b2d0d2d9e86f308c2ba2d08cf0375e7cfed202e7e8"
-"checksum pyo3-derive-backend 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "783639e1c566f08b19e74956c3fff4d953c0c271b39de2db22a9102fbedbeab1"
-"checksum pyo3cls 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "c4f91eb8e5394cabd1219c29ac99f7a93103a0daf3a71df0f0b6d9c395d08a86"
+"checksum pyo3 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d09e6e2d3fa5ae1a8af694f865e03e763e730768b16e3097851ff0b7f2276086"
+"checksum pyo3-derive-backend 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d9d7ae8ab3017515cd7c82d88ce49b55e12a56c602dc69993e123da45c91b186"
+"checksum pyo3cls 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "c494f8161f5b73096cc50f00fbb90fe670f476cde5e59c1decff39b546d54f40"
 "checksum quick-error 1.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "9274b940887ce9addde99c4eee6b5c44cc494b182b97e73dc8ffdcb3397fd3f0"
 "checksum quote 0.6.12 (registry+https://github.com/rust-lang/crates.io-index)" = "faf4799c5d274f3868a4aae320a0a182cbd2baee377b378f080e16a23e9d80db"
 "checksum rand 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)" = "6d71dacdc3c88c1fde3885a3be3fbab9f35724e6ce99467f7d9c5026132184ca"
