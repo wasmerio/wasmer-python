@@ -119,13 +119,11 @@ impl Module {
                     runtime_core::load_cache_with(artifact, &runtime::default_compiler())
                 } {
                     Ok(module) => Ok(Py::new(py, Self { module })?),
-
                     Err(_) => Err(RuntimeError::py_err(
                         "Failed to compile the serialized module.",
                     )),
                 }
             }
-
             Err(_) => Err(RuntimeError::py_err("Failed to deserialize the module.")),
         }
     }
