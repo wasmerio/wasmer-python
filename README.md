@@ -110,6 +110,41 @@ view = instance.memory.uint8_view()
 
 See below for more information.
 
+## The `Module` class
+
+Compiles a sequence of bytes into a WebAssembly module. From here, it
+is possible to instantiate it:
+
+```python
+from wasmer import Module
+
+# Get the Wasm bytes.
+wasm_bytes = open('my_program.wasm', 'rb').read()
+
+# Compile the Wasm bytes into a Wasm module.
+module = Module(wasm_bytes)
+
+# Instantiate the Wasm module.
+instance = module.instantiate()
+
+# Call a function on it.
+result = instance.exports.sum(1, 2)
+
+print(result) # 3
+```
+
+The `Module.validate` static method check whether the given bytes
+represent valid WebAssembly bytes:
+
+```python
+from wasmer import Module
+
+wasm_bytes = open('my_program.wasm', 'rb').read()
+
+if not Module.validate(wasm_bytes):
+    print('The program seems corrupted.')
+```
+
 ## The `Value` class
 
 Builds WebAssembly values with the correct types:
@@ -281,21 +316,6 @@ assert int16[1] == 0b01000000_00010000
                      ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐
 assert int32[0] == 0b01000000_00010000_00000100_00000001
 ```
-
-## The `validate` function
-
-Checks whether the given bytes represent valid WebAssembly bytes:
-
-```python
-from wasmer import validate
-
-wasm_bytes = open('my_program.wasm', 'rb').read()
-
-if not validate(wasm_bytes):
-    print('The program seems corrupted.')
-```
-
-This function returns a boolean.
 
 # Development
 
