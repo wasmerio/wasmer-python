@@ -139,10 +139,10 @@ impl ExportedFunction {
 /// ```
 pub struct ExportedFunctions {
     /// The underlying Rust WebAssembly instance.
-    instance: Rc<runtime::Instance>,
+    pub(crate) instance: Rc<runtime::Instance>,
 
     /// Available exported function names from the WebAssembly module.
-    functions: Vec<String>,
+    pub(crate) functions: Vec<String>,
 }
 
 #[pyproto]
@@ -183,11 +183,11 @@ impl PyObjectProtocol for ExportedFunctions {
 pub struct Instance {
     /// All WebAssembly exported functions represented by an
     /// `ExportedFunctions` object.
-    exports: Py<ExportedFunctions>,
+    pub(crate) exports: Py<ExportedFunctions>,
 
     /// The WebAssembly exported memory represented by a `Memory`
     /// object.
-    memory: Py<Memory>,
+    pub(crate) memory: Py<Memory>,
 }
 
 #[pymethods]
