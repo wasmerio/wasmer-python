@@ -12,12 +12,12 @@ use pyo3::{
 };
 use std::rc::Rc;
 use wasmer_runtime::{self as runtime, imports, validate, Export};
+use wasmer_runtime_core::{self as runtime_core, cache::Artifact};
 
 #[pyclass]
 /// `Module` is a Python class that represents a WebAssembly module.
 pub struct Module {
     /// The underlying Rust WebAssembly module.
-    #[allow(unused)]
     module: runtime::Module,
 }
 
@@ -29,6 +29,8 @@ impl Module {
     fn new(object: &PyRawObject, bytes: &PyAny) -> PyResult<()> {
         // Read the bytes.
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
+
+        // Compile the module.
         let module = runtime::compile(bytes).map_err(|error| {
             RuntimeError::py_err(format!("Failed to compile the module:\n    {}", error))
         })?;
@@ -42,6 +44,8 @@ impl Module {
     // Instantiate the module into an `Instance` Python object.
     fn instantiate(&self, py: Python) -> PyResult<Py<Instance>> {
         let imports = imports! {};
+
+        // Instantiate the module.
         let instance = match self.module.instantiate(&imports) {
             Ok(instance) => Rc::new(instance),
             Err(e) => {
@@ -84,6 +88,44 @@ impl Module {
                 memory: Py::new(py, Memory { memory })?,
             },
         )?)
+    }
+
+    /// Serialize the module into Python bytes.
+    fn serialize<'p>(&self, py: Python<'p>) -> PyResult<&'p PyBytes> {
+        // Get the module artifact.
+        match self.module.cache() {
+            // Serialize the artifact.
+            Ok(artifact) => match artifact.serialize() {
+                Ok(serialized_artifact) => Ok(PyBytes::new(py, serialized_artifact.as_slice())),
+                Err(_) => Err(RuntimeError::py_err(
+                    "Failed to serialize the module artifact.",
+                )),
+            },
+            Err(_) => Err(RuntimeError::py_err("Failed to get the module artifact.")),
+        }
+    }
+
+    /// Deserialize Python bytes into a module instance.
+    #[staticmethod]
+    fn deserialize(bytes: &PyAny, py: Python) -> PyResult<Py<Module>> {
+        // Read the bytes.
+        let serialized_module = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
+
+        // Deserialize the artifact.
+        match Artifact::deserialize(serialized_module) {
+            Ok(artifact) => {
+                // Get the module from the artifact.
+                match unsafe {
+                    runtime_core::load_cache_with(artifact, &runtime::default_compiler())
+                } {
+                    Ok(module) => Ok(Py::new(py, Self { module })?),
+                    Err(_) => Err(RuntimeError::py_err(
+                        "Failed to compile the serialized module.",
+                    )),
+                }
+            }
+            Err(_) => Err(RuntimeError::py_err("Failed to deserialize the module.")),
+        }
     }
 
     /// Check that given bytes represent a valid WebAssembly module.

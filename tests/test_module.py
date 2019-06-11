@@ -28,3 +28,13 @@ def test_failed_to_compile():
 
 def test_instantiate():
     assert Module(TEST_BYTES).instantiate().exports.sum(1, 2) == 3
+
+def test_serialize():
+    assert type(Module(TEST_BYTES).serialize()) == bytes
+
+def test_deserialize():
+    serialized_module = Module(TEST_BYTES).serialize()
+    module = Module.deserialize(serialized_module)
+    del serialized_module
+
+    assert module.instantiate().exports.sum(1, 2) == 3
