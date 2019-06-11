@@ -1,5 +1,5 @@
 import wasmer
-from wasmer import Instance, Uint8Array, Value, validate
+from wasmer import Instance, Uint8Array, Value
 import inspect
 import os
 import pytest
@@ -67,12 +67,6 @@ def test_call_string():
 
 def test_call_void():
     assert Instance(TEST_BYTES).exports.void() == None
-
-def test_validate():
-    assert validate(TEST_BYTES)
-
-def test_validate_invalid():
-    assert not validate(INVALID_TEST_BYTES)
 
 def test_memory_view():
     assert isinstance(Instance(TEST_BYTES).memory.uint8_view(), Uint8Array)

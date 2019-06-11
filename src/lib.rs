@@ -1,25 +1,22 @@
 #![deny(warnings)]
 
-use pyo3::{
-    prelude::*,
-    types::{PyAny, PyBytes},
-    wrap_pyfunction, PyTryFrom,
-};
-use wasmer_runtime::validate as wasm_validate;
+use pyo3::prelude::*;
 
 mod instance;
 mod memory;
+mod module;
 mod value;
 
 use instance::Instance;
+use module::Module;
 use value::Value;
 
 /// This extension allows to manipulate and to execute WebAssembly binaries.
 #[pymodule]
 fn wasmer(_py: Python, module: &PyModule) -> PyResult<()> {
-    module.add_wrapped(wrap_pyfunction!(validate))?;
     module.add("__version__", env!("CARGO_PKG_VERSION"))?;
     module.add_class::<Instance>()?;
+    module.add_class::<Module>()?;
     module.add_class::<Value>()?;
     module.add_class::<memory::Memory>()?;
     module.add_class::<memory::view::Int16Array>()?;
@@ -30,16 +27,4 @@ fn wasmer(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_class::<memory::view::Uint8Array>()?;
 
     Ok(())
-}
-
-/// validate(bytes, /)
-/// --
-///
-/// Check a WebAssembly module is valid.
-#[pyfunction]
-pub fn validate(bytes: &PyAny) -> PyResult<bool> {
-    match <PyBytes as PyTryFrom>::try_from(bytes) {
-        Ok(bytes) => Ok(wasm_validate(bytes.as_bytes())),
-        _ => Ok(false),
-    }
 }
