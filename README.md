@@ -121,7 +121,7 @@ from wasmer import Module
 # Get the Wasm bytes.
 wasm_bytes = open('my_program.wasm', 'rb').read()
 
-# Compile the Wasm bytes into a Wasm module.
+# Compile the bytes into a Wasm module.
 module = Module(wasm_bytes)
 
 # Instantiate the Wasm module.
@@ -132,6 +132,38 @@ result = instance.exports.sum(1, 2)
 
 print(result) # 3
 ```
+
+The `Module.serialize` method and its complementary
+`Module.deserialize` static method help to respectively serialize and
+deserialize a compiled WebAssembly module, thus saving the compilation
+time for the next use:
+
+```python
+from wasmer import Module
+
+# Get the Wasm bytes.
+wasm_bytes = open('my_program.wasm', 'rb').read()
+
+# Compile the bytes into a Wasm module.
+module1 = Module(wasm_bytes)
+
+# Serialize the module.
+serialized_module = module1.serialize()
+
+# Let's forget about the module for this example.
+del module1
+
+# Deserialize the module.
+module2 = Module.deserialize(serialized_module)
+
+# Instantiate and use it.
+result = module2.instantiate().exports.sum(1, 2)
+
+print(result) # 3
+```
+
+A serialized module is a sequence of bytes. They can be saved in any
+storage.
 
 The `Module.validate` static method check whether the given bytes
 represent valid WebAssembly bytes:
