@@ -8,6 +8,7 @@ readme = "README.md"
 repository = "https://github.com/wasmerio/python-ext-wasm"
 keywords = ["python", "extension", "webassembly"]
 categories = ["wasm"]
+build = "build.rs"
 
 [lib]
 name = "wasmer"

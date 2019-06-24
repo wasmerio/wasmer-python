@@ -17,6 +17,9 @@ def test_is_a_class():
 def test_version():
     assert isinstance(wasmer.__version__, str)
 
+def test_core_version():
+    assert isinstance(wasmer.__core_version__, str)
+
 def test_can_construct():
     assert isinstance(Instance(TEST_BYTES), Instance)
 
