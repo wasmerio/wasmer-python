@@ -8,10 +8,12 @@ instance = Instance(wasm_bytes)
 pointer = instance.exports.return_hello()
 
 memory = instance.memory.uint8_view(pointer)
+memory_length = len(memory)
+
 nth = 0;
 string = '';
 
-while True:
+while nth < memory_length:
     char = memory[nth]
 
     if char == 0:
