@@ -6,7 +6,7 @@ use pyo3::{
     prelude::*,
     types::{PyAny, PySlice},
 };
-use std::{mem::size_of, rc::Rc};
+use std::{cmp::min, mem::size_of, rc::Rc};
 use wasmer_runtime::memory::Memory;
 
 macro_rules! memory_view {
@@ -49,7 +49,7 @@ macro_rules! memory_view {
                         )));
                     }
 
-                    (offset + slice.start as usize)..(offset + slice.stop as usize)
+                    (offset + slice.start as usize)..(min(offset + slice.stop as usize, view.len()))
                 } else if let Ok(index) = index.extract::<isize>() {
                     if index < 0 {
                         return Err(IndexError::py_err(
