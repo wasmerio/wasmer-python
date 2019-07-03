@@ -28,11 +28,12 @@ output_pointer = instance.exports.greet(input_pointer)
 
 # Read the result of the `greet` function.
 memory = instance.memory.uint8_view(output_pointer)
+memory_length = len(memory)
 
 output = []
 nth = 0
 
-while True:
+while nth < memory_length:
     byte = memory[nth]
 
     if byte == 0:

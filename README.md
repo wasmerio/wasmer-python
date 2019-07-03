@@ -268,12 +268,13 @@ pointer = instance.exports.return_string()
 
 # Get the memory view, with the offset set to `pointer` (default is 0).
 memory = instance.memory.uint8_view(pointer)
+memory_length = len(memory)
 
 # Read the string pointed by the pointer.
 nth = 0;
 string = ''
 
-while True:
+while nth < memory_length:
     char = memory[nth]
     
     if char == 0:
