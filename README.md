@@ -212,6 +212,13 @@ print(repr(value_i32)) # I32(7)
 A WebAssembly instance has its own memory, represented by the `Memory`
 class. It is accessible by the `Instance.memory` getter.
 
+The `Memory.grow` method allows to grow the memory by a number of
+pages (of 65kb each).
+
+```python
+instance.memory.grow(1)
+```
+
 The `Memory` class offers methods to create views of the memory
 internal buffer, e.g. `uint8_view`, `int8_view`, `uint16_view`
 etc. All these methods accept one argument: `offset`, to subset the

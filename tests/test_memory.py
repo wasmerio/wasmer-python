@@ -140,3 +140,28 @@ def test_memory_views_share_the_same_buffer():
     assert int16[0] == 0b00000100_00000001
     assert int16[1] == 0b01000000_00010000
     assert int32[0] == 0b01000000_00010000_00000100_00000001
+
+def test_memory_grow():
+    instance = Instance(TEST_BYTES)
+    memory = instance.memory
+    int8 = memory.int8_view()
+
+    old_memory_length = len(int8)
+
+    assert old_memory_length == 1114112
+
+    memory.grow(1)
+
+    memory_length = len(int8)
+
+    assert memory_length == 1179648
+    assert memory_length - old_memory_length == 65536
+
+def test_memory_grow_too_much():
+    with pytest.raises(RuntimeError) as context_manager:
+        Instance(TEST_BYTES).memory.grow(100000)
+
+    exception = context_manager.value
+    assert str(exception) == (
+        'Failed to grow the memory: Grow Error: Failed to add pages because would exceed maximum number of pages. Left: 17, Right: 100000, Pages added: 100017.'
+    )

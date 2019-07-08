@@ -1,8 +1,9 @@
 //! Memory API of an WebAssembly instance.
 
-use pyo3::prelude::*;
+use pyo3::{exceptions::RuntimeError, prelude::*};
 use std::rc::Rc;
 use wasmer_runtime::Memory as WasmMemory;
+use wasmer_runtime_core::units::Pages;
 
 pub mod view;
 
@@ -77,5 +78,12 @@ impl Memory {
                 offset,
             },
         )
+    }
+
+    fn grow(&self, number_of_pages: u32) -> PyResult<u32> {
+        self.memory
+            .grow(Pages(number_of_pages))
+            .map(|previous_pages| previous_pages.0)
+            .map_err(|err| RuntimeError::py_err(format!("Failed to grow the memory: {}.", err)))
     }
 }
