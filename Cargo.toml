@@ -15,8 +15,8 @@ name = "wasmer"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer-runtime = "0.4.2"
-wasmer-runtime-core = "0.4.2"
+wasmer-runtime = "0.5.5"
+wasmer-runtime-core = "0.5.5"
 pyo3 = { version = "0.7.0", features = ["extension-module"] }
 
 [package.metadata.pyo3-pack]
