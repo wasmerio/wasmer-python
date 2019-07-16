@@ -1,6 +1,6 @@
 [package]
 name = "wasmer"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Ivan Enderlin <ivan.enderlin@hoa-project.net>"]
 edition = "2018"
 description = "Python extension to run WebAssembly binaries"
