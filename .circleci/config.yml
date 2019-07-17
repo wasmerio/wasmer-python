@@ -70,6 +70,7 @@ jobs:
             export PATH="/home/circleci/.pyenv/versions/3.7.3/bin/:$PATH"
             source .env/bin/activate
             just build
+            just wasmer_any
 
       # Run the extension test suites.
       - run:
@@ -124,7 +125,8 @@ jobs:
             export PATH="/home/circleci/.pyenv/versions/3.6.8/bin/:$PATH"
             export PATH="/home/circleci/.pyenv/versions/3.5.7/bin/:$PATH"
             source .env/bin/activate
-            pyo3-pack publish -i python3.7 python3.6 python3.5 -u wasmer
+            just wasmer_any
+            just publish
 
 
 # List of workflows.

@@ -37,6 +37,15 @@ benchmark:
 inspect:
 	@python -c "help('wasmer')"
 
+# Create a distribution of wasmer that can be installed
+# anywhere (it will fail on import)
+wasmer_any:
+	mkdir -p ./target/wheels/
+	cd wasmer-any && pip3 wheel . -w ../target/wheels/
+
+publish:
+	pyo3-pack publish -i python3.7 python3.6 python3.5 -u wasmer
+
 # Local Variables:
 # mode: makefile
 # End:
