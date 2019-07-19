@@ -27,11 +27,11 @@ python-run file='':
 
 # Run the tests.
 test:
-	@py.test tests
+	@py.test -v tests
 
-# Run the benchmarks.
-benchmark:
-	@py.test benchmarks
+# Run one or more benchmarks.
+benchmark benchmark-filename='':
+	@py.test benchmarks/{{benchmark-filename}}
 
 # Inspect the `python-ext-wasm` extension.
 inspect:

@@ -9,19 +9,15 @@ instance = Instance(wasm_bytes)
 
 # Set the subject to greet.
 subject = bytes('Wasmer 🐍', 'utf-8')
-length_of_subject = len(subject)
+length_of_subject = len(subject) + 1
 
 # Allocate memory for the subject, and get a pointer to it.
 input_pointer = instance.exports.allocate(length_of_subject)
 
 # Write the subject into the memory.
 memory = instance.memory.uint8_view(input_pointer)
-
-for nth in range(0, length_of_subject):
-    memory[nth] = subject[nth]
-
-# C-string terminates by NULL.
-memory[length_of_subject] = 0
+memory[0:length_of_subject] = subject
+memory[length_of_subject] = 0 # C-string terminates by NULL.
 
 # Run the `greet` function. Give the pointer to the subject.
 output_pointer = instance.exports.greet(input_pointer)

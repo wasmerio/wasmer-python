@@ -2,11 +2,11 @@
 
 use pyo3::{
     class::PyMappingProtocol,
-    exceptions::{IndexError, ValueError},
+    exceptions::{IndexError, RuntimeError, ValueError},
     prelude::*,
-    types::{PyAny, PySlice},
+    types::{PyAny, PyInt, PyLong, PySequence, PySlice},
 };
-use std::{cmp::min, mem::size_of, rc::Rc};
+use std::{cmp::min, mem::size_of, ops::Range, rc::Rc};
 use wasmer_runtime::memory::Memory;
 
 macro_rules! memory_view {
@@ -27,10 +27,14 @@ macro_rules! memory_view {
 
         #[pyproto]
         impl PyMappingProtocol for $class_name {
+            /// Returns the length of the memory view.
             fn __len__(&self) -> PyResult<usize> {
                 Ok(self.memory.view::<$wasm_type>()[self.offset..].len() / size_of::<$wasm_type>())
             }
 
+            /// Returns one or more values from the memory view.
+            ///
+            /// The `index` can be either a slice or an integer.
             fn __getitem__(&self, index: &PyAny) -> PyResult<PyObject> {
                 let view = self.memory.view::<$wasm_type>();
                 let offset = self.offset;
@@ -86,28 +90,103 @@ macro_rules! memory_view {
                 }
             }
 
-            fn __setitem__(&mut self, index: isize, value: u8) -> PyResult<()> {
+            /// Sets one or more values in the memory view.
+            ///
+            /// The `index` and `value` can only be of type slice and
+            /// list, or integer and integer.
+            fn __setitem__(&mut self, index: &PyAny, value: &PyAny) -> PyResult<()> {
                 let offset = self.offset;
-                let view = self.memory.view::<u8>();
+                let view = self.memory.view::<$wasm_type>();
 
-                if index < 0 {
-                    return Err(IndexError::py_err(
-                        "Out of bound: Index cannot be negative.",
-                    ));
-                }
+                if let (Ok(slice), Ok(values)) = (
+                    index.cast_as::<PySlice>(),
+                    value
+                        .cast_as::<PySequence>()
+                        .map_err(|_| {
+                            RuntimeError::py_err(
+                                "Failed to downcast `value` to a Python sequence.",
+                            )
+                        })
+                        .and_then(|sequence| sequence.list()),
+                ) {
+                    let slice = slice.indices(view.len() as i64)?;
 
-                let index = index as usize;
+                    if slice.start >= slice.stop {
+                        return Err(IndexError::py_err(format!(
+                            "Slice `{}:{}` cannot be empty.",
+                            slice.start, slice.stop
+                        )));
+                    } else if slice.step < 1 {
+                        return Err(IndexError::py_err(format!(
+                            "Slice must have a positive step; given {}.",
+                            slice.step
+                        )));
+                    }
 
-                if view.len() <= offset + index {
-                    Err(IndexError::py_err(format!(
-                        "Out of bound: Absolute index {} is larger than the memory size {}.",
-                        offset + index,
-                        view.len()
-                    )))
-                } else {
-                    view[offset + index].set(value);
+                    let iterator = Range {
+                        start: slice.start,
+                        end: slice.stop,
+                    }
+                    .step_by(slice.step as usize);
+
+                    // Normally unreachable since the slice is bound
+                    // to the size of the memory view.
+                    if iterator.len() > view.len() {
+                        return Err(IndexError::py_err(format!(
+                            "Out of bound: The given key slice will write out of memory; memory length is {}, memory offset is {}, slice length is {}.",
+                            view.len(),
+                            offset,
+                            iterator.len()
+                        )));
+                    }
+
+                    for (index, value) in iterator.zip(values.iter()) {
+                        let index = index as usize;
+                        let value = value.extract::<$wasm_type>()?;
+
+                        view[offset + index].set(value);
+                    }
 
                     Ok(())
+                } else if let (Ok(index), Ok(value)) = (
+                    index
+                        .cast_as::<PyLong>()
+                        .map_err(|_| {
+                            RuntimeError::py_err(
+                                "Failed to downcast `index` to a Python long value.",
+                            )
+                        })
+                        .and_then(|pylong| pylong.extract::<isize>()),
+                    value
+                        .cast_as::<PyInt>()
+                        .map_err(|_| {
+                            RuntimeError::py_err(
+                                "Failed to downcast `value` to a Python int value.",
+                            )
+                        })
+                        .and_then(|pyint| pyint.extract::<$wasm_type>()),
+                ) {
+                    if index < 0 {
+                        return Err(IndexError::py_err(
+                            "Out of bound: Index cannot be negative.",
+                        ));
+                    }
+
+                    let index = index as usize;
+
+                    if view.len() <= offset + index {
+                        Err(IndexError::py_err(format!(
+                            "Out of bound: Absolute index {} is larger than the memory size {}.",
+                            offset + index,
+                            view.len()
+                        )))
+                    } else {
+                        view[offset + index].set(value);
+
+                        Ok(())
+                    }
+                } else {
+                    Err(RuntimeError::py_err("When setting data to the memory view, the index and the value can only have the following types: Either `int` and `int`, or `slice` and `sequence`."))
                 }
             }
         }
