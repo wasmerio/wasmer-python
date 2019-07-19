@@ -1,9 +1,6 @@
 from math import sqrt
 from ppci import wasm
-import inspect
 import os
-import pytest
-import sys
 import wasmer
 
 here = os.path.dirname(os.path.realpath(__file__))
