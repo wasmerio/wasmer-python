@@ -99,6 +99,37 @@ def test_get_invalid_index():
         'Only integers and slices are valid to represent an index.'
     )
 
+def test_set_single_value():
+    memory = Instance(TEST_BYTES).memory.uint8_view()
+
+    assert memory[7] == 0
+    memory[7] = 42
+    assert memory[7] == 42
+
+def test_set_list():
+    memory = Instance(TEST_BYTES).memory.uint8_view()
+
+    memory[7:12] = [1, 2, 3, 4, 5]
+    assert memory[7:12] == [1, 2, 3, 4, 5]
+
+def test_set_bytes():
+    memory = Instance(TEST_BYTES).memory.uint8_view()
+
+    memory[7:12] = bytes(b'abcde')
+    assert memory[7:12] == [97, 98, 99, 100, 101]
+
+def test_set_bytearray():
+    memory = Instance(TEST_BYTES).memory.uint8_view()
+
+    memory[7:12] = bytearray(b'abcde')
+    assert memory[7:12] == [97, 98, 99, 100, 101]
+
+def test_set_values_with_slice_and_step():
+    memory = Instance(TEST_BYTES).memory.uint8_view()
+
+    memory[7:12:2] = [1, 2, 3, 4, 5]
+    assert memory[7:12] == [1, 0, 2, 0, 3]
+    
 def test_set_out_of_range():
     with pytest.raises(IndexError) as context_manager:
         memory = Instance(TEST_BYTES).memory.uint8_view()
