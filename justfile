@@ -27,7 +27,7 @@ python-run file='':
 
 # Run the tests.
 test:
-	@py.test tests
+	@py.test -v tests
 
 # Run the benchmarks.
 benchmark:
