@@ -4,3 +4,5 @@
 /benchmarks/__pycache__/
 /target
 /tests/__pycache__/
+/wasmer-any/dist
+.DS_Store
