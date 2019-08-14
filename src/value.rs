@@ -38,6 +38,13 @@ impl Value {
             value: WasmValue::F64(value),
         })
     }
+
+    #[staticmethod]
+    fn v128(value: u128) -> PyResult<Self> {
+        Ok(Self {
+            value: WasmValue::V128(value),
+        })
+    }
 }
 
 #[pyproto]
