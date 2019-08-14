@@ -98,6 +98,9 @@ impl ExportedFunction {
                     Type::F64 => {
                         WasmValue::F64(argument.downcast_ref::<PyFloat>()?.extract::<f64>()?)
                     }
+                    Type::V128 => {
+                        WasmValue::V128(argument.downcast_ref::<PyLong>()?.extract::<u128>()?)
+                    }
                 },
             };
 
@@ -117,6 +120,7 @@ impl ExportedFunction {
                 WasmValue::I64(result) => result.to_object(py),
                 WasmValue::F32(result) => result.to_object(py),
                 WasmValue::F64(result) => result.to_object(py),
+                WasmValue::V128(result) => result.to_object(py),
             })
         } else {
             Ok(py.None())
