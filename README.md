@@ -195,10 +195,13 @@ value_f32 = Value.f32(7.42)
 
 # Float on 64-bits.
 value_f64 = Value.f64(7.42)
+
+# Integer on 128-bits.
+value_v128 = Value.v128(7)
 ```
 
-The `Value.[if](32|64)` static methods must be considered as static
-constructors.
+The `Value.([if](32|64)|v128)` static methods must be considered as
+static constructors.
 
 The `__repr__` method allows to get a string representation of a
 `Value` instance:
