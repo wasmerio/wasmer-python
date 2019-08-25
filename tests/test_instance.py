@@ -73,3 +73,11 @@ def test_call_void():
 
 def test_memory_view():
     assert isinstance(Instance(TEST_BYTES).memory.uint8_view(), Uint8Array)
+
+def test_getfullargspec():
+    i = Instance(TEST_BYTES)
+    assert isinstance(i.exports.sum.getfullargspec, str)
+
+def test_getargs():
+    i = Instance(TEST_BYTES)
+    assert isinstance(i.exports.sum.getargs, str)

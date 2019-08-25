@@ -1,7 +1,8 @@
 //! The `wasmer.Module` Python object to build WebAssembly modules.
 
 use crate::{
-    instance::{ExportedFunctions, Instance},
+    instance::Instance,
+    instance::exported::ExportedFunctions,
     memory::Memory,
 };
 use pyo3::{

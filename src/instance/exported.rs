@@ -1,27 +1,21 @@
-//! The `wasmer.Instance` Python object to build WebAssembly instances.
+//! The `ExportedFunction` and relative collection that encapsulate Wasmer
+//!  memory and instances.
 //!
-//! The `Instance` class has the following declaration:
-//!
-//! * The constructor reads bytes from its first parameter, and it
-//!   expects those bytes to represent a valid WebAssembly module,
-//! * The `exports` getter, to get exported functions from the
-//!   WebAssembly module, e.g. `instance.exports.sum(1, 2)` to call the
-//!   exported function `sum` with arguments `1` and `2`,
-//! * The `memory` getter, to get the exported memory (if any) from
-//!   the WebAssembly module, .e.g. `instance.memory.uint8_view()`, see
-//!   the `wasmer.Memory` class.
-
-use crate::{memory::Memory, value::Value};
+use crate::{
+    value::Value,
+    instance::inspect::InspectExported
+};
 use pyo3::{
     class::basic::PyObjectProtocol,
     exceptions::{LookupError, RuntimeError},
     prelude::*,
-    types::{PyAny, PyBytes, PyFloat, PyLong, PyTuple},
-    PyNativeType, PyTryFrom, ToPyObject,
+    types::{PyFloat, PyLong, PyTuple},
+    ToPyObject,
 };
 use std::rc::Rc;
-use wasmer_runtime::{self as runtime, imports, instantiate, Export, Value as WasmValue};
-use wasmer_runtime_core::types::Type;
+use wasmer_runtime::{self as runtime, Value as WasmValue};
+use wasmer_runtime_core::types::{ Type, FuncSig };
+use wasmer_runtime_core::instance::DynFunc;
 
 #[pyclass]
 /// `ExportedFunction` is a Python class that represents a WebAssembly
@@ -35,8 +29,40 @@ pub struct ExportedFunction {
     function_name: String,
 }
 
+/// see `crate::inspect::Inspect`
+impl InspectExported for ExportedFunction {
+    fn move_runtime_func_obj(&self) -> Result<DynFunc, PyErr> {
+        match self.instance.dyn_func(&self.function_name) {
+            Ok(function) => Ok(function),
+            Err(_) => {
+                return Err(RuntimeError::py_err(format!(
+                    "Function `{}` does not exist.",
+                    self.function_name
+                )))
+            }
+        }
+    }
+
+    fn signature(&self) -> String {
+        let func: &DynFunc = &self.move_runtime_func_obj().unwrap();
+        let sig: &FuncSig = func.signature();
+        format!("{}: {:?}", &self.function_name, sig)
+    }
+
+    fn params(&self) -> String {
+        let func: &DynFunc = &self.move_runtime_func_obj().unwrap();
+        let sig: &FuncSig = func.signature();
+        format!("{}: {:?}", &self.function_name, sig.params())
+    }
+
+}
+
 #[pymethods]
 /// Implement methods on the `ExportedFunction` Python class.
+///
+/// * ` __call__`
+/// * convenience methods: `get_runtime_func_obj`
+/// * introspection: `inspect_signature`, `inspect_arguments`
 impl ExportedFunction {
     #[call]
     #[args(arguments = "*")]
@@ -46,15 +72,7 @@ impl ExportedFunction {
     // `arguments` argument.
     fn __call__(&self, py: Python, arguments: &PyTuple) -> PyResult<PyObject> {
         // Get the exported function.
-        let function = match self.instance.dyn_func(&self.function_name) {
-            Ok(function) => function,
-            Err(_) => {
-                return Err(RuntimeError::py_err(format!(
-                    "Function `{}` does not exist.",
-                    self.function_name
-                )))
-            }
-        };
+        let function: DynFunc = self.move_runtime_func_obj().unwrap();
 
         // Check the given arguments match the exported function signature.
         let signature = function.signature();
@@ -126,6 +144,17 @@ impl ExportedFunction {
             Ok(py.None())
         }
     }
+
+    #[getter]
+    // On the blueprint of Python's `inpect.getfullargspec`
+    fn getfullargspec(&self) -> PyResult<String> {
+        Ok(self.signature())
+    }
+
+    #[getter]
+    fn getargs(&self) -> PyResult<String> {
+        Ok(self.params())
+    }
 }
 
 #[pyclass]
@@ -171,97 +200,5 @@ impl PyObjectProtocol for ExportedFunctions {
 
     fn __repr__(&self) -> PyResult<String> {
         Ok(format!("{:?}", self.functions))
-    }
-}
-
-#[pyclass]
-/// `Instance` is a Python class that represents a WebAssembly instance.
-///
-/// # Examples
-///
-/// ```python
-/// from wasmer import Instance
-///
-/// instance = Instance(wasm_bytes)
-/// ```
-pub struct Instance {
-    /// All WebAssembly exported functions represented by an
-    /// `ExportedFunctions` object.
-    pub(crate) exports: Py<ExportedFunctions>,
-
-    /// The WebAssembly exported memory represented by a `Memory`
-    /// object.
-    pub(crate) memory: Py<Memory>,
-}
-
-#[pymethods]
-/// Implement methods on the `Instance` Python class.
-impl Instance {
-    #[new]
-    /// The constructor instantiates a new WebAssembly instance basde
-    /// on WebAssembly bytes (represented by the Python bytes type).
-    fn new(object: &PyRawObject, bytes: &PyAny) -> PyResult<()> {
-        // Read the bytes.
-        let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
-
-        // Instantiate the WebAssembly module.
-        let imports = imports! {};
-        let instance = match instantiate(bytes, &imports) {
-            Ok(instance) => Rc::new(instance),
-            Err(e) => {
-                return Err(RuntimeError::py_err(format!(
-                    "Failed to instantiate the module:\n    {}",
-                    e
-                )))
-            }
-        };
-
-        let py = object.py();
-
-        // Collect the exported functions from the WebAssembly module.
-        let mut exported_functions = Vec::new();
-
-        for (export_name, export) in instance.exports() {
-            if let Export::Function { .. } = export {
-                exported_functions.push(export_name);
-            }
-        }
-
-        // Collect the exported memory from the WebAssembly module.
-        let memory = instance
-            .exports()
-            .find_map(|(_, export)| match export {
-                Export::Memory(memory) => Some(Rc::new(memory)),
-                _ => None,
-            })
-            .ok_or_else(|| RuntimeError::py_err("No memory exported."))?;
-
-        // Instantiate the `Instance` Python class.
-        object.init({
-            Self {
-                exports: Py::new(
-                    py,
-                    ExportedFunctions {
-                        instance: instance.clone(),
-                        functions: exported_functions,
-                    },
-                )?,
-                memory: Py::new(py, Memory { memory })?,
-            }
-        });
-
-        Ok(())
-    }
-
-    #[getter]
-    /// The `exports` getter.
-    fn exports(&self) -> PyResult<&Py<ExportedFunctions>> {
-        Ok(&self.exports)
-    }
-
-    #[getter]
-    /// The `memory` getter.
-    fn memory(&self) -> PyResult<&Py<Memory>> {
-        Ok(&self.memory)
     }
 }
