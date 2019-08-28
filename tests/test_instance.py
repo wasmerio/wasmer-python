@@ -75,9 +75,9 @@ def test_memory_view():
     assert isinstance(Instance(TEST_BYTES).memory.uint8_view(), Uint8Array)
 
 def test_getfullargspec():
-    i = Instance(TEST_BYTES)
-    assert isinstance(i.exports.sum.getfullargspec, str)
+    instance = Instance(TEST_BYTES)
+    assert instance.exports.sum.getfullargspec == "sum: FuncSig { params: [I32, I32], returns: [I32] }"
 
 def test_getargs():
-    i = Instance(TEST_BYTES)
-    assert isinstance(i.exports.sum.getargs, str)
+    instance = Instance(TEST_BYTES)
+    assert instance.exports.sum.getargs == "sum: [I32, I32]"

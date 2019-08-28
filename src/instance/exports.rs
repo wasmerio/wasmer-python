@@ -1,10 +1,9 @@
 //! The `ExportedFunction` and relative collection that encapsulate Wasmer
 //!  memory and instances.
 //!
-use crate::{
-    value::Value,
-    instance::inspect::InspectExported
-};
+
+use super::inspect::InspectExportedFunction;
+use crate::value::Value;
 use pyo3::{
     class::basic::PyObjectProtocol,
     exceptions::{LookupError, RuntimeError},
@@ -14,8 +13,8 @@ use pyo3::{
 };
 use std::rc::Rc;
 use wasmer_runtime::{self as runtime, Value as WasmValue};
-use wasmer_runtime_core::types::{ Type, FuncSig };
 use wasmer_runtime_core::instance::DynFunc;
+use wasmer_runtime_core::types::Type;
 
 #[pyclass]
 /// `ExportedFunction` is a Python class that represents a WebAssembly
@@ -29,8 +28,8 @@ pub struct ExportedFunction {
     function_name: String,
 }
 
-/// see `crate::inspect::Inspect`
-impl InspectExported for ExportedFunction {
+/// Implement the `InspectExportedFunction` trait.
+impl InspectExportedFunction for ExportedFunction {
     fn move_runtime_func_obj(&self) -> Result<DynFunc, PyErr> {
         match self.instance.dyn_func(&self.function_name) {
             Ok(function) => Ok(function),
@@ -44,25 +43,22 @@ impl InspectExported for ExportedFunction {
     }
 
     fn signature(&self) -> String {
-        let func: &DynFunc = &self.move_runtime_func_obj().unwrap();
-        let sig: &FuncSig = func.signature();
-        format!("{}: {:?}", &self.function_name, sig)
+        let function = &self.move_runtime_func_obj().unwrap();
+        let signature = function.signature();
+
+        format!("{}: {:?}", &self.function_name, signature)
     }
 
     fn params(&self) -> String {
-        let func: &DynFunc = &self.move_runtime_func_obj().unwrap();
-        let sig: &FuncSig = func.signature();
-        format!("{}: {:?}", &self.function_name, sig.params())
-    }
+        let function = &self.move_runtime_func_obj().unwrap();
+        let signature = function.signature();
 
+        format!("{}: {:?}", &self.function_name, signature.params())
+    }
 }
 
 #[pymethods]
 /// Implement methods on the `ExportedFunction` Python class.
-///
-/// * ` __call__`
-/// * convenience methods: `get_runtime_func_obj`
-/// * introspection: `inspect_signature`, `inspect_arguments`
 impl ExportedFunction {
     #[call]
     #[args(arguments = "*")]

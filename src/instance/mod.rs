@@ -10,18 +10,17 @@
 //! * The `memory` getter, to get the exported memory (if any) from
 //!   the WebAssembly module, .e.g. `instance.memory.uint8_view()`, see
 //!   the `wasmer.Memory` class.
-pub (crate) mod exported;
-pub (crate) mod inspect;
 
-use crate::{
-    memory::Memory,
-    instance::exported::ExportedFunctions
-};
+pub(crate) mod exports;
+pub(crate) mod inspect;
+
+use crate::memory::Memory;
+use exports::ExportedFunctions;
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
     types::{PyAny, PyBytes},
-    PyNativeType, PyTryFrom
+    PyNativeType, PyTryFrom,
 };
 use std::rc::Rc;
 use wasmer_runtime::{imports, instantiate, Export};
