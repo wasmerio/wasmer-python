@@ -72,6 +72,8 @@ And then, finally, enjoy by running:
 $ python examples/simple.py
 ```
 
+For a soft introduction about how different languages compile to Wasm, it is possible to give it a try at [WebAssembly Studio](https://webassembly.studio).
+
 # API of the `wasmer` extension/module
 
 ## The `Instance` class
