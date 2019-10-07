@@ -80,13 +80,13 @@ macro_rules! memory_view {
                 let py = gil.python();
 
                 if range.end - range.start == 1 {
-                    Ok(view[range.start].get().into_object(py))
+                    Ok(view[range.start].get().into_py(py))
                 } else {
                     Ok(view[range]
                         .iter()
                         .map(|cell| cell.get())
                         .collect::<Vec<$wasm_type>>()
-                        .into_object(py))
+                        .into_py(py))
                 }
             }
 
