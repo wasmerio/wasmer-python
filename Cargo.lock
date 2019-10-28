@@ -612,7 +612,7 @@ dependencies = [
 
 [[package]]
 name = "pyo3"
-version = "0.8.1"
+version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "indoc 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -621,7 +621,7 @@ dependencies = [
  "libc 0.2.62 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "paste 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "pyo3cls 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pyo3cls 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 1.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 1.0.41 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -632,7 +632,7 @@ dependencies = [
 
 [[package]]
 name = "pyo3-derive-backend"
-version = "0.8.1"
+version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -642,11 +642,11 @@ dependencies = [
 
 [[package]]
 name = "pyo3cls"
-version = "0.8.1"
+version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "pyo3-derive-backend 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pyo3-derive-backend 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -943,7 +943,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "wasmer"
 version = "0.3.0"
 dependencies = [
- "pyo3 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pyo3 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasmer-runtime 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasmer-runtime-core 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1181,9 +1181,9 @@ dependencies = [
 "checksum proc-macro-hack 0.5.10 (registry+https://github.com/rust-lang/crates.io-index)" = "114cdf1f426eb7f550f01af5f53a33c0946156f6814aec939b3bd77e844f9a9d"
 "checksum proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)" = "cf3d2011ab5c909338f7887f4fc896d35932e29146c12c8d01da6b22a80ba759"
 "checksum proc-macro2 1.0.5 (registry+https://github.com/rust-lang/crates.io-index)" = "90cf5f418035b98e655e9cdb225047638296b862b42411c4e45bb88d700f7fc0"
-"checksum pyo3 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)" = "a00f96312ebe4082db7d93ad062df1818f597660002541c1bbae6752ec583244"
-"checksum pyo3-derive-backend 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)" = "1a7caa60cb986fca5b488e29d078fb25ae228e01dab080b855168ce061bbef0a"
-"checksum pyo3cls 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)" = "a5ccfa624ed9b5d805079f1ad64b3f1de5d551a946d4cf494f1f032b5572d39f"
+"checksum pyo3 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)" = "e00968c74d07a0d2f18ce7a7594b1baedb1dfe2c56b4f32a74c4ea7548f37468"
+"checksum pyo3-derive-backend 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)" = "e458cac2fb0ffe261e46b5a3c254daba5e1b0fdb6955dbf9cb7286be0053659a"
+"checksum pyo3cls 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)" = "cf4a59e5c95f7a355d3f471e9e97a72bdd9bd355686f2e069748773ffb4bbc42"
 "checksum quick-error 1.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "9274b940887ce9addde99c4eee6b5c44cc494b182b97e73dc8ffdcb3397fd3f0"
 "checksum quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)" = "6ce23b6b870e8f94f81fb0a363d65d86675884b34a09043c81e5562f11c1f8e1"
 "checksum quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "053a8c8bcc71fcce321828dc897a98ab9760bef03a4fc36693c231e5b3216cfe"
