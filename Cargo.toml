@@ -15,9 +15,9 @@ name = "wasmer"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer-runtime = "0.8.0"
-wasmer-runtime-core = "0.8.0"
-pyo3 = { version = "0.8.1", features = ["extension-module"] }
+wasmer-runtime = "0.10"
+wasmer-runtime-core = "0.10"
+pyo3 = { version = "0.8", features = ["extension-module"] }
 
 [package.metadata.pyo3-pack]
 classifier = [
