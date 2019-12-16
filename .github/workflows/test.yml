@@ -60,8 +60,7 @@ jobs:
         shell: bash
         run: |
           export PATH="$HOME/.pyenv/bin:$PATH"
-          VERSIONS=('3.8.0')
-          #VERSIONS=('3.5.9' '3.6.9' '3.7.5' '3.8.0')
+          VERSIONS=('3.5.9' '3.6.9' '3.7.5' '3.8.0')
 
           for version in ${VERSIONS[*]}; do
               test -d $HOME/.pyenv/versions/${version}/bin || pyenv install ${version};
