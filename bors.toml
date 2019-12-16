@@ -1,4 +1,6 @@
-status = [ "ci/circleci: build-and-test" ]
+status = [
+    "Test%",
+]
 required_approvals = 0
 timeout_sec = 900
 delete_merged_branches = true 
