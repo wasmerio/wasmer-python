@@ -31,6 +31,12 @@ build:
 	cargo check
 	pyo3-pack develop --binding_crate pyo3 --release --strip
 
+# Create a distribution of wasmer that can be installed
+# anywhere (it will fail on import)
+build-any:
+	mkdir -p ./target/wheels/
+	cd wasmer-any && pip3 wheel . -w ../target/wheels/
+
 # Run Python.
 python-run file='':
 	@python {{file}}
@@ -47,14 +53,8 @@ benchmark benchmark-filename='':
 inspect:
 	@python -c "help('wasmer')"
 
-# Create a distribution of wasmer that can be installed
-# anywhere (it will fail on import)
-wasmer_any:
-	mkdir -p ./target/wheels/
-	cd wasmer-any && pip3 wheel . -w ../target/wheels/
-
 publish:
-	pyo3-pack publish -i python3.7 python3.6 python3.5 -u wasmer
+	pyo3-pack publish -i python3.8 python3.7 python3.6 python3.5 -u wasmer
 
 # Local Variables:
 # mode: makefile
