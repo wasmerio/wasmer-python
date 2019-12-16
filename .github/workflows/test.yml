@@ -57,11 +57,8 @@ jobs:
           export PATH="$HOME/.pyenv/bin:$PATH"
           VERSIONS=('3.5.9', '3.6.9', '3.7.5', '3.8.1')
 
-          eval "$(pyenv init -)"
-          eval "$(pyenv virtualenv-init -)"
-
           for version in ${VERSIONS[*]}; do
-              pyenv install --list | grep $version;
+              pyenv install --list | grep $version
               test -d $HOME/.pyenv/versions/${version}/bin || pyenv install ${version};
           done
 
