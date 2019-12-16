@@ -13,7 +13,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
       # As soon as one job fails in the matrix, all the other
       # in-progress jobs are canceled.
-      fail-fast: true
+      fail-fast: false
 
     runs-on: ${{ matrix.os }}
 
