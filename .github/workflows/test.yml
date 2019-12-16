@@ -61,8 +61,8 @@ jobs:
           eval "$(pyenv virtualenv-init -)"
 
           for version in ${VERSIONS[*]}; do
-              pyenv install --list | grep $version
-              test -d $HOME/.pyenv/versions/${version}/bin || pyenv install ${version}
+              pyenv install --list | grep $version;
+              test -d $HOME/.pyenv/versions/${version}/bin || pyenv install ${version};
           done
 
       - name: Set up just
