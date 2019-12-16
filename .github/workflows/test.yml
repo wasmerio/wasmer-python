@@ -26,7 +26,6 @@ jobs:
         run: |
           curl https://pyenv.run | bash
           export PATH="$HOME/.pyenv/bin:$PATH"
-          cd ~/.pyenv/plugins/python-build && git pull
 
       - name: Set up Rust
         shell: bash
@@ -63,7 +62,7 @@ jobs:
           export PATH="$HOME/.pyenv/bin:$PATH"
           VERSIONS=('3.7.5', '3.8.0')
 
-          pyenv install --list
+          $HOME/.pyenv/plugins/python-build/bin/python-build --definitions
 
           echo "Will install the following versions: ${VERSIONS[*]}."
 
