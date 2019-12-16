@@ -16,6 +16,24 @@ prelude:
 	source .env/bin/activate
 	pip3 install maturin pytest pytest-benchmark
 
+	echo -n 'maturin -- path: '
+	which maturin
+
+	echo -n 'maturin -- version: '
+	maturin --version
+
+	echo -n 'python -- path: '
+	which python
+
+	echo -n 'python -- version: '
+	python --version
+
+	echo -n 'python-config -- path: '
+	which python-config
+
+	echo -n 'python-config -- abiflags: '
+	python-config --abiflags || true
+
 # Setup the environment to develop the extension.
 wakeup:
 	#!/usr/bin/env bash
