@@ -58,7 +58,6 @@ jobs:
           VERSIONS=('3.5.9', '3.6.9', '3.7.5', '3.8.1')
 
           for version in ${VERSIONS[*]}; do
-              pyenv install --list | grep $version
               test -d $HOME/.pyenv/versions/${version}/bin || pyenv install ${version};
           done
 
