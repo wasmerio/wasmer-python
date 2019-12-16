@@ -365,7 +365,7 @@ assert int32[0] == 0b01000000_00010000_00000100_00000001
 # Development
 
 The Python extension is written in Rust, with [`pyo3`] and
-[`pyo3-pack`].
+[`maturin`].
 
 To set up your environment, run only once:
 
@@ -373,8 +373,8 @@ To set up your environment, run only once:
 $ just prelude
 ```
 
-It will install `pyo3-pack` for Python and for Rust. It will also
-install [`virtualenv`].
+It will install `pyo3` and `maturin` for Python and for Rust. It will
+also install [`virtualenv`].
 
 Then, simply run:
 
@@ -439,7 +439,7 @@ The entire project is under the MIT License. Please read [the
 [Pypi]: https://pypi.org/
 [`rust-cpython`]: https://github.com/dgrunwald/rust-cpython
 [`pyo3`]: https://github.com/PyO3/pyo3
-[`pyo3-pack`]: https://github.com/PyO3/pyo3-pack
+[`maturin`]: https://github.com/PyO3/maturin
 [`virtualenv`]: https://virtualenv.pypa.io/
 [`just`]: https://github.com/casey/just/
 [license]: https://github.com/wasmerio/wasmer/blob/master/LICENSE

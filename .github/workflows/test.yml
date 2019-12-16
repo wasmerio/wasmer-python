@@ -13,7 +13,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
       # As soon as one job fails in the matrix, all the other
       # in-progress jobs are canceled.
-      fail-fast: true
+      fail-fast: false
 
     runs-on: ${{ matrix.os }}
 
@@ -25,6 +25,7 @@ jobs:
         shell: bash
         run: |
           curl https://pyenv.run | bash
+          export PATH="$HOME/.pyenv/bin:$PATH"
 
       - name: Set up Rust
         shell: bash
@@ -49,14 +50,21 @@ jobs:
           path: target
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
+      - name: Cache Python versions
+        uses: actions/cache@v1
+        with:
+          path: ~/.pyenv/versions
+          key: ${{ runner.os }}-pyenv-versions
+
       - name: Set up Python versions
         shell: bash
         run: |
           export PATH="$HOME/.pyenv/bin:$PATH"
-          VERSIONS=('3.5.9', '3.6.9', '3.7.5', '3.8.1')
+          VERSIONS=('3.8.0')
+          #VERSIONS=('3.5.9' '3.6.9' '3.7.5' '3.8.0')
 
           for version in ${VERSIONS[*]}; do
-              test -d $HOME/.pyenv/versions/${version}/bin || pyenv install ${version}
+              test -d $HOME/.pyenv/versions/${version}/bin || pyenv install ${version};
           done
 
       - name: Set up just
