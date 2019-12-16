@@ -25,6 +25,8 @@ jobs:
         shell: bash
         run: |
           curl https://pyenv.run | bash
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          pyenv install --list
 
       - name: Set up Rust
         shell: bash
