@@ -14,7 +14,7 @@ prelude:
 	pip3 install virtualenv
 	virtualenv -p $(which python3) .env
 	source .env/bin/activate
-	pip3 install pyo3-pack pytest pytest-benchmark
+	pip3 install maturin pytest pytest-benchmark
 
 # Setup the environment to develop the extension.
 wakeup:
@@ -29,7 +29,7 @@ sleep:
 build:
 	export PYTHON_SYS_EXECUTABLE=$(which python3)
 	cargo check
-	pyo3-pack develop --binding_crate pyo3 --release --strip
+	maturin develop --binding-crate pyo3 --release --strip
 
 # Create a distribution of wasmer that can be installed
 # anywhere (it will fail on import)
@@ -54,7 +54,7 @@ inspect:
 	@python -c "help('wasmer')"
 
 publish:
-	pyo3-pack publish -i python3.8 python3.7 python3.6 python3.5 -u wasmer
+	maturin publish -i python3.8 python3.7 python3.6 python3.5 -u wasmer
 
 # Local Variables:
 # mode: makefile

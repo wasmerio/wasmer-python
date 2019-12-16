@@ -19,7 +19,7 @@ wasmer-runtime = "0.11"
 wasmer-runtime-core = "0.11"
 pyo3 = { version = "0.8", features = ["extension-module"] }
 
-[package.metadata.pyo3-pack]
+[package.metadata.maturin]
 classifier = [
     "Programming Language :: Python",
     "License :: OSI Approved :: MIT License",
