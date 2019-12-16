@@ -26,6 +26,7 @@ jobs:
         run: |
           curl https://pyenv.run | bash
           export PATH="$HOME/.pyenv/bin:$PATH"
+          cd ~/.pyenv/plugins/python-build && git pull
           pyenv install --list
 
       - name: Set up Rust
@@ -50,6 +51,12 @@ jobs:
         with:
           path: target
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache Python versions
+        uses: actions/cache@v1
+        with:
+          path: ~/.pyenv/versions
+          key: ${{ runner.os }}-pyenv-versions
 
       - name: Set up Python versions
         shell: bash
