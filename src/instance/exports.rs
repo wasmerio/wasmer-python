@@ -80,18 +80,16 @@ impl ExportedFunction {
             Ordering::Greater => {
                 return Err(RuntimeError::py_err(format!(
                     "Missing {} argument(s) when calling `{}`: Expect {} argument(s), given {}.",
-                    diff, self.function_name, number_of_parameters, number_of_arguments
+                    diff, self.function_name, number_of_parameters, number_of_arguments,
                 )))
             }
-            Ordering::Less => {
-                return Err(RuntimeError::py_err(format!(
+            Ordering::Less => return Err(RuntimeError::py_err(format!(
                 "Given {} extra argument(s) when calling `{}`: Expect {} argument(s), given {}.",
                 diff.abs(),
                 self.function_name,
                 number_of_parameters,
-                number_of_arguments
-            )))
-            }
+                number_of_arguments,
+            ))),
             Ordering::Equal => {}
         }
 
