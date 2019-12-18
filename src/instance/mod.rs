@@ -51,6 +51,7 @@ impl Instance {
     #[new]
     /// The constructor instantiates a new WebAssembly instance basde
     /// on WebAssembly bytes (represented by the Python bytes type).
+    #[allow(clippy::new_ret_no_self)]
     fn new(object: &PyRawObject, bytes: &PyAny) -> PyResult<()> {
         // Read the bytes.
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
