@@ -1,6 +1,7 @@
 status = [
     "Test (ubuntu-latest)",
     "Test (macos-latest)",
+    "Lint",
 ]
 required_approvals = 0
 timeout_sec = 900
