@@ -11,7 +11,7 @@ use pyo3::{
     types::{PyFloat, PyLong, PyTuple},
     ToPyObject,
 };
-use std::rc::Rc;
+use std::{cmp::Ordering, rc::Rc};
 use wasmer_runtime::{self as runtime, Value as WasmValue};
 use wasmer_runtime_core::instance::DynFunc;
 use wasmer_runtime_core::types::Type;
@@ -33,12 +33,10 @@ impl InspectExportedFunction for ExportedFunction {
     fn move_runtime_func_obj(&self) -> Result<DynFunc, PyErr> {
         match self.instance.dyn_func(&self.function_name) {
             Ok(function) => Ok(function),
-            Err(_) => {
-                return Err(RuntimeError::py_err(format!(
-                    "Function `{}` does not exist.",
-                    self.function_name
-                )))
-            }
+            Err(_) => Err(RuntimeError::py_err(format!(
+                "Function `{}` does not exist.",
+                self.function_name
+            ))),
         }
     }
 
@@ -78,19 +76,21 @@ impl ExportedFunction {
         let number_of_arguments = arguments.len() as isize;
         let diff: isize = number_of_parameters - number_of_arguments;
 
-        if diff > 0 {
-            return Err(RuntimeError::py_err(format!(
-                "Missing {} argument(s) when calling `{}`: Expect {} argument(s), given {}.",
-                diff, self.function_name, number_of_parameters, number_of_arguments
-            )));
-        } else if diff < 0 {
-            return Err(RuntimeError::py_err(format!(
+        match diff.cmp(&0) {
+            Ordering::Greater => {
+                return Err(RuntimeError::py_err(format!(
+                    "Missing {} argument(s) when calling `{}`: Expect {} argument(s), given {}.",
+                    diff, self.function_name, number_of_parameters, number_of_arguments,
+                )))
+            }
+            Ordering::Less => return Err(RuntimeError::py_err(format!(
                 "Given {} extra argument(s) when calling `{}`: Expect {} argument(s), given {}.",
                 diff.abs(),
                 self.function_name,
                 number_of_parameters,
-                number_of_arguments
-            )));
+                number_of_arguments,
+            ))),
+            Ordering::Equal => {}
         }
 
         // Map Python arguments to WebAssembly values.
@@ -128,7 +128,7 @@ impl ExportedFunction {
         };
 
         // Map the WebAssembly first result to a Python value.
-        if results.len() > 0 {
+        if !results.is_empty() {
             Ok(match results[0] {
                 WasmValue::I32(result) => result.to_object(py),
                 WasmValue::I64(result) => result.to_object(py),

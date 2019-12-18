@@ -23,6 +23,7 @@ pub struct Module {
 impl Module {
     /// Compile bytes into a WebAssembly module.
     #[new]
+    #[allow(clippy::new_ret_no_self)]
     fn new(object: &PyRawObject, bytes: &PyAny) -> PyResult<()> {
         // Read the bytes.
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
@@ -78,7 +79,7 @@ impl Module {
                 exports: Py::new(
                     py,
                     ExportedFunctions {
-                        instance: instance.clone(),
+                        instance,
                         functions: exported_functions,
                     },
                 )?,
