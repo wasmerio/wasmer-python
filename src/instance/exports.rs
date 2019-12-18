@@ -130,7 +130,7 @@ impl ExportedFunction {
         };
 
         // Map the WebAssembly first result to a Python value.
-        if results.len() > 0 {
+        if !results.is_empty() {
             Ok(match results[0] {
                 WasmValue::I32(result) => result.to_object(py),
                 WasmValue::I64(result) => result.to_object(py),
