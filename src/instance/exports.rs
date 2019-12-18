@@ -33,12 +33,10 @@ impl InspectExportedFunction for ExportedFunction {
     fn move_runtime_func_obj(&self) -> Result<DynFunc, PyErr> {
         match self.instance.dyn_func(&self.function_name) {
             Ok(function) => Ok(function),
-            Err(_) => {
-                return Err(RuntimeError::py_err(format!(
-                    "Function `{}` does not exist.",
-                    self.function_name
-                )))
-            }
+            Err(_) => Err(RuntimeError::py_err(format!(
+                "Function `{}` does not exist.",
+                self.function_name
+            ))),
         }
     }
 
