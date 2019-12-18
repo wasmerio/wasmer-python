@@ -1,6 +1,6 @@
 name: Build and Test
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   # The `test` job.
@@ -13,7 +13,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
       # As soon as one job fails in the matrix, all the other
       # in-progress jobs are canceled.
-      fail-fast: false
+      fail-fast: true
 
     runs-on: ${{ matrix.os }}
 
