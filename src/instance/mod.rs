@@ -94,7 +94,7 @@ impl Instance {
                 exports: Py::new(
                     py,
                     ExportedFunctions {
-                        instance: instance.clone(),
+                        instance,
                         functions: exported_functions,
                     },
                 )?,
