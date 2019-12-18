@@ -61,7 +61,16 @@ macro_rules! memory_view {
                         ));
                     }
 
-                    (offset + index as usize)..(offset + index as usize + 1)
+                    let index = offset + index as usize;
+
+                    #[allow(clippy::range_plus_one)]
+                    // Writing `index..=index` makes Clippy happy but
+                    // the type of this expression is
+                    // `RangeInclusive`, when the type of `range` is
+                    // `Range`.
+                    {
+                        index..index + 1
+                    }
                 } else {
                     return Err(ValueError::py_err(
                         "Only integers and slices are valid to represent an index.",
