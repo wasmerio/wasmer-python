@@ -16,7 +16,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasmer-runtime = "0.11"
-wasmer-runtime-core = "0.11"
+wasmer-runtime-core = "0.13"
 pyo3 = { version = "0.8", features = ["extension-module"] }
 
 [package.metadata.maturin]
