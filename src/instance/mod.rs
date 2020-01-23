@@ -113,10 +113,7 @@ impl Instance {
 
     #[getter]
     /// The `memory` getter.
-    fn memory(&self) -> PyResult<PyObject> {
-        let gil_guard = Python::acquire_gil();
-        let py = gil_guard.python();
-
+    fn memory(&self, py: Python) -> PyResult<PyObject> {
         match &self.memory {
             Some(memory) => Ok(memory.into_py(py)),
             None => Ok(py.None()),
