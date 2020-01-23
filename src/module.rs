@@ -4,12 +4,12 @@ use crate::{instance::exports::ExportedFunctions, instance::Instance, memory::Me
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
-    types::{PyAny, PyBytes},
+    types::{PyAny, PyBytes, PyDict, PyList},
     PyTryFrom,
 };
 use std::rc::Rc;
 use wasmer_runtime::{self as runtime, imports, validate, Export};
-use wasmer_runtime_core::{self as runtime_core, cache::Artifact};
+use wasmer_runtime_core::{self as runtime_core, cache::Artifact, module::ExportIndex};
 
 #[pyclass]
 /// `Module` is a Python class that represents a WebAssembly module.
@@ -86,6 +86,31 @@ impl Module {
                 },
             },
         )?)
+    }
+
+    #[getter]
+    /// The `exports` getter.
+    fn exports<'p>(&self, py: Python<'p>) -> PyResult<&'p PyList> {
+        let mut items: Vec<&PyDict> = vec![];
+
+        for (name, export_index) in self.module.info().exports.iter() {
+            let dict = PyDict::new(py);
+
+            dict.set_item("name", name)?;
+            dict.set_item(
+                "kind",
+                match export_index {
+                    ExportIndex::Func(_) => "function",
+                    ExportIndex::Memory(_) => "memory",
+                    ExportIndex::Global(_) => "global",
+                    ExportIndex::Table(_) => "table",
+                },
+            )?;
+
+            items.push(dict);
+        }
+
+        Ok(PyList::new(py, items))
     }
 
     /// Serialize the module into Python bytes.
