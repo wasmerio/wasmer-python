@@ -20,7 +20,7 @@ use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
     types::{PyAny, PyBytes},
-    PyNativeType, PyTryFrom,
+    PyNativeType, PyTryFrom, Python,
 };
 use std::rc::Rc;
 use wasmer_runtime::{imports, instantiate, Export};
@@ -42,7 +42,7 @@ pub struct Instance {
 
     /// The WebAssembly exported memory represented by a `Memory`
     /// object.
-    pub(crate) memory: Py<Memory>,
+    pub(crate) memory: Option<Py<Memory>>,
 }
 
 #[pymethods]
@@ -80,13 +80,10 @@ impl Instance {
         }
 
         // Collect the exported memory from the WebAssembly module.
-        let memory = instance
-            .exports()
-            .find_map(|(_, export)| match export {
-                Export::Memory(memory) => Some(Rc::new(memory)),
-                _ => None,
-            })
-            .ok_or_else(|| RuntimeError::py_err("No memory exported."))?;
+        let memory = instance.exports().find_map(|(_, export)| match export {
+            Export::Memory(memory) => Some(Rc::new(memory)),
+            _ => None,
+        });
 
         // Instantiate the `Instance` Python class.
         object.init({
@@ -98,7 +95,10 @@ impl Instance {
                         functions: exported_functions,
                     },
                 )?,
-                memory: Py::new(py, Memory { memory })?,
+                memory: match memory {
+                    Some(memory) => Some(Py::new(py, Memory { memory })?),
+                    None => None,
+                },
             }
         });
 
@@ -113,7 +113,13 @@ impl Instance {
 
     #[getter]
     /// The `memory` getter.
-    fn memory(&self) -> PyResult<&Py<Memory>> {
-        Ok(&self.memory)
+    fn memory(&self) -> PyResult<PyObject> {
+        let gil_guard = Python::acquire_gil();
+        let py = gil_guard.python();
+
+        match &self.memory {
+            Some(memory) => Ok(memory.into_py(py)),
+            None => Ok(py.None()),
+        }
     }
 }

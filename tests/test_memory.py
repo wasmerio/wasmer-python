@@ -196,3 +196,9 @@ def test_memory_grow_too_much():
     assert str(exception) == (
         'Failed to grow the memory: Grow Error: Failed to add pages because would exceed maximum number of pages. Left: 17, Right: 100000, Pages added: 100017.'
     )
+
+def test_memory_is_absent():
+    bytes = open(here + '/no_memory.wasm', 'rb').read()
+    instance = Instance(bytes)
+
+    assert instance.memory == None
