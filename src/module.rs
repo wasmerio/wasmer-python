@@ -64,13 +64,10 @@ impl Module {
         }
 
         // Collect the exported memory from the WebAssembly module.
-        let memory = instance
-            .exports()
-            .find_map(|(_, export)| match export {
-                Export::Memory(memory) => Some(Rc::new(memory)),
-                _ => None,
-            })
-            .ok_or_else(|| RuntimeError::py_err("No memory exported."))?;
+        let memory = instance.exports().find_map(|(_, export)| match export {
+            Export::Memory(memory) => Some(Rc::new(memory)),
+            _ => None,
+        });
 
         // Instantiate the `Instance` Python class.
         Ok(Py::new(
@@ -83,7 +80,10 @@ impl Module {
                         functions: exported_functions,
                     },
                 )?,
-                memory: Py::new(py, Memory { memory })?,
+                memory: match memory {
+                    Some(memory) => Some(Py::new(py, Memory { memory })?),
+                    None => None,
+                },
             },
         )?)
     }
