@@ -95,9 +95,10 @@ impl Module {
     #[getter]
     /// The `exports` getter.
     fn exports<'p>(&self, py: Python<'p>) -> PyResult<&'p PyList> {
-        let mut items: Vec<&PyDict> = vec![];
+        let exports = &self.module.info().exports;
+        let mut items: Vec<&PyDict> = Vec::with_capacity(exports.len());
 
-        for (name, export_index) in self.module.info().exports.iter() {
+        for (name, export_index) in exports.iter() {
             let dict = PyDict::new(py);
 
             dict.set_item("name", name)?;
