@@ -7,7 +7,7 @@ mod memory;
 mod module;
 mod value;
 
-use instance::{exports::ExportKind, Instance};
+use instance::{exports::ExportImportKind, Instance};
 use module::Module;
 use value::Value;
 
@@ -31,7 +31,7 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
         let enum_module = py.import("enum")?;
         let mut variants = String::new();
 
-        for kind in ExportKind::iter() {
+        for kind in ExportImportKind::iter() {
             variants.push_str(kind.into());
             variants.push(' ');
         }
@@ -41,6 +41,13 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
             enum_module.call1(
                 "IntEnum",
                 PyTuple::new(py, &["ExportKind", variants.as_str()]),
+            )?,
+        )?;
+        module.add(
+            "ImportKind",
+            enum_module.call1(
+                "IntEnum",
+                PyTuple::new(py, &["ImportKind", variants.as_str()]),
             )?,
         )?;
     }

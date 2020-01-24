@@ -17,33 +17,33 @@ use wasmer_runtime_core::instance::DynFunc;
 use wasmer_runtime_core::types::Type;
 
 #[repr(u8)]
-pub enum ExportKind {
+pub enum ExportImportKind {
     Function = 1,
     Memory = 2,
     Global = 3,
     Table = 4,
 }
 
-impl ExportKind {
-    pub fn iter() -> slice::Iter<'static, ExportKind> {
-        static VARIANTS: [ExportKind; 4] = [
-            ExportKind::Function,
-            ExportKind::Memory,
-            ExportKind::Global,
-            ExportKind::Table,
+impl ExportImportKind {
+    pub fn iter() -> slice::Iter<'static, ExportImportKind> {
+        static VARIANTS: [ExportImportKind; 4] = [
+            ExportImportKind::Function,
+            ExportImportKind::Memory,
+            ExportImportKind::Global,
+            ExportImportKind::Table,
         ];
 
         VARIANTS.iter()
     }
 }
 
-impl From<&ExportKind> for &'static str {
-    fn from(value: &ExportKind) -> Self {
+impl From<&ExportImportKind> for &'static str {
+    fn from(value: &ExportImportKind) -> Self {
         match value {
-            ExportKind::Function => "FUNCTION",
-            ExportKind::Memory => "MEMORY",
-            ExportKind::Global => "GLOBAL",
-            ExportKind::Table => "TABLE",
+            ExportImportKind::Function => "FUNCTION",
+            ExportImportKind::Memory => "MEMORY",
+            ExportImportKind::Global => "GLOBAL",
+            ExportImportKind::Table => "TABLE",
         }
     }
 }
