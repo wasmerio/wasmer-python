@@ -1,19 +1,19 @@
 #![deny(warnings)]
 
-use pyo3::prelude::*;
+use pyo3::{prelude::*, types::PyTuple};
 
 mod instance;
 mod memory;
 mod module;
 mod value;
 
-use instance::Instance;
+use instance::{exports::ExportKind, Instance};
 use module::Module;
 use value::Value;
 
 /// This extension allows to manipulate and to execute WebAssembly binaries.
 #[pymodule]
-fn wasmer(_py: Python, module: &PyModule) -> PyResult<()> {
+fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     module.add("__version__", env!("CARGO_PKG_VERSION"))?;
     module.add("__core_version__", env!("WASMER_RUNTIME_CORE_VERSION"))?;
     module.add_class::<Instance>()?;
@@ -26,6 +26,24 @@ fn wasmer(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_class::<memory::view::Uint16Array>()?;
     module.add_class::<memory::view::Uint32Array>()?;
     module.add_class::<memory::view::Uint8Array>()?;
+
+    {
+        let enum_module = py.import("enum")?;
+        let mut variants = String::new();
+
+        for kind in ExportKind::iter() {
+            variants.push_str(kind.into());
+            variants.push(' ');
+        }
+
+        module.add(
+            "ExportKind",
+            enum_module.call1(
+                "IntEnum",
+                PyTuple::new(py, &["ExportKind", variants.as_str()]),
+            )?,
+        )?;
+    }
 
     Ok(())
 }
