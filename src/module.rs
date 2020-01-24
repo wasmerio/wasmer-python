@@ -100,8 +100,8 @@ impl Module {
     /// The `exports` getter returns all the exported functions as a
     /// list of dictionnaries with 2 pairs:
     ///
-    ///   1. `"name": <name>`, where the name is a string,
-    ///   2. `"kind": <kind>`, where the kind is a `ExportKind` value.
+    ///   1. `"kind": <kind>`, where the kind is a `ExportKind` value.
+    ///   2. `"name": <name>`, where the name is a string,
     #[getter]
     fn exports<'p>(&self, py: Python<'p>) -> PyResult<&'p PyList> {
         let exports = &self.module.info().exports;
@@ -128,7 +128,21 @@ impl Module {
     }
 
     /// The `imports` getter returns all the imported functions as a
-    /// list of dictionnaries with 3 pairs:
+    /// list of dictionnaries with at least 3 pairs:
+    ///
+    ///   1. `"kind": <kind>`, where the kind is a `ImportKind` value.
+    ///   2. `"namespace": <namespace>`, where the namespace is a string,
+    ///   3. `"name": <name>`, where the name is a string.
+    ///
+    /// Additional pairs exist for the following kinds:
+    ///
+    ///   * `ImportKind.MEMORY` has the `"minimum_pages": {int}` and
+    ///      `"maximum_pages": {int?}` pairs.
+    ///   * `ImportKind.GLOBAL` has the `"mutable": {bool}` and
+    ///     `"type": {string}` pairs.
+    ///   * `ImportKind.TABLE` has the `"minimum_elements: {int}`,
+    ///     `"maximum_elements: {int?}`, and `"element_type": {string}`
+    ///     pairs.
     #[getter]
     fn imports<'p>(&self, py: Python<'p>) -> PyResult<&'p PyList> {
         let module_info = &self.module.info();
