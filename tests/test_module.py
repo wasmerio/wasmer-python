@@ -1,5 +1,5 @@
 import wasmer
-from wasmer import Module, ExportKind
+from wasmer import Module, ExportKind, ImportKind
 from enum import IntEnum
 import inspect
 import os
@@ -37,6 +37,14 @@ def test_export_kind():
     assert ExportKind.MEMORY == 2
     assert ExportKind.GLOBAL == 3
     assert ExportKind.TABLE == 4
+
+def test_import_kind():
+    assert issubclass(ImportKind, IntEnum)
+    assert len(ImportKind) == 4
+    assert ImportKind.FUNCTION == 1
+    assert ImportKind.MEMORY == 2
+    assert ImportKind.GLOBAL == 3
+    assert ImportKind.TABLE == 4
 
 def test_exports():
     assert Module(TEST_BYTES).exports == [
@@ -92,6 +100,42 @@ def test_exports():
             "name": "void",
             "kind": ExportKind.FUNCTION,
         },
+    ]
+
+def test_imports():
+    assert Module(open(here + '/imports.wasm', 'rb').read()).imports == [
+        {
+            "kind": ImportKind.FUNCTION,
+            "namespace": "ns",
+            "name": "f1",
+        },
+        {
+            "kind": ImportKind.FUNCTION,
+            "namespace": "ns",
+            "name": "f2",
+        },
+        {
+            "kind": ImportKind.MEMORY,
+            "namespace": "ns",
+            "name": "m1",
+            "minimum_pages": 3,
+            "maximum_pages": 4,
+        },
+        {
+            "kind": ImportKind.GLOBAL,
+            "namespace": "ns",
+            "name": "g1",
+            "mutable": False,
+            "type": "f32"
+        },
+        {
+            "kind": ImportKind.TABLE,
+            "namespace": "ns",
+            "name": "t1",
+            "minimum_elements": 1,
+            "maximum_elements": 2,
+            "element_type": "anyfunc",
+        }
     ]
 
 def test_serialize():
