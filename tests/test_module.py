@@ -1,5 +1,6 @@
 import wasmer
-from wasmer import Module
+from wasmer import Module, ExportKind
+from enum import IntEnum
 import inspect
 import os
 import pytest
@@ -28,6 +29,14 @@ def test_failed_to_compile():
 
 def test_instantiate():
     assert Module(TEST_BYTES).instantiate().exports.sum(1, 2) == 3
+
+def test_export_kind():
+    assert issubclass(ExportKind, IntEnum)
+    assert len(ExportKind) == 4
+    assert ExportKind.FUNCTION == 1
+    assert ExportKind.MEMORY == 2
+    assert ExportKind.GLOBAL == 3
+    assert ExportKind.TABLE == 4
 
 def test_exports():
     assert Module(TEST_BYTES).exports == [

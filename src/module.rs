@@ -1,6 +1,10 @@
 //! The `wasmer.Module` Python object to build WebAssembly modules.
 
-use crate::{instance::exports::ExportedFunctions, instance::Instance, memory::Memory};
+use crate::{
+    instance::exports::{ExportKind, ExportedFunctions},
+    instance::Instance,
+    memory::Memory,
+};
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
@@ -100,10 +104,10 @@ impl Module {
             dict.set_item(
                 "kind",
                 match export_index {
-                    ExportIndex::Func(_) => "function",
-                    ExportIndex::Memory(_) => "memory",
-                    ExportIndex::Global(_) => "global",
-                    ExportIndex::Table(_) => "table",
+                    ExportIndex::Func(_) => ExportKind::Function as u8,
+                    ExportIndex::Memory(_) => ExportKind::Memory as u8,
+                    ExportIndex::Global(_) => ExportKind::Global as u8,
+                    ExportIndex::Table(_) => ExportKind::Table as u8,
                 },
             )?;
 
