@@ -11,10 +11,42 @@ use pyo3::{
     types::{PyFloat, PyLong, PyTuple},
     ToPyObject,
 };
-use std::{cmp::Ordering, rc::Rc};
+use std::{cmp::Ordering, convert::From, rc::Rc, slice};
 use wasmer_runtime::{self as runtime, Value as WasmValue};
 use wasmer_runtime_core::instance::DynFunc;
 use wasmer_runtime_core::types::Type;
+
+#[repr(u8)]
+pub enum ExportKind {
+    Function = 1,
+    Memory = 2,
+    Global = 3,
+    Table = 4,
+}
+
+impl ExportKind {
+    pub fn iter() -> slice::Iter<'static, ExportKind> {
+        static VARIANTS: [ExportKind; 4] = [
+            ExportKind::Function,
+            ExportKind::Memory,
+            ExportKind::Global,
+            ExportKind::Table,
+        ];
+
+        VARIANTS.iter()
+    }
+}
+
+impl From<&ExportKind> for &'static str {
+    fn from(value: &ExportKind) -> Self {
+        match value {
+            ExportKind::Function => "FUNCTION",
+            ExportKind::Memory => "MEMORY",
+            ExportKind::Global => "GLOBAL",
+            ExportKind::Table => "TABLE",
+        }
+    }
+}
 
 #[pyclass]
 /// `ExportedFunction` is a Python class that represents a WebAssembly

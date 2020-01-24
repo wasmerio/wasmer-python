@@ -1,5 +1,6 @@
 import wasmer
-from wasmer import Module
+from wasmer import Module, ExportKind
+from enum import IntEnum
 import inspect
 import os
 import pytest
@@ -29,59 +30,67 @@ def test_failed_to_compile():
 def test_instantiate():
     assert Module(TEST_BYTES).instantiate().exports.sum(1, 2) == 3
 
+def test_export_kind():
+    assert issubclass(ExportKind, IntEnum)
+    assert len(ExportKind) == 4
+    assert ExportKind.FUNCTION == 1
+    assert ExportKind.MEMORY == 2
+    assert ExportKind.GLOBAL == 3
+    assert ExportKind.TABLE == 4
+
 def test_exports():
     assert Module(TEST_BYTES).exports == [
         {
             "name": "memory",
-            "kind": "memory",
+            "kind": ExportKind.MEMORY,
         },
         {
             "name": "__heap_base",
-            "kind": "global",
+            "kind": ExportKind.GLOBAL,
         },
         {
             "name": "__data_end",
-            "kind": "global",
+            "kind": ExportKind.GLOBAL,
         },
         {
             "name": "sum",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "arity_0",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "i32_i32",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "i64_i64",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "f32_f32",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "f64_f64",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "i32_i64_f32_f64_f64",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "bool_casted_to_i32",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "string",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "void",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
     ]
 
