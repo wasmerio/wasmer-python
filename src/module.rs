@@ -286,6 +286,22 @@ impl Module {
         Ok(PyList::new(py, items))
     }
 
+    /// Read all the custom section names. To get the value of a
+    /// custom section, use the `Module.custom_section()`
+    /// function. This designed is motivated by saving memory.
+    #[getter]
+    fn custom_section_names<'p>(&self, py: Python<'p>) -> &'p PyList {
+        PyList::new(py, self.module.info().custom_sections.keys())
+    }
+
+    /// Read a specific custom section.
+    fn custom_section<'p>(&self, py: Python<'p>, name: String) -> PyObject {
+        match self.module.info().custom_sections.get(&name) {
+            Some(bytes) => PyBytes::new(py, bytes).into_py(py),
+            None => py.None(),
+        }
+    }
+
     /// Serialize the module into Python bytes.
     fn serialize<'p>(&self, py: Python<'p>) -> PyResult<&'p PyBytes> {
         // Get the module artifact.
