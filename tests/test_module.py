@@ -42,55 +42,55 @@ def test_exports():
     assert Module(TEST_BYTES).exports == [
         {
             "name": "memory",
-            "kind": "memory",
+            "kind": ExportKind.MEMORY,
         },
         {
             "name": "__heap_base",
-            "kind": "global",
+            "kind": ExportKind.GLOBAL,
         },
         {
             "name": "__data_end",
-            "kind": "global",
+            "kind": ExportKind.GLOBAL,
         },
         {
             "name": "sum",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "arity_0",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "i32_i32",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "i64_i64",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "f32_f32",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "f64_f64",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "i32_i64_f32_f64_f64",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "bool_casted_to_i32",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "string",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
         {
             "name": "void",
-            "kind": "function",
+            "kind": ExportKind.FUNCTION,
         },
     ]
 
