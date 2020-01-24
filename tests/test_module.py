@@ -49,92 +49,92 @@ def test_import_kind():
 def test_exports():
     assert Module(TEST_BYTES).exports == [
         {
-            "name": "memory",
-            "kind": ExportKind.MEMORY,
+            'name': 'memory',
+            'kind': ExportKind.MEMORY,
         },
         {
-            "name": "__heap_base",
-            "kind": ExportKind.GLOBAL,
+            'name': '__heap_base',
+            'kind': ExportKind.GLOBAL,
         },
         {
-            "name": "__data_end",
-            "kind": ExportKind.GLOBAL,
+            'name': '__data_end',
+            'kind': ExportKind.GLOBAL,
         },
         {
-            "name": "sum",
-            "kind": ExportKind.FUNCTION,
+            'name': 'sum',
+            'kind': ExportKind.FUNCTION,
         },
         {
-            "name": "arity_0",
-            "kind": ExportKind.FUNCTION,
+            'name': 'arity_0',
+            'kind': ExportKind.FUNCTION,
         },
         {
-            "name": "i32_i32",
-            "kind": ExportKind.FUNCTION,
+            'name': 'i32_i32',
+            'kind': ExportKind.FUNCTION,
         },
         {
-            "name": "i64_i64",
-            "kind": ExportKind.FUNCTION,
+            'name': 'i64_i64',
+            'kind': ExportKind.FUNCTION,
         },
         {
-            "name": "f32_f32",
-            "kind": ExportKind.FUNCTION,
+            'name': 'f32_f32',
+            'kind': ExportKind.FUNCTION,
         },
         {
-            "name": "f64_f64",
-            "kind": ExportKind.FUNCTION,
+            'name': 'f64_f64',
+            'kind': ExportKind.FUNCTION,
         },
         {
-            "name": "i32_i64_f32_f64_f64",
-            "kind": ExportKind.FUNCTION,
+            'name': 'i32_i64_f32_f64_f64',
+            'kind': ExportKind.FUNCTION,
         },
         {
-            "name": "bool_casted_to_i32",
-            "kind": ExportKind.FUNCTION,
+            'name': 'bool_casted_to_i32',
+            'kind': ExportKind.FUNCTION,
         },
         {
-            "name": "string",
-            "kind": ExportKind.FUNCTION,
+            'name': 'string',
+            'kind': ExportKind.FUNCTION,
         },
         {
-            "name": "void",
-            "kind": ExportKind.FUNCTION,
+            'name': 'void',
+            'kind': ExportKind.FUNCTION,
         },
     ]
 
 def test_imports():
     assert Module(open(here + '/imports.wasm', 'rb').read()).imports == [
         {
-            "kind": ImportKind.FUNCTION,
-            "namespace": "ns",
-            "name": "f1",
+            'kind': ImportKind.FUNCTION,
+            'namespace': 'ns',
+            'name': 'f1',
         },
         {
-            "kind": ImportKind.FUNCTION,
-            "namespace": "ns",
-            "name": "f2",
+            'kind': ImportKind.FUNCTION,
+            'namespace': 'ns',
+            'name': 'f2',
         },
         {
-            "kind": ImportKind.MEMORY,
-            "namespace": "ns",
-            "name": "m1",
-            "minimum_pages": 3,
-            "maximum_pages": 4,
+            'kind': ImportKind.MEMORY,
+            'namespace': 'ns',
+            'name': 'm1',
+            'minimum_pages': 3,
+            'maximum_pages': 4,
         },
         {
-            "kind": ImportKind.GLOBAL,
-            "namespace": "ns",
-            "name": "g1",
-            "mutable": False,
-            "type": "f32"
+            'kind': ImportKind.GLOBAL,
+            'namespace': 'ns',
+            'name': 'g1',
+            'mutable': False,
+            'type': 'f32'
         },
         {
-            "kind": ImportKind.TABLE,
-            "namespace": "ns",
-            "name": "t1",
-            "minimum_elements": 1,
-            "maximum_elements": 2,
-            "element_type": "anyfunc",
+            'kind': ImportKind.TABLE,
+            'namespace': 'ns',
+            'name': 't1',
+            'minimum_elements': 1,
+            'maximum_elements': 2,
+            'element_type': 'anyfunc',
         }
     ]
 
