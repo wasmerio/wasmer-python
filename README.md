@@ -96,6 +96,8 @@ result = instance.exports.sum(1, 2)
 print(result) # 3
 ```
 
+### Exported functions
+
 All exported functions are accessible on the `exports` getter.
 Arguments of these functions are automatically casted to WebAssembly
 values. If one wants to explicitely pass a value of a particular type,
@@ -103,12 +105,16 @@ it is possible to use the `Value` class,
 e.g. `instance.exports.sum(Value.i32(1), Value.i32(2))`. Note that for
 most usecases, this is not necessary.
 
+### Exported memory
+
 The `memory` getter exposes the `Memory` class representing the memory
 of that particular instance, e.g.:
 
 ```python
 view = instance.memory.uint8_view()
 ```
+
+`Instance.memory` can return `None` if no memory is exported.
 
 See below for more information.
 
@@ -134,6 +140,75 @@ result = instance.exports.sum(1, 2)
 
 print(result) # 3
 ```
+
+### Exports, imports, and custom sections
+
+It is also possible to query the module to get a list of exports, of
+imports, or of custom sections.
+
+```python
+from wasmer import Module, ExportKind, ImportKind
+
+# Get the Wasm bytes.
+wasm_bytes = open('my_program.wasm', 'rb').read()
+
+# Compile the bytes into a Wasm module.
+module = Module(wasm_bytes)
+
+# Check all the exports.
+assert module.exports == [{'kind': ExportKind.MEMORY,   'name': 'memory'},
+                          {'kind': ExportKind.TABLE,    'name': '__indirect_function_table'},
+                          {'kind': ExportKind.GLOBAL,   'name': '__heap_base'},
+                          {'kind': ExportKind.GLOBAL,   'name': '__data_end'},
+                          {'kind': ExportKind.FUNCTION, 'name': 'sum'}]
+
+# Check all the imports.
+assert module.imports == [{'kind': ImportKind.FUNCTION,
+                           'namespace': 'ns',
+                           'name': 'func'},
+                          {'kind': ImportKind.MEMORY,
+                           'namespace': 'ns',
+                           'name': 'mem',
+                           'minimum_pages': 3,
+                           'maximum_pages': 4},
+                          {'kind': ImportKind.GLOBAL,
+                           'namespace': 'ns',
+                           'name': 'glo',
+                           'mutable': False,
+                           'type': 'f32'},
+                          {'kind': ImportKind.TABLE,
+                           'namespace': 'ns',
+                           'name': 'tab',
+                           'minimum_elements': 1,
+                           'maximum_elements': 2,
+                           'element_type': 'anyfunc'}]
+
+# Check all the custom sections.
+assert sorted(module.custom_section_names) == ['section1', 'section2']
+
+# Check one specific custom section content (in bytes).
+custom_section1 = module.custom_section('section1')
+
+assert type(custom_section1) == bytes
+assert custom_sections1 == b'Wasmer'
+```
+
+Note the `ExportKind` and `ImportKind` enumerations. They are precisely
+[`IntEnum`](https://docs.python.org/3/library/enum.html#enum.IntEnum).
+
+`Module.exports` always returns a list of dictionnaries with the
+`kind` and `name` pairs. `Module.imports` always returns a list of
+dictionnaries with at least the `namespace` and `name` pairs. Some
+specific pairs exist, see the following table.
+
+| `ExportKind`/`ImportKind` variants | Meaning | Specific pairs for `imports` |
+|-|-|-|
+| `FUNCTION` | Function | none |
+| `GLOBAL` | Global variable | `mutable` and `type` |
+| `MEMORY` | Memory | `minimum_pages` and `maximum_pages` (`None` if absent) |
+| `TABLE` | Table | `minimum_elements`, `maximum_elements` (`None` is absent) and `element_type` |
+
+### Serialization and deserialization
 
 The `Module.serialize` method and its complementary
 `Module.deserialize` static method help to respectively serialize and
@@ -288,7 +363,7 @@ string = ''
 
 while nth < memory_length:
     char = memory[nth]
-    
+
     if char == 0:
         break
 
