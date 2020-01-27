@@ -1,6 +1,5 @@
 //! The `ExportedFunction` and relative collection that encapsulate Wasmer
 //!  memory and instances.
-//!
 
 use super::inspect::InspectExportedFunction;
 use crate::value::Value;
@@ -13,8 +12,7 @@ use pyo3::{
 };
 use std::{cmp::Ordering, convert::From, rc::Rc, slice};
 use wasmer_runtime::{self as runtime, Value as WasmValue};
-use wasmer_runtime_core::instance::DynFunc;
-use wasmer_runtime_core::types::Type;
+use wasmer_runtime_core::{instance::DynFunc, types::Type};
 
 #[repr(u8)]
 pub enum ExportImportKind {
@@ -210,13 +208,13 @@ pub struct ExportedFunctions {
 /// Implement the Python object protocol on the `ExportedFunctions`
 /// Python class.
 impl PyObjectProtocol for ExportedFunctions {
-    /// An Python attribute in this context represents a WebAssembly
+    /// A Python attribute in this context represents a WebAssembly
     /// exported function name.
     fn __getattr__(&self, key: String) -> PyResult<ExportedFunction> {
         if self.functions.contains(&key) {
             Ok(ExportedFunction {
-                function_name: key,
                 instance: self.instance.clone(),
+                function_name: key,
             })
         } else {
             Err(LookupError::py_err(format!(

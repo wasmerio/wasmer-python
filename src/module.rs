@@ -1,8 +1,11 @@
 //! The `wasmer.Module` Python object to build WebAssembly modules.
 
 use crate::{
-    instance::exports::{ExportImportKind, ExportedFunctions},
-    instance::Instance,
+    instance::{
+        exports::{ExportImportKind, ExportedFunctions},
+        globals::ExportedGlobals,
+        Instance,
+    },
     memory::Memory,
 };
 use pyo3::{
@@ -63,20 +66,24 @@ impl Module {
             }
         };
 
-        // Collect the exported functions from the WebAssembly module.
-        let mut exported_functions = Vec::new();
+        let exports = instance.exports();
 
-        for (export_name, export) in instance.exports() {
-            if let Export::Function { .. } = export {
-                exported_functions.push(export_name);
+        // Collect the exported functions, globals and memory from the
+        // WebAssembly module.
+        let mut exported_functions = Vec::new();
+        let mut exported_globals = Vec::new();
+        let mut exported_memory = None;
+
+        for (export_name, export) in exports {
+            match export {
+                Export::Function { .. } => exported_functions.push(export_name),
+                Export::Global(global) => exported_globals.push((export_name, Rc::new(global))),
+                Export::Memory(memory) if exported_memory.is_none() => {
+                    exported_memory = Some(Rc::new(memory))
+                }
+                _ => (),
             }
         }
-
-        // Collect the exported memory from the WebAssembly module.
-        let memory = instance.exports().find_map(|(_, export)| match export {
-            Export::Memory(memory) => Some(Rc::new(memory)),
-            _ => None,
-        });
 
         // Instantiate the `Instance` Python class.
         Ok(Py::new(
@@ -85,14 +92,20 @@ impl Module {
                 exports: Py::new(
                     py,
                     ExportedFunctions {
-                        instance,
+                        instance: instance.clone(),
                         functions: exported_functions,
                     },
                 )?,
-                memory: match memory {
+                memory: match exported_memory {
                     Some(memory) => Some(Py::new(py, Memory { memory })?),
                     None => None,
                 },
+                globals: Py::new(
+                    py,
+                    ExportedGlobals {
+                        globals: exported_globals,
+                    },
+                )?,
             },
         )?)
     }
