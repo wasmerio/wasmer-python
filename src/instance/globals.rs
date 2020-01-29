@@ -90,16 +90,14 @@ impl PyObjectProtocol for ExportedGlobals {
     /// A Python attribute in this context represents a WebAssembly
     /// exported global name.
     fn __getattr__(&self, key: String) -> PyResult<ExportedGlobal> {
-        match self.globals.iter().find(|(name, _)| name == &key) {
-            Some((global_name, global)) => Ok(ExportedGlobal {
+        self.globals
+            .iter()
+            .find(|(name, _)| name == &key)
+            .map(|(global_name, global)| ExportedGlobal {
                 global_name: global_name.clone(),
                 global: global.clone(),
-            }),
-            None => Err(LookupError::py_err(format!(
-                "Global `{}` does not exist.",
-                key
-            ))),
-        }
+            })
+            .ok_or_else(|| LookupError::py_err(format!("Global `{}` does not exist.", key)))
     }
 
     fn __repr__(&self) -> PyResult<String> {
