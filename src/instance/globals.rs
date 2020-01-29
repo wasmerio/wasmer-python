@@ -12,13 +12,13 @@ use wasmer_runtime_core::global::Global;
 
 #[pyclass]
 /// `ExportedGlobal` is a Python class that represents a WebAssembly
-/// exported global variable. Such a variable can be read with the
-/// `value` getter and setter.
+/// exported global variable. Such a variable can be read and write
+/// with the `value` getter and setter.
 pub struct ExportedGlobal {
     /// The exported global name from the WebAssembly instance.
     global_name: String,
 
-    /// the exported global from the WebAssembly instance.
+    /// The exported global from the WebAssembly instance.
     global: Rc<Global>,
 }
 
