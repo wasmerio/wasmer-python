@@ -47,7 +47,7 @@ pub struct Instance {
     pub(crate) memory: Option<Py<Memory>>,
 
     /// All WebAssembly exported globals represented by an
-    /// `ExportedGlobals` object.  }
+    /// `ExportedGlobals` object.
     pub(crate) globals: Py<ExportedGlobals>,
 }
 
