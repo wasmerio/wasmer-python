@@ -14,6 +14,7 @@
 pub(crate) mod exports;
 pub(crate) mod globals;
 pub(crate) mod inspect;
+pub(crate) mod tables;
 
 use crate::memory::Memory;
 use exports::ExportedFunctions;
@@ -25,6 +26,7 @@ use pyo3::{
     PyNativeType, PyTryFrom, Python,
 };
 use std::rc::Rc;
+use tables::ExportedTables;
 use wasmer_runtime::{imports, instantiate, Export};
 
 #[pyclass]
@@ -49,6 +51,9 @@ pub struct Instance {
     /// All WebAssembly exported globals represented by an
     /// `ExportedGlobals` object.
     pub(crate) globals: Py<ExportedGlobals>,
+
+    /// All WebAssembly exported tables represented by an `ExportedTAbles` object.
+    pub(crate) tables: Py<ExportedTables>,
 }
 
 #[pymethods]
@@ -78,11 +83,12 @@ impl Instance {
 
         let exports = instance.exports();
 
-        // Collect the exported functions, globals and memory from the
-        // WebAssembly module.
+        // Collect the exported functions, globals, memory and tables
+        // from the WebAssembly module.
         let mut exported_functions = Vec::new();
         let mut exported_globals = Vec::new();
         let mut exported_memory = None;
+        let mut exported_tables = Vec::new();
 
         for (export_name, export) in exports {
             match export {
@@ -91,6 +97,7 @@ impl Instance {
                 Export::Memory(memory) if exported_memory.is_none() => {
                     exported_memory = Some(Rc::new(memory))
                 }
+                Export::Table(table) => exported_tables.push((export_name, Rc::new(table))),
                 _ => (),
             }
         }
@@ -113,6 +120,12 @@ impl Instance {
                     py,
                     ExportedGlobals {
                         globals: exported_globals,
+                    },
+                )?,
+                tables: Py::new(
+                    py,
+                    ExportedTables {
+                        tables: exported_tables,
                     },
                 )?,
             }
@@ -140,5 +153,11 @@ impl Instance {
     #[getter]
     fn globals(&self) -> &Py<ExportedGlobals> {
         &self.globals
+    }
+
+    /// The `tables` getter.
+    #[getter]
+    fn tables(&self) -> &Py<ExportedTables> {
+        &self.tables
     }
 }

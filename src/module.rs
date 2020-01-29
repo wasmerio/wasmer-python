@@ -4,6 +4,7 @@ use crate::{
     instance::{
         exports::{ExportImportKind, ExportedFunctions},
         globals::ExportedGlobals,
+        tables::ExportedTables,
         Instance,
     },
     memory::Memory,
@@ -68,11 +69,12 @@ impl Module {
 
         let exports = instance.exports();
 
-        // Collect the exported functions, globals and memory from the
-        // WebAssembly module.
+        // Collect the exported functions, globals, memory and tables
+        // from the WebAssembly module.
         let mut exported_functions = Vec::new();
         let mut exported_globals = Vec::new();
         let mut exported_memory = None;
+        let mut exported_tables = Vec::new();
 
         for (export_name, export) in exports {
             match export {
@@ -81,6 +83,7 @@ impl Module {
                 Export::Memory(memory) if exported_memory.is_none() => {
                     exported_memory = Some(Rc::new(memory))
                 }
+                Export::Table(table) => exported_tables.push((export_name, Rc::new(table))),
                 _ => (),
             }
         }
@@ -104,6 +107,12 @@ impl Module {
                     py,
                     ExportedGlobals {
                         globals: exported_globals,
+                    },
+                )?,
+                tables: Py::new(
+                    py,
+                    ExportedTables {
+                        tables: exported_tables,
                     },
                 )?,
             },
