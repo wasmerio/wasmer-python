@@ -1,4 +1,4 @@
-//! The `Buffer` Python object to build WebAssembly values.
+//! The `*Array` Python objects to represent WebAsembly memory views.
 
 use pyo3::{
     class::PyMappingProtocol,

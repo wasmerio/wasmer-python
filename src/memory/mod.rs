@@ -5,6 +5,7 @@ use std::rc::Rc;
 use wasmer_runtime::Memory as WasmMemory;
 use wasmer_runtime_core::units::Pages;
 
+pub mod buffer;
 pub mod view;
 
 #[pyclass]
@@ -14,6 +15,16 @@ pub struct Memory {
 
 #[pymethods]
 impl Memory {
+    #[getter]
+    fn buffer(&self, py: Python) -> PyResult<Py<buffer::Buffer>> {
+        Py::new(
+            py,
+            buffer::Buffer {
+                memory: self.memory.clone(),
+            },
+        )
+    }
+
     #[args(offset = 0)]
     fn uint8_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Uint8Array>> {
         Py::new(

@@ -26,6 +26,7 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     module.add_class::<memory::view::Uint16Array>()?;
     module.add_class::<memory::view::Uint32Array>()?;
     module.add_class::<memory::view::Uint8Array>()?;
+    module.add_class::<memory::buffer::Buffer>()?;
 
     {
         let enum_module = py.import("enum")?;
