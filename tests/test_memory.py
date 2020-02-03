@@ -1,4 +1,4 @@
-from wasmer import Instance, Memory, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array
+from wasmer import Instance, Memory, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array, Buffer
 import inspect
 import os
 import pytest
@@ -202,3 +202,43 @@ def test_memory_is_absent():
     instance = Instance(bytes)
 
     assert instance.memory == None
+
+def test_memory_buffer():
+    memory = Instance(TEST_BYTES).memory.buffer
+    assert isinstance(memory, Buffer)
+
+def test_memory_buffer_memoryview():
+    memory = Instance(TEST_BYTES).memory
+
+    int8 = memory.int8_view()
+    int8[0] = 1
+    int8[1] = 2
+    int8[2] = 3
+
+    memory_view = memoryview(memory.buffer)
+
+    assert memory_view.nbytes == 1114112
+    assert memory_view.readonly == True
+    assert memory_view.format == 'B'
+    assert memory_view.itemsize == 1
+    assert memory_view.ndim == 1
+    assert memory_view.shape == (1114112,)
+    assert memory_view.strides == (1,)
+    assert memory_view.suboffsets == ()
+    assert memory_view.c_contiguous == True
+    assert memory_view.f_contiguous == True
+    assert memory_view.contiguous == True
+    assert memory_view[0:3].tolist() == [1, 2, 3]
+
+def test_memory_buffer_bytearray():
+    memory = Instance(TEST_BYTES).memory
+
+    int8 = memory.int8_view()
+    int8[0] = 1
+    int8[1] = 2
+    int8[2] = 3
+
+    byte_array = bytearray(memory.buffer)
+
+    assert len(byte_array) == 1114112
+    assert byte_array[0:3] == b'\x01\x02\x03'
