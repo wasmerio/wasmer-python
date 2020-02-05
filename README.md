@@ -292,6 +292,8 @@ print(repr(value_i32)) # I32(7)
 A WebAssembly instance has its own memory, represented by the `Memory`
 class. It is accessible by the `Instance.memory` getter.
 
+### Growing the memory
+
 The `Memory.grow` method allows to grow the memory by a number of
 pages (of 65kb each).
 
@@ -299,23 +301,59 @@ pages (of 65kb each).
 instance.memory.grow(1)
 ```
 
-The `Memory` class offers methods to create views of the memory
-internal buffer, e.g. `uint8_view`, `int8_view`, `uint16_view`
-etc. All these methods accept one argument: `offset`, to subset the
-memory buffer at a particular offset. These methods return
-respectively a `*Array` object, i.e. `uint8_view` returns a
-`Uint8Array` object etc.
+### Getting an access to the in-memory data
+
+The `Memory` class offers 2 ways to get an access to its data:
+
+  1. Direct raw buffer access, through the [Python Buffer
+     Protocol][python-buffer-protocol],
+  2. Views.
+
+To get a direct raw buffer, you can use the `buffer` getter, combined
+with the builtin [`memoryview`], [`bytes`] or [`bytearray`] Python
+functions:
 
 ```python
-offset = 7
-view = instance.memory.uint8_view(offset)
+# With `memoryview`
+memory_view = memoryview(instance.memory.buffer)
+memory_size = memory_view.nbytes
+assert bytes(memory_view[0:3]).decode() == 'Wasmer'
 
-print(view[0])
+# With `bytearray`
+byte_array = bytearray(instance.memory.buffer)
+memory_size = len(byte_array)
+assert byte_array[0:6].decode() == 'Wasmer'
 ```
+
+To create specific views over the memory data, you can use the
+following methods:
+
+  * `uint8_view(offset = 0)`,
+  * `int8_view(offset = 0)`,
+  * `uint16_view(offset = 0)`,
+  * `int16_view(offset = 0)`,
+  * `uint32_view(offset = 0)`,
+  * `int32_view(offset = 0)`.
+
+All these methods accept one optional argument: `offset`, to subset
+the memory view at a particular offset. These methods return
+respectively an `*Array` object, i.e. `uint8_view` returns a
+`Uint8Array` object and so on.
+
+```python
+uint8_view = instance.memory.uint8_view(offset = 7)
+bytes = uint8_view[0:3]
+```
+
+[python-buffer-protocol]: https://docs.python.org/3/c-api/buffer.html
+[`memoryview`]: https://docs.python.org/3.3/library/functions.html#func-memoryview
+[`bytes`]: https://docs.python.org/3.3/library/functions.html#bytes
+[`bytearray`]: https://docs.python.org/3.3/library/functions.html#bytearray
 
 ### The `*Array` classes
 
-These classes represent views over a memory buffer of an instance.
+These classes represent views over a memory of an instance where
+elements are specific bytes.
 
 | Class | View buffer as a sequence of… | Bytes per element |
 |-|-|-|
@@ -339,7 +377,9 @@ class Uint8Array:
     def __setitem__(index, value)
 ```
 
-Let's see it in action:
+### Let's see in action
+
+First start with a `uint8_view`:
 
 ```python
 from wasmer import Instance
@@ -354,7 +394,7 @@ instance = Instance(wasm_bytes)
 pointer = instance.exports.return_string()
 
 # Get the memory view, with the offset set to `pointer` (default is 0).
-memory = instance.memory.uint8_view(pointer)
+memory = instance.memory.uint8_view(offset = pointer)
 memory_length = len(memory)
 
 # Read the string pointed by the pointer.
@@ -377,12 +417,25 @@ A slice can be used as index of the `__getitem__` method, which is
 useful when we already know the size of the data we want to read, e.g.:
 
 ```python
-print(''.join(map(chr, memory[0:13]))) # Hello, World!
+print(bytes(memory[0:13]).decode()) # Hello, World!
 ```
 
-Notice that `*Array` treat bytes in little-endian, as required by the
-WebAssembly specification, [Chapter Structure, Section Instructions,
-Sub-Section Memory
+With a direct raw buffer, we would get:
+
+```python
+# Call a function that returns a pointer to a string for instance.
+pointer = instance.exports.return_string()
+
+# Get a `bytearray` object.
+byte_array = bytearray(instance.memory.buffer)
+
+# Read the string pointed by the pointer.
+print(byte_array[pointer:pointer+13].decode()) # Hello, World!
+```
+
+Notice that `*Array` and `Buffer` treat bytes in little-endian, as
+required by the WebAssembly specification, [Chapter Structure, Section
+Instructions, Sub-Section Memory
 Instructions](https://webassembly.github.io/spec/core/syntax/instructions.html#memory-instructions):
 
 > All values are read and written in [little
@@ -436,6 +489,14 @@ assert int16[1] == 0b01000000_00010000
                      ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐ ┌┬┬┬┬┬┬┐
 assert int32[0] == 0b01000000_00010000_00000100_00000001
 ```
+
+### Performance
+
+Using the direct raw buffer API with
+`bytearray(instance.memory.buffer)` is 15x faster than using
+`instance.memory.uint8_view()` for _reading_. However, the direct raw
+buffer API is _read-only_ for the moment, whilst the views are read
+and write. Chose them wisely.
 
 # Development
 

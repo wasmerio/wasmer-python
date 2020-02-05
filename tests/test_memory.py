@@ -164,6 +164,8 @@ def test_memory_views_share_the_same_buffer():
     int8[2] = 0b00010000
     int8[3] = 0b01000000
 
+    byte_array = bytearray(instance.memory.buffer)
+
     assert int8[0] == 0b00000001
     assert int8[1] == 0b00000100
     assert int8[2] == 0b00010000
@@ -171,6 +173,10 @@ def test_memory_views_share_the_same_buffer():
     assert int16[0] == 0b00000100_00000001
     assert int16[1] == 0b01000000_00010000
     assert int32[0] == 0b01000000_00010000_00000100_00000001
+    assert byte_array[0] == 0b00000001
+    assert byte_array[1] == 0b00000100
+    assert byte_array[2] == 0b00010000
+    assert byte_array[3] == 0b01000000
 
 def test_memory_grow():
     instance = Instance(TEST_BYTES)
