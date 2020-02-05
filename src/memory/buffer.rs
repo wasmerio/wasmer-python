@@ -1,4 +1,4 @@
-//! The `Buffer` Python objects to represent a WebAssembly memory
+//! The `Buffer` Python object to represent a WebAssembly memory
 //! through the Python Buffer Protocol.
 
 use pyo3::{
@@ -71,7 +71,7 @@ impl PyBufferProtocol for Buffer {
 
             // An indicator of whether the buffer is read-only. This
             // field is controlled by the `PyBUF_WRITABLE` flag.
-            (*view).readonly = if dbg!(PyBUF_WRITABLE == (flags & PyBUF_WRITABLE)) {
+            (*view).readonly = if PyBUF_WRITABLE == (flags & PyBUF_WRITABLE) {
                 0
             } else {
                 1
