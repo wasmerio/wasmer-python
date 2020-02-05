@@ -237,8 +237,15 @@ def test_memory_buffer_bytearray():
     int8[0] = 1
     int8[1] = 2
     int8[2] = 3
+    int8[3] = 0x57
+    int8[4] = 0x61
+    int8[5] = 0x73
+    int8[6] = 0x6d
+    int8[7] = 0x65
+    int8[8] = 0x72
 
     byte_array = bytearray(memory.buffer)
 
     assert len(byte_array) == 1114112
     assert byte_array[0:3] == b'\x01\x02\x03'
+    assert byte_array[3:9].decode() == 'Wasmer'
