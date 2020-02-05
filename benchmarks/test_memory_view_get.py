@@ -4,8 +4,6 @@ import wasmer
 here = os.path.dirname(os.path.realpath(__file__))
 TEST_BYTES = open(here + '/../tests/tests.wasm', 'rb').read()
 
-N = 5000
-
 def test_benchmark_memory_view_int8_get(benchmark):
     memory = wasmer.Instance(TEST_BYTES).memory.uint8_view()
 
