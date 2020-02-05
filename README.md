@@ -346,7 +346,7 @@ bytes = uint8_view[0:3]
 ```
 
 [python-buffer-protocol]: https://docs.python.org/3/c-api/buffer.html
-[`memoryview`]: https://docs.python.org/3.3/library/functions.html#memoryview
+[`memoryview`]: https://docs.python.org/3.3/library/functions.html#func-memoryview
 [`bytes`]: https://docs.python.org/3.3/library/functions.html#bytes
 [`bytearray`]: https://docs.python.org/3.3/library/functions.html#bytearray
 
