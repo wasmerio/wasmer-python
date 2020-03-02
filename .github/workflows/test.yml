@@ -11,8 +11,8 @@ jobs:
       matrix:
         # The job runs on 2 different OS.
         os: [ubuntu-latest, macos-latest]
-        # The job runs on 4 different Python versions
-        python: ['3.5.9', '3.6.9', '3.7.5', '3.8.0']
+        # The job runs on 3 different Python versions
+        python: ['3.6.9', '3.7.5', '3.8.0']
       # As soon as one job fails in the matrix, all the other
       # in-progress jobs are canceled.
       fail-fast: true
