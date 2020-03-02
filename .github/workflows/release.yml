@@ -88,4 +88,5 @@ jobs:
           export PATH="$HOME/.pyenv/versions/${{ matrix.python }}/bin/:$PATH"
           source .env/bin/activate
           just build-any
-          just publish
+          version=${{ matrix.python }}
+          just publish -i python${version%.*}
