@@ -72,7 +72,7 @@ inspect:
 	@python -c "help('wasmer')"
 
 publish:
-	maturin publish -i python3.8 python3.7 python3.6 python3.5 -u wasmer
+	maturin publish -u wasmer
 
 # Local Variables:
 # mode: makefile

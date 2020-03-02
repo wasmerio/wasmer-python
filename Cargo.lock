@@ -744,7 +744,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "wasmer"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "pyo3 0.8.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasmer-runtime 0.14.1 (registry+https://github.com/rust-lang/crates.io-index)",

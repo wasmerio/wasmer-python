@@ -1,0 +1,88 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '**'
+
+jobs:
+  release:
+    name: Release
+
+    strategy:
+      matrix:
+        # The job runs on 2 different OS.
+        os: [ubuntu-latest, macos-latest]
+        # The job runs on 3 different Python versions
+        python: ['3.6.9', '3.7.5', '3.8.0']
+      # As soon as one job fails in the matrix, all the other
+      # in-progress jobs are canceled.
+      fail-fast: true
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up `pyenv`
+        shell: bash
+        run: |
+          curl https://pyenv.run | bash
+          export PATH="$HOME/.pyenv/bin:$PATH"
+
+      - name: Set up Rust
+        shell: bash
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache Cargo bin
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/bin
+          key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache Cargo build
+        uses: actions/cache@v1
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache Python versions
+        uses: actions/cache@v1
+        with:
+          path: ~/.pyenv/versions
+          key: ${{ runner.os }}-pyenv-versions
+
+      - name: Set up Python version ${{ matrix.python }}
+        shell: bash
+        run: |
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          test -d $HOME/.pyenv/versions/${{ matrix.python }}/bin || pyenv install ${{ matrix.python }}
+
+      - name: Set up just
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          test -f $HOME/.cargo/bin/just || cargo install just
+
+      - name: Prelude
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/${{ matrix.python }}/bin/:$PATH"
+          just prelude
+
+      - name: Build wheels and Publish on Pypi
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/${{ matrix.python }}/bin/:$PATH"
+          just build-any
+          just publish
