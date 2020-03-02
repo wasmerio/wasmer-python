@@ -81,6 +81,8 @@ jobs:
 
       - name: Build wheels and Publish on Pypi
         shell: bash
+        env:
+          MATURIN_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
           export PATH="$HOME/.pyenv/versions/${{ matrix.python }}/bin/:$PATH"
