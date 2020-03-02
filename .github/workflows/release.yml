@@ -89,4 +89,4 @@ jobs:
           source .env/bin/activate
           just build-any
           version=${{ matrix.python }}
-          just publish -i python${version%.*}
+          just publish python${version%.*}

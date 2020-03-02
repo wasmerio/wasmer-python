@@ -71,8 +71,8 @@ benchmark benchmark-filename='':
 inspect:
 	@python -c "help('wasmer')"
 
-publish:
-	maturin publish -u wasmer
+publish version:
+	maturin publish -i {{version}} -u wasmer
 
 # Local Variables:
 # mode: makefile
