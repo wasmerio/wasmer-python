@@ -11,6 +11,8 @@ jobs:
       matrix:
         # The job runs on 2 different OS.
         os: [ubuntu-latest, macos-latest]
+        # The job runs on 4 different Python versions
+        python: ['3.5.9', '3.6.9', '3.7.5', '3.8.0']
       # As soon as one job fails in the matrix, all the other
       # in-progress jobs are canceled.
       fail-fast: true
@@ -56,15 +58,11 @@ jobs:
           path: ~/.pyenv/versions
           key: ${{ runner.os }}-pyenv-versions
 
-      - name: Set up Python versions
+      - name: Set up Python version ${{ matrix.python }}
         shell: bash
         run: |
           export PATH="$HOME/.pyenv/bin:$PATH"
-          VERSIONS=('3.5.9' '3.6.9' '3.7.5' '3.8.0')
-
-          for version in ${VERSIONS[*]}; do
-              test -d $HOME/.pyenv/versions/${version}/bin || pyenv install ${version};
-          done
+          test -d $HOME/.pyenv/versions/${{ matrix.python }}/bin || pyenv install ${{ matrix.python }}
 
       - name: Set up just
         shell: bash
@@ -76,14 +74,14 @@ jobs:
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          export PATH="$HOME/.pyenv/versions/3.8.0/bin/:$PATH"
+          export PATH="$HOME/.pyenv/versions/${{ matrix.python }}/bin/:$PATH"
           just prelude
 
       - name: Compile the library
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          export PATH="$HOME/.pyenv/versions/3.8.0/bin/:$PATH"
+          export PATH="$HOME/.pyenv/versions/${{ matrix.python }}/bin/:$PATH"
           source .env/bin/activate
           just build
           just build-any
@@ -92,6 +90,6 @@ jobs:
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          export PATH="$HOME/.pyenv/versions/3.8.0/bin/:$PATH"
+          export PATH="$HOME/.pyenv/versions/${{ matrix.python }}/bin/:$PATH"
           source .env/bin/activate
           just test
