@@ -84,5 +84,6 @@ jobs:
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
           export PATH="$HOME/.pyenv/versions/${{ matrix.python }}/bin/:$PATH"
+          source .env/bin/activate
           just build-any
           just publish
