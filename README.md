@@ -196,9 +196,9 @@ assert custom_sections1 == b'Wasmer'
 Note the `ExportKind` and `ImportKind` enumerations. They are precisely
 [`IntEnum`](https://docs.python.org/3/library/enum.html#enum.IntEnum).
 
-`Module.exports` always returns a list of dictionnaries with the
+`Module.exports` always returns a list of dictionaries with the
 `kind` and `name` pairs. `Module.imports` always returns a list of
-dictionnaries with at least the `namespace` and `name` pairs. Some
+dictionaries with at least the `namespace` and `name` pairs. Some
 specific pairs exist, see the following table.
 
 | `ExportKind`/`ImportKind` variants | Meaning | Specific pairs for `imports` |
