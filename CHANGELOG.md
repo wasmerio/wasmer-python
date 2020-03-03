@@ -236,7 +236,7 @@ All notable changes to this project will be documented in this file.
 * Bump `spin` from 0.5.0 to 0.5.2
   ([#72](https://github.com/wasmerio/python-ext-wasm/pull/72)]
 
-## [0.3.0] - 2020-07-16
+## [0.3.0] - 2019-07-16
 
 ### Added
 
