@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 * [Unreleased](#unreleased)
 * [0.4.1](#041---2020-02-02)
-* [0.3.0](#030---2020-07-16)
+* [0.3.0](#030---2019-07-16)
 * [0.2.0](#020---2019-04-16)
 
 ## [Unreleased]
