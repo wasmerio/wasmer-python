@@ -354,10 +354,10 @@ All notable changes to this project will be documented in this file.
 
 ## [0.2.0] - 2019-04-16
 
-[Unreleased]: https://github.com/wasmerio/go-ext-wasm/compare/0.4.0...HEAD
-[0.4.0]: https://github.com/wasmerio/go-ext-wasm/compare/0.3.0...0.4.0
-[0.3.0]: https://github.com/wasmerio/go-ext-wasm/compare/0.2.0...0.3.0
-[0.2.0]: https://github.com/wasmerio/go-ext-wasm/compare/0.1.0...0.2.0
+[Unreleased]: https://github.com/wasmerio/python-ext-wasm/compare/0.4.0...HEAD
+[0.4.0]: https://github.com/wasmerio/python-ext-wasm/compare/0.3.0...0.4.0
+[0.3.0]: https://github.com/wasmerio/python-ext-wasm/compare/0.2.0...0.3.0
+[0.2.0]: https://github.com/wasmerio/python-ext-wasm/compare/0.1.0...0.2.0
 [@Hywan]: https://github.com/Hywan
 [@Mec-iS]: https://github.com/Mec-iS
 [@syrusakbary]: https://github.com/syrusakbary
