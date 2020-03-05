@@ -11,6 +11,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+* Update Wasmer from 0.14.0 to 0.15.0
+  ([#139](https://github.com/wasmerio/python-ext-wasm/pull/139) by
+  [@Hywan])
+
 ## [0.4.1] - 2020-02-02
 
 ### Added
