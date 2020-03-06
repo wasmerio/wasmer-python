@@ -68,7 +68,7 @@ jobs:
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          source .env/bin/activate
+          (test -d .env/bin/ && source .env/bin/activate) || .env/Scripts/activate
           just build
           just build-any
 
@@ -76,5 +76,5 @@ jobs:
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          source .env/bin/activate
+          (test -d .env/bin/ && source .env/bin/activate) || .env/Scripts/activate
           just test
