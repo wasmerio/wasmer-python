@@ -41,7 +41,7 @@ macro_rules! memory_view {
                 let view = self.memory.view::<$wasm_type>();
                 let offset = self.offset;
                 let range = if let Ok(slice) = index.cast_as::<PySlice>() {
-                    let slice = slice.indices(view.len() as i64)?;
+                    let slice = slice.indices(view.len() as _)?;
 
                     if slice.start >= slice.stop {
                         return Err(IndexError::py_err(format!(
@@ -105,8 +105,7 @@ macro_rules! memory_view {
             ///
             /// The `index` and `value` can only be of type slice and
             /// list, or integer and integer.
-            fn __setitem__(&mut self, _index: &PyAny, _value: &PyAny) -> PyResult<()> {
-                /*
+            fn __setitem__(&mut self, index: &PyAny, value: &PyAny) -> PyResult<()> {
                 let offset = self.offset;
                 let view = self.memory.view::<$wasm_type>();
 
@@ -121,7 +120,7 @@ macro_rules! memory_view {
                         })
                         .and_then(|sequence| sequence.list()),
                 ) {
-                    let slice = slice.indices(view.len() as i64)?;
+                    let slice = slice.indices(view.len() as _)?;
 
                     if slice.start >= slice.stop {
                         return Err(IndexError::py_err(format!(
@@ -200,8 +199,6 @@ macro_rules! memory_view {
                 } else {
                     Err(RuntimeError::py_err("When setting data to the memory view, the index and the value can only have the following types: Either `int` and `int`, or `slice` and `sequence`."))
                 }
-                 */
-                Ok(())
             }
         }
     };
