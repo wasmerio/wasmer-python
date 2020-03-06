@@ -15,7 +15,7 @@ prelude:
 
 	pip3 install virtualenv
 	virtualenv .env
-	(test -d .env/bin/ && source .env/bin/activate) || .env/Scripts/activate
+	(test -d .env/bin/ && source .env/bin/activate) || source .env/Scripts/activate
 	pip3 install maturin pytest pytest-benchmark
 
 	which maturin
@@ -30,7 +30,7 @@ prelude:
 # Setup the environment to develop the extension.
 wakeup:
 	#!/usr/bin/env bash
-	(test -d .env/bin/ && source .env/bin/activate) || .env/Scripts/activate
+	(test -d .env/bin/ && source .env/bin/activate) || source .env/Scripts/activate
 
 # Unset the development environment.
 sleep:
