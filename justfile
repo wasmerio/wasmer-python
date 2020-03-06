@@ -38,7 +38,7 @@ sleep:
 
 # Compile and install the Python library.
 build:
-	export PYTHON_SYS_EXECUTABLE=$(which python3)
+	export PYTHON_SYS_EXECUTABLE=$(which python)
 	cargo check
 	maturin develop --binding-crate pyo3 --release --strip
 
