@@ -26,9 +26,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Rust
-        shell: bash
-        run: |
-          curl https://sh.rustup.rs -sSf | sh -s -- -y
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+          override: true
 
       - name: Cache Cargo registry
         uses: actions/cache@v1
