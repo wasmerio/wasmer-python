@@ -11,8 +11,8 @@ jobs:
 
     strategy:
       matrix:
-        # The job runs on 2 different OS.
-        os: [ubuntu-latest, macos-latest]
+        # The job runs on 3 different OS.
+        os: [ubuntu-latest, macos-latest, windows-latest]
         # The job runs on 3 different Python versions.
         python: ['3.6', '3.7', '3.8']
       # As soon as one job fails in the matrix, all the other
