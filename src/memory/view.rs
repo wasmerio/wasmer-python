@@ -1,5 +1,7 @@
 //! The `*Array` Python objects to represent WebAsembly memory views.
 
+#![allow(unused_imports)]
+
 use pyo3::{
     class::PyMappingProtocol,
     exceptions::{IndexError, RuntimeError, ValueError},
@@ -29,13 +31,17 @@ macro_rules! memory_view {
         impl PyMappingProtocol for $class_name {
             /// Returns the length of the memory view.
             fn __len__(&self) -> PyResult<usize> {
+                /*
                 Ok(self.memory.view::<$wasm_type>()[self.offset..].len() / size_of::<$wasm_type>())
+                */
+                Ok(0)
             }
 
             /// Returns one or more values from the memory view.
             ///
             /// The `index` can be either a slice or an integer.
-            fn __getitem__(&self, index: &PyAny) -> PyResult<PyObject> {
+            fn __getitem__(&self, _index: &PyAny) -> PyResult<PyObject> {
+                /*
                 let view = self.memory.view::<$wasm_type>();
                 let offset = self.offset;
                 let range = if let Ok(slice) = index.cast_as::<PySlice>() {
@@ -97,13 +103,16 @@ macro_rules! memory_view {
                         .collect::<Vec<$wasm_type>>()
                         .into_py(py))
                 }
+                */
+                Err(RuntimeError::py_err("arf".to_string()))
             }
 
             /// Sets one or more values in the memory view.
             ///
             /// The `index` and `value` can only be of type slice and
             /// list, or integer and integer.
-            fn __setitem__(&mut self, index: &PyAny, value: &PyAny) -> PyResult<()> {
+            fn __setitem__(&mut self, _index: &PyAny, _value: &PyAny) -> PyResult<()> {
+                /*
                 let offset = self.offset;
                 let view = self.memory.view::<$wasm_type>();
 
@@ -197,6 +206,8 @@ macro_rules! memory_view {
                 } else {
                     Err(RuntimeError::py_err("When setting data to the memory view, the index and the value can only have the following types: Either `int` and `int`, or `slice` and `sequence`."))
                 }
+                 */
+                Ok(())
             }
         }
     };
