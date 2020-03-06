@@ -31,10 +31,7 @@ macro_rules! memory_view {
         impl PyMappingProtocol for $class_name {
             /// Returns the length of the memory view.
             fn __len__(&self) -> PyResult<usize> {
-                /*
                 Ok(self.memory.view::<$wasm_type>()[self.offset..].len() / size_of::<$wasm_type>())
-                */
-                Ok(0)
             }
 
             /// Returns one or more values from the memory view.
