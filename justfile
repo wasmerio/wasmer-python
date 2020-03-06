@@ -1,6 +1,6 @@
 # Compile a Rust program to Wasm.
-compile-wasm FILE='examples/simple':
-	#!/usr/bin/env bash
+cmacosompile-wasm FILE='examples/simple':
+ macos	#!/usr/bin/env bash
 	set -euo pipefail
 	rustc --target wasm32-unknown-unknown -O --crate-type=cdylib {{FILE}}.rs -o {{FILE}}.raw.wasm
 	wasm-gc {{FILE}}.raw.wasm {{FILE}}.wasm
@@ -11,28 +11,20 @@ compile-wasm FILE='examples/simple':
 # Install the environment to develop the extension.
 prelude:
 	#!/usr/bin/env bash
+	set -x
+
 	pip3 install virtualenv
 	virtualenv -p $(which python3) .env
 	source .env/bin/activate
 	pip3 install maturin pytest pytest-benchmark
 
-	echo -n 'maturin -- path: '
 	which maturin
-
-	echo -n 'maturin -- version: '
 	maturin --version
-
-	echo -n 'python -- path: '
 	which python
-
-	echo -n 'python -- version: '
 	python --version
-
-	echo -n 'python-config -- path: '
 	which python-config
-
-	echo -n 'python-config -- abiflags: '
 	python-config --abiflags || true
+	ls .env
 
 # Setup the environment to develop the extension.
 wakeup:
