@@ -37,8 +37,7 @@ macro_rules! memory_view {
             /// Returns one or more values from the memory view.
             ///
             /// The `index` can be either a slice or an integer.
-            fn __getitem__(&self, _index: &PyAny) -> PyResult<PyObject> {
-                /*
+            fn __getitem__(&self, index: &PyAny) -> PyResult<PyObject> {
                 let view = self.memory.view::<$wasm_type>();
                 let offset = self.offset;
                 let range = if let Ok(slice) = index.cast_as::<PySlice>() {
@@ -100,8 +99,6 @@ macro_rules! memory_view {
                         .collect::<Vec<$wasm_type>>()
                         .into_py(py))
                 }
-                */
-                Err(RuntimeError::py_err("arf".to_string()))
             }
 
             /// Sets one or more values in the memory view.
