@@ -1,6 +1,6 @@
 # Compile a Rust program to Wasm.
-cmacosompile-wasm FILE='examples/simple':
- macos	#!/usr/bin/env bash
+compile-wasm FILE='examples/simple':
+	#!/usr/bin/env bash
 	set -euo pipefail
 	rustc --target wasm32-unknown-unknown -O --crate-type=cdylib {{FILE}}.rs -o {{FILE}}.raw.wasm
 	wasm-gc {{FILE}}.raw.wasm {{FILE}}.wasm
@@ -24,7 +24,8 @@ prelude:
 	python --version
 	which python-config
 	python-config --abiflags || true
-	ls .env
+	pwd
+	ls -l .env
 
 # Setup the environment to develop the extension.
 wakeup:
