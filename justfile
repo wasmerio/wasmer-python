@@ -14,7 +14,7 @@ prelude:
 	set -x
 
 	pip3 install virtualenv
-	virtualenv -p $(which python) .env
+	virtualenv .env
 	source .env/bin/activate
 	pip3 install maturin pytest pytest-benchmark
 
