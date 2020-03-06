@@ -72,7 +72,7 @@ jobs:
           MATURIN_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          source .env/bin/activate
+          (test -d .env/bin/ && source .env/bin/activate) || source .env/Scripts/activate
           just build-any
           version=${{ matrix.python }}
           just publish python${version%.*}

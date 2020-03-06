@@ -1,7 +1,5 @@
 //! The `*Array` Python objects to represent WebAsembly memory views.
 
-#![allow(unused_imports)]
-
 use pyo3::{
     class::PyMappingProtocol,
     exceptions::{IndexError, RuntimeError, ValueError},
