@@ -1,6 +1,6 @@
 name: Build and Test
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   # The `test` job.
@@ -11,8 +11,8 @@ jobs:
       matrix:
         # The job runs on 2 different OS.
         os: [ubuntu-latest, macos-latest]
-        # The job runs on 3 different Python versions
-        python: ['3.6.9', '3.7.5', '3.8.2']
+        # The job runs on 3 different Python versions.
+        python: ['3.6', '3.7', '3.8']
       # As soon as one job fails in the matrix, all the other
       # in-progress jobs are canceled.
       fail-fast: true
@@ -22,12 +22,6 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
-
-      - name: Set up `pyenv`
-        shell: bash
-        run: |
-          curl https://pyenv.run | bash
-          export PATH="$HOME/.pyenv/bin:$PATH"
 
       - name: Set up Rust
         shell: bash
@@ -52,17 +46,10 @@ jobs:
           path: target
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Cache Python versions
-        uses: actions/cache@v1
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v1
         with:
-          path: ~/.pyenv/versions
-          key: ${{ runner.os }}-pyenv-versions
-
-      - name: Set up Python version ${{ matrix.python }}
-        shell: bash
-        run: |
-          export PATH="$HOME/.pyenv/bin:$PATH"
-          test -d $HOME/.pyenv/versions/${{ matrix.python }}/bin || pyenv install ${{ matrix.python }}
+          python-version: ${{ matrix.python }}
 
       - name: Set up just
         shell: bash
@@ -74,14 +61,12 @@ jobs:
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          export PATH="$HOME/.pyenv/versions/${{ matrix.python }}/bin/:$PATH"
           just prelude
 
       - name: Compile the library
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          export PATH="$HOME/.pyenv/versions/${{ matrix.python }}/bin/:$PATH"
           source .env/bin/activate
           just build
           just build-any
@@ -90,6 +75,5 @@ jobs:
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          export PATH="$HOME/.pyenv/versions/${{ matrix.python }}/bin/:$PATH"
           source .env/bin/activate
           just test
