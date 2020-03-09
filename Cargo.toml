@@ -15,8 +15,10 @@ name = "wasmer"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer-runtime = "0.15"
-wasmer-runtime-core = "0.15"
+#wasmer-runtime = "0.15"
+#wasmer-runtime-core = "0.15"
+wasmer-runtime = { git = "https://github.com/Hywan/wasmer", branch = "fix-runtime-core-sys-windows-memory" }
+wasmer-runtime-core = { git = "https://github.com/Hywan/wasmer", branch = "fix-runtime-core-sys-windows-memory" }
 pyo3 = { version = "0.8", features = ["extension-module"] }
 
 [package.metadata.maturin]
