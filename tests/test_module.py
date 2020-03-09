@@ -102,50 +102,50 @@ def test_exports():
         },
     ]
 
-#def test_imports():
-#    assert Module(open(here + '/imports.wasm', 'rb').read()).imports == [
-#        {
-#            'kind': ImportKind.FUNCTION,
-#            'namespace': 'ns',
-#            'name': 'f1',
-#        },
-#        {
-#            'kind': ImportKind.FUNCTION,
-#            'namespace': 'ns',
-#            'name': 'f2',
-#        },
-#        {
-#            'kind': ImportKind.MEMORY,
-#            'namespace': 'ns',
-#            'name': 'm1',
-#            'minimum_pages': 3,
-#            'maximum_pages': 4,
-#        },
-#        {
-#            'kind': ImportKind.GLOBAL,
-#            'namespace': 'ns',
-#            'name': 'g1',
-#            'mutable': False,
-#            'type': 'f32'
-#        },
-#        {
-#            'kind': ImportKind.TABLE,
-#            'namespace': 'ns',
-#            'name': 't1',
-#            'minimum_elements': 1,
-#            'maximum_elements': 2,
-#            'element_type': 'anyfunc',
-#        }
-#    ]
-#
-#def test_custom_section_names():
-#    assert sorted(Module(open(here + '/custom_sections.wasm', 'rb').read()).custom_section_names) == ['easter_egg', 'hello']
-#
-#def test_custom_section():
-#    module = Module(open(here + '/custom_sections.wasm', 'rb').read())
-#    assert module.custom_section('easter_egg') == b'Wasmer'
-#    assert module.custom_section('hello') == b'World!'
-#    assert module.custom_section('foo') == None
+def test_imports():
+    assert Module(open(here + '/imports.wasm', 'rb').read()).imports == [
+        {
+            'kind': ImportKind.FUNCTION,
+            'namespace': 'ns',
+            'name': 'f1',
+        },
+        {
+            'kind': ImportKind.FUNCTION,
+            'namespace': 'ns',
+            'name': 'f2',
+        },
+        {
+            'kind': ImportKind.MEMORY,
+            'namespace': 'ns',
+            'name': 'm1',
+            'minimum_pages': 3,
+            'maximum_pages': 4,
+        },
+        {
+            'kind': ImportKind.GLOBAL,
+            'namespace': 'ns',
+            'name': 'g1',
+            'mutable': False,
+            'type': 'f32'
+        },
+        {
+            'kind': ImportKind.TABLE,
+            'namespace': 'ns',
+            'name': 't1',
+            'minimum_elements': 1,
+            'maximum_elements': 2,
+            'element_type': 'anyfunc',
+        }
+    ]
+
+def test_custom_section_names():
+    assert sorted(Module(open(here + '/custom_sections.wasm', 'rb').read()).custom_section_names) == ['easter_egg', 'hello']
+
+def test_custom_section():
+    module = Module(open(here + '/custom_sections.wasm', 'rb').read())
+    assert module.custom_section('easter_egg') == b'Wasmer'
+    assert module.custom_section('hello') == b'World!'
+    assert module.custom_section('foo') == None
 
 def test_serialize():
     assert type(Module(TEST_BYTES).serialize()) == bytes
