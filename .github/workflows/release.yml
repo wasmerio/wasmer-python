@@ -74,5 +74,4 @@ jobs:
           export PATH="$HOME/.cargo/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
           just build-any
-          version=${{ matrix.python }}
-          just publish python${version%.*}
+          just publish python${{ matrix.python }}
