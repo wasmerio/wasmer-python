@@ -106,6 +106,7 @@ impl Module {
                         globals: exported_globals,
                     },
                 )?,
+                host_function_references: Vec::new(),
             },
         )?)
     }

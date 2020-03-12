@@ -22,7 +22,7 @@ use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
     types::{PyAny, PyBytes, PyDict, PyFloat, PyLong, PyString, PyTuple},
-    PyNativeType, PyTryFrom, Python,
+    AsPyPointer, PyNativeType, PyObject, PyTryFrom, Python, ToPyObject,
 };
 use std::{rc::Rc, sync::Arc};
 use wasmer_runtime::{
@@ -54,6 +54,11 @@ pub struct Instance {
     /// All WebAssembly exported globals represented by an
     /// `ExportedGlobals` object.
     pub(crate) globals: Py<ExportedGlobals>,
+
+    /// This field is unused as is, but is required to keep a
+    /// reference to host function `PyObject`.
+    #[allow(unused)]
+    pub(crate) host_function_references: Vec<PyObject>,
 }
 
 #[pymethods]
@@ -68,12 +73,15 @@ impl Instance {
         bytes: &PyAny,
         imported_functions: &'static PyDict,
     ) -> PyResult<()> {
+        let py = object.py();
+
         // Read the bytes.
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
 
         let mut import_object = ImportObject::new();
+        let mut host_function_references = Vec::with_capacity(imported_functions.len());
 
-        for (namespace_name, namespace) in imported_functions.into_iter() {
+        for (namespace_name, namespace) in imported_functions.iter() {
             let namespace_name = namespace_name
                 .downcast_ref::<PyString>()
                 .map_err(|_| RuntimeError::py_err("Namespace name must be a string.".to_string()))?
@@ -121,10 +129,10 @@ impl Instance {
                     })?
                 {
                     let ty = match value.to_string().as_str() {
-                        "i32" => Type::I32,
-                        "i64" => Type::I64,
-                        "f32" => Type::F32,
-                        "f64" => Type::F64,
+                        "i32" | "I32" => Type::I32,
+                        "i64" | "I64" => Type::I64,
+                        "f32" | "F32" => Type::F32,
+                        "f64" | "F64" => Type::F64,
                         _ => {
                             return Err(RuntimeError::py_err(
                                 "Type `{}` is not supported as a WebAssembly type.".to_string(),
@@ -144,6 +152,10 @@ impl Instance {
                     ));
                 }
 
+                let function = function.to_object(py);
+
+                host_function_references.push(function.clone_ref(py));
+
                 let function_implementation = DynamicFunc::new(
                     Arc::new(FuncSig::new(input_types, output_types.clone())),
                     move |_, inputs: &[Value]| -> Vec<Value> {
@@ -161,13 +173,18 @@ impl Instance {
                             })
                             .collect::<Vec<PyObject>>();
 
+                        if function.as_ptr().is_null() {
+                            panic!("Host function implementation is null. Maybe it has moved?");
+                        }
+
                         let results = function
-                            .call(PyTuple::new(py, inputs), None)
+                            .call(py, PyTuple::new(py, inputs), None)
                             .expect("Oh dear, trap, quick");
 
-                        let results = results
-                            .downcast_ref::<PyTuple>()
-                            .unwrap_or_else(|_| PyTuple::new(py, vec![results]));
+                        let results = match results.cast_as::<PyTuple>(py) {
+                            Ok(results) => results,
+                            Err(_) => PyTuple::new(py, vec![results]),
+                        };
 
                         let outputs = results
                             .iter()
@@ -251,8 +268,6 @@ impl Instance {
             }
         }
 
-        let py = object.py();
-
         // Instantiate the `Instance` Python class.
         object.init({
             Self {
@@ -273,6 +288,7 @@ impl Instance {
                         globals: exported_globals,
                     },
                 )?,
+                host_function_references,
             }
         });
 
