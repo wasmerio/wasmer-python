@@ -2,6 +2,7 @@
 
 use pyo3::{prelude::*, types::PyTuple};
 
+mod import;
 mod instance;
 mod memory;
 mod module;
