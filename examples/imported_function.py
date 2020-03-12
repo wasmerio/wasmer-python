@@ -1,8 +1,5 @@
 from wasmer import Instance
 import os
-import gc
-
-gc.disable()
 
 __dir__ = os.path.dirname(os.path.realpath(__file__))
 
