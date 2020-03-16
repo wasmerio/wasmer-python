@@ -15,17 +15,17 @@ pub(crate) mod exports;
 pub(crate) mod globals;
 pub(crate) mod inspect;
 
-use crate::memory::Memory;
+use crate::{memory::Memory, value::Value};
 use exports::ExportedFunctions;
 use globals::ExportedGlobals;
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
-    types::{PyAny, PyBytes},
+    types::{PyAny, PyBytes, PyTuple},
     PyNativeType, PyTryFrom, Python,
 };
 use std::rc::Rc;
-use wasmer_runtime::{imports, instantiate, Export};
+use wasmer_runtime::{self as runtime, imports, instantiate, Export, Value as WasmValue};
 
 #[pyclass]
 /// `Instance` is a Python class that represents a WebAssembly instance.
@@ -38,6 +38,8 @@ use wasmer_runtime::{imports, instantiate, Export};
 /// instance = Instance(wasm_bytes)
 /// ```
 pub struct Instance {
+    pub(crate) instance: Rc<runtime::Instance>,
+
     /// All WebAssembly exported functions represented by an
     /// `ExportedFunctions` object.
     pub(crate) exports: Py<ExportedFunctions>,
@@ -98,6 +100,7 @@ impl Instance {
         // Instantiate the `Instance` Python class.
         object.init({
             Self {
+                instance: instance.clone(),
                 exports: Py::new(
                     py,
                     ExportedFunctions {
@@ -140,5 +143,49 @@ impl Instance {
     #[getter]
     fn globals(&self) -> &Py<ExportedGlobals> {
         &self.globals
+    }
+
+    /// Call a function by its index. It is useful for advanced usages.
+    ///
+    /// Arguments must be objects of type `Value`.
+    ///
+    /// # Examples
+    ///
+    /// ```python
+    /// index = 42
+    /// instance.call_function_by_index(index, Value.i32(x), Value.i32(y))
+    /// ```
+    #[args(arguments = "*")]
+    fn call_function_by_index(
+        &self,
+        py: Python,
+        index: usize,
+        arguments: &PyTuple,
+    ) -> PyResult<PyObject> {
+        let mut typed_arguments = Vec::with_capacity(arguments.len());
+
+        for argument in arguments.iter() {
+            typed_arguments.push(argument.downcast_ref::<Value>()?.value.clone());
+        }
+
+        let results = match self
+            .instance
+            .call_function_by_index(index, &typed_arguments)
+        {
+            Ok(results) => results,
+            Err(e) => return Err(RuntimeError::py_err(format!("{}", e))),
+        };
+
+        if !results.is_empty() {
+            Ok(match results[0] {
+                WasmValue::I32(result) => result.to_object(py),
+                WasmValue::I64(result) => result.to_object(py),
+                WasmValue::F32(result) => result.to_object(py),
+                WasmValue::F64(result) => result.to_object(py),
+                WasmValue::V128(result) => result.to_object(py),
+            })
+        } else {
+            Ok(py.None())
+        }
     }
 }

@@ -89,6 +89,7 @@ impl Module {
         Ok(Py::new(
             py,
             Instance {
+                instance: instance.clone(),
                 exports: Py::new(
                     py,
                     ExportedFunctions {

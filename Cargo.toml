@@ -15,8 +15,8 @@ name = "wasmer"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer-runtime = "0.15"
-wasmer-runtime-core = "0.15"
+wasmer-runtime = { git = "https://github.com/Hywan/wasmer", branch = "feat-runtime-core-instance-call-by-index" }
+wasmer-runtime-core = { git = "https://github.com/Hywan/wasmer", branch = "feat-runtime-core-instance-call-by-index" }
 pyo3 = { version = "0.8", features = ["extension-module"] }
 
 [package.metadata.maturin]
