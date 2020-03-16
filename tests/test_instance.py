@@ -42,6 +42,9 @@ def test_function_does_not_exist():
 def test_basic_sum():
     assert value_with_type(Instance(TEST_BYTES).exports.sum(1, 2)) == (3, int)
 
+def test_call_by_index():
+    assert value_with_type(Instance(TEST_BYTES).call_function_by_index(0, Value.i32(1), Value.i32(2))) == (3, int)
+
 def test_call_arity_0():
     assert value_with_type(Instance(TEST_BYTES).exports.arity_0()) == (42, int)
 
