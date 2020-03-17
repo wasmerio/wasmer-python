@@ -15,9 +15,11 @@ pub(crate) mod exports;
 pub(crate) mod globals;
 pub(crate) mod inspect;
 
-use crate::{memory::Memory, value::Value};
-use exports::ExportedFunctions;
-use globals::ExportedGlobals;
+use crate::{
+    instance::exports::{call_dyn_func, ExportedFunctions},
+    instance::globals::ExportedGlobals,
+    memory::Memory,
+};
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
@@ -25,7 +27,7 @@ use pyo3::{
     PyNativeType, PyTryFrom, Python,
 };
 use std::rc::Rc;
-use wasmer_runtime::{self as runtime, imports, instantiate, Export, Value as WasmValue};
+use wasmer_runtime::{self as runtime, imports, instantiate, Export};
 
 #[pyclass]
 /// `Instance` is a Python class that represents a WebAssembly instance.
@@ -162,30 +164,10 @@ impl Instance {
         index: usize,
         arguments: &PyTuple,
     ) -> PyResult<PyObject> {
-        let mut typed_arguments = Vec::with_capacity(arguments.len());
+        let function = self.instance.dyn_func_by_index(index).map_err(|_| {
+            RuntimeError::py_err(format!("Function at index `{}` does not exist.", index))
+        })?;
 
-        for argument in arguments.iter() {
-            typed_arguments.push(argument.downcast_ref::<Value>()?.value.clone());
-        }
-
-        let results = match self
-            .instance
-            .call_function_by_index(index, &typed_arguments)
-        {
-            Ok(results) => results,
-            Err(e) => return Err(RuntimeError::py_err(format!("{}", e))),
-        };
-
-        if !results.is_empty() {
-            Ok(match results[0] {
-                WasmValue::I32(result) => result.to_object(py),
-                WasmValue::I64(result) => result.to_object(py),
-                WasmValue::F32(result) => result.to_object(py),
-                WasmValue::F64(result) => result.to_object(py),
-                WasmValue::V128(result) => result.to_object(py),
-            })
-        } else {
-            Ok(py.None())
-        }
+        call_dyn_func(py, &index.to_string(), function, arguments)
     }
 }
