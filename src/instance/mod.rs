@@ -16,14 +16,12 @@ pub(crate) mod globals;
 pub(crate) mod inspect;
 
 use crate::{
-    instance::exports::{call_dyn_func, ExportedFunctions},
-    instance::globals::ExportedGlobals,
-    memory::Memory,
+    instance::exports::ExportedFunctions, instance::globals::ExportedGlobals, memory::Memory,
 };
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
-    types::{PyAny, PyBytes, PyTuple},
+    types::{PyAny, PyBytes},
     PyNativeType, PyTryFrom, Python,
 };
 use std::{collections::HashMap, rc::Rc};
@@ -166,38 +164,15 @@ impl Instance {
         &self.globals
     }
 
-    /// Call a function by its index. It is useful for advanced
-    /// usages. Please, think twice before using it.
-    ///
-    /// Arguments must be objects of type `Value`.
-    ///
-    /// # Examples
-    ///
-    /// ```python
-    /// index = 42
-    /// instance.call_function_by_index(index, x, y)
-    /// ```
-    #[args(arguments = "*")]
-    fn call_function_by_index(
-        &mut self,
-        py: Python,
-        index: usize,
-        arguments: &PyTuple,
-    ) -> PyResult<PyObject> {
+    /// Find the export _name_ associated to an index if it is valid.
+    fn resolve_exported_function(&mut self, py: Python, index: usize) -> PyResult<String> {
         match &self.exports_index_to_name {
-            Some(exports_index_to_name) => {
-                let export_name = exports_index_to_name.get(&index).ok_or_else(|| {
+            Some(exports_index_to_name) => exports_index_to_name
+                .get(&index)
+                .map(|name| name.clone())
+                .ok_or_else(|| {
                     RuntimeError::py_err(format!("Function at index `{}` does not exist.", index))
-                })?;
-                let function = self.instance.dyn_func(export_name).map_err(|_| {
-                    RuntimeError::py_err(format!(
-                        "Exported function `{}` does not exist.",
-                        export_name
-                    ))
-                })?;
-
-                call_dyn_func(py, &index.to_string(), function, arguments)
-            }
+                }),
 
             None => {
                 self.exports_index_to_name = Some(
@@ -211,7 +186,7 @@ impl Instance {
                         .collect(),
                 );
 
-                self.call_function_by_index(py, index, arguments)
+                self.resolve_exported_function(py, index)
             }
         }
     }
