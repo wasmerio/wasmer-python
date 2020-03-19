@@ -6,11 +6,11 @@ use wasmer_runtime_core::types::Type as WasmType;
 
 #[repr(u8)]
 pub enum Type {
-    I32,
-    I64,
-    F32,
-    F64,
-    V128,
+    I32 = 1,
+    I64 = 2,
+    F32 = 3,
+    F64 = 4,
+    V128 = 5,
 }
 
 impl Type {
