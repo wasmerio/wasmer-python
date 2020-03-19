@@ -211,8 +211,6 @@ impl Instance {
                         .collect(),
                 );
 
-                dbg!(&self.exports_index_to_name);
-
                 self.call_function_by_index(py, index, arguments)
             }
         }
