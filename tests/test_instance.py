@@ -42,9 +42,6 @@ def test_function_does_not_exist():
 def test_basic_sum():
     assert value_with_type(Instance(TEST_BYTES).exports.sum(1, 2)) == (3, int)
 
-def test_call_by_index():
-    assert value_with_type(Instance(TEST_BYTES).call_function_by_index(0, 1, 2)) == (3, int)
-
 def test_call_arity_0():
     assert value_with_type(Instance(TEST_BYTES).exports.arity_0()) == (42, int)
 
@@ -84,3 +81,6 @@ def test_getfullargspec():
 def test_getargs():
     instance = Instance(TEST_BYTES)
     assert instance.exports.sum.getargs == "sum: [I32, I32]"
+
+def test_resolve_exported_function():
+    assert Instance(TEST_BYTES).resolve_exported_function(0) == "sum"
