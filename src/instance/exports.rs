@@ -139,10 +139,9 @@ pub(super) fn call_dyn_func(
     }
 
     // Call the exported function.
-    let results = match function.call(function_arguments.as_slice()) {
-        Ok(results) => results,
-        Err(e) => return Err(RuntimeError::py_err(format!("{}", e))),
-    };
+    let results = function
+        .call(function_arguments.as_slice())
+        .map_err(|e| RuntimeError::py_err(format!("{}", e)))?;
 
     // Map the WebAssembly first result to a Python value.
     if !results.is_empty() {
