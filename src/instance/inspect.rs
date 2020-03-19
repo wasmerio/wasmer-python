@@ -10,11 +10,5 @@ use wasmer_runtime_core::instance::DynFunc;
 pub trait InspectExportedFunction {
     // A convenience method to move Wasmer runtime's dynamic function
     // object into scope for pyo3 constructors/callers
-    fn move_runtime_func_obj(&self) -> Result<DynFunc, PyErr>;
-
-    // Returns the signature of an exported function.
-    fn signature(&self) -> String;
-
-    // Returns the parameters of an exporterd function.
-    fn params(&self) -> String;
+    fn function(&self) -> PyResult<DynFunc>;
 }
