@@ -26,7 +26,7 @@ use pyo3::{
     types::{PyAny, PyBytes, PyTuple},
     PyNativeType, PyTryFrom, Python,
 };
-use std::rc::Rc;
+use std::{collections::HashMap, rc::Rc};
 use wasmer_runtime::{self as runtime, imports, instantiate, Export};
 
 #[pyclass]
@@ -53,6 +53,25 @@ pub struct Instance {
     /// All WebAssembly exported globals represented by an
     /// `ExportedGlobals` object.
     pub(crate) globals: Py<ExportedGlobals>,
+
+    exports_index_to_name: Option<HashMap<usize, String>>,
+}
+
+impl Instance {
+    pub(crate) fn inner_new(
+        instance: Rc<runtime::Instance>,
+        exports: Py<ExportedFunctions>,
+        memory: Option<Py<Memory>>,
+        globals: Py<ExportedGlobals>,
+    ) -> Self {
+        Self {
+            instance,
+            exports,
+            memory,
+            globals,
+            exports_index_to_name: None,
+        }
+    }
 }
 
 #[pymethods]
@@ -101,26 +120,26 @@ impl Instance {
 
         // Instantiate the `Instance` Python class.
         object.init({
-            Self {
-                instance: instance.clone(),
-                exports: Py::new(
+            Self::inner_new(
+                instance.clone(),
+                Py::new(
                     py,
                     ExportedFunctions {
                         instance: instance.clone(),
                         functions: exported_functions,
                     },
                 )?,
-                memory: match exported_memory {
+                match exported_memory {
                     Some(memory) => Some(Py::new(py, Memory { memory })?),
                     None => None,
                 },
-                globals: Py::new(
+                Py::new(
                     py,
                     ExportedGlobals {
                         globals: exported_globals,
                     },
                 )?,
-            }
+            )
         });
 
         Ok(())
@@ -147,7 +166,8 @@ impl Instance {
         &self.globals
     }
 
-    /// Call a function by its index. It is useful for advanced usages.
+    /// Call a function by its index. It is useful for advanced
+    /// usages. Please, think twice before using it.
     ///
     /// Arguments must be objects of type `Value`.
     ///
@@ -155,19 +175,46 @@ impl Instance {
     ///
     /// ```python
     /// index = 42
-    /// instance.call_function_by_index(index, Value.i32(x), Value.i32(y))
+    /// instance.call_function_by_index(index, x, y)
     /// ```
     #[args(arguments = "*")]
     fn call_function_by_index(
-        &self,
+        &mut self,
         py: Python,
         index: usize,
         arguments: &PyTuple,
     ) -> PyResult<PyObject> {
-        let function = self.instance.dyn_func_by_index(index).map_err(|_| {
-            RuntimeError::py_err(format!("Function at index `{}` does not exist.", index))
-        })?;
+        match &self.exports_index_to_name {
+            Some(exports_index_to_name) => {
+                let export_name = exports_index_to_name.get(&index).ok_or_else(|| {
+                    RuntimeError::py_err(format!("Function at index `{}` does not exist.", index))
+                })?;
+                let function = self.instance.dyn_func(export_name).map_err(|_| {
+                    RuntimeError::py_err(format!(
+                        "Exported function `{}` does not exist.",
+                        export_name
+                    ))
+                })?;
 
-        call_dyn_func(py, &index.to_string(), function, arguments)
+                call_dyn_func(py, &index.to_string(), function, arguments)
+            }
+
+            None => {
+                self.exports_index_to_name = Some(
+                    self.instance
+                        .exports()
+                        .filter(|(_, export)| match export {
+                            Export::Function { .. } => true,
+                            _ => false,
+                        })
+                        .map(|(name, _)| (self.instance.resolve_func(&name).unwrap(), name.clone()))
+                        .collect(),
+                );
+
+                dbg!(&self.exports_index_to_name);
+
+                self.call_function_by_index(py, index, arguments)
+            }
+        }
     }
 }

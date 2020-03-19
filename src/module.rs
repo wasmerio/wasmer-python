@@ -88,26 +88,26 @@ impl Module {
         // Instantiate the `Instance` Python class.
         Ok(Py::new(
             py,
-            Instance {
-                instance: instance.clone(),
-                exports: Py::new(
+            Instance::inner_new(
+                instance.clone(),
+                Py::new(
                     py,
                     ExportedFunctions {
                         instance: instance.clone(),
                         functions: exported_functions,
                     },
                 )?,
-                memory: match exported_memory {
+                match exported_memory {
                     Some(memory) => Some(Py::new(py, Memory { memory })?),
                     None => None,
                 },
-                globals: Py::new(
+                Py::new(
                     py,
                     ExportedGlobals {
                         globals: exported_globals,
                     },
                 )?,
-            },
+            ),
         )?)
     }
 
