@@ -85,6 +85,78 @@ impl InspectExportedFunction for ExportedFunction {
     }
 }
 
+pub(super) fn call_dyn_func(
+    py: Python,
+    function_name_as_str: &str,
+    function: DynFunc,
+    arguments: &PyTuple,
+) -> PyResult<PyObject> {
+    // Check the given arguments match the exported function signature.
+    let signature = function.signature();
+    let parameters = signature.params();
+
+    let number_of_parameters = parameters.len() as isize;
+    let number_of_arguments = arguments.len() as isize;
+    let diff: isize = number_of_parameters - number_of_arguments;
+
+    match diff.cmp(&0) {
+        Ordering::Greater => {
+            return Err(RuntimeError::py_err(format!(
+                "Missing {} argument(s) when calling `{}`: Expect {} argument(s), given {}.",
+                diff, function_name_as_str, number_of_parameters, number_of_arguments,
+            )))
+        }
+        Ordering::Less => {
+            return Err(RuntimeError::py_err(format!(
+                "Given {} extra argument(s) when calling `{}`: Expect {} argument(s), given {}.",
+                diff.abs(),
+                function_name_as_str,
+                number_of_parameters,
+                number_of_arguments,
+            )))
+        }
+        Ordering::Equal => {}
+    }
+
+    // Map Python arguments to WebAssembly values.
+    let mut function_arguments = Vec::<WasmValue>::with_capacity(number_of_parameters as usize);
+
+    for (parameter, argument) in parameters.iter().zip(arguments.iter()) {
+        let value = match argument.downcast_ref::<Value>() {
+            Ok(value) => value.value.clone(),
+            Err(_) => match parameter {
+                Type::I32 => WasmValue::I32(argument.downcast_ref::<PyLong>()?.extract::<i32>()?),
+                Type::I64 => WasmValue::I64(argument.downcast_ref::<PyLong>()?.extract::<i64>()?),
+                Type::F32 => WasmValue::F32(argument.downcast_ref::<PyFloat>()?.extract::<f32>()?),
+                Type::F64 => WasmValue::F64(argument.downcast_ref::<PyFloat>()?.extract::<f64>()?),
+                Type::V128 => {
+                    WasmValue::V128(argument.downcast_ref::<PyLong>()?.extract::<u128>()?)
+                }
+            },
+        };
+
+        function_arguments.push(value);
+    }
+
+    // Call the exported function.
+    let results = function
+        .call(function_arguments.as_slice())
+        .map_err(|e| RuntimeError::py_err(format!("{}", e)))?;
+
+    // Map the WebAssembly first result to a Python value.
+    if !results.is_empty() {
+        Ok(match results[0] {
+            WasmValue::I32(result) => result.to_object(py),
+            WasmValue::I64(result) => result.to_object(py),
+            WasmValue::F32(result) => result.to_object(py),
+            WasmValue::F64(result) => result.to_object(py),
+            WasmValue::V128(result) => result.to_object(py),
+        })
+    } else {
+        Ok(py.None())
+    }
+}
+
 #[pymethods]
 /// Implement methods on the `ExportedFunction` Python class.
 impl ExportedFunction {
@@ -98,77 +170,7 @@ impl ExportedFunction {
         // Get the exported function.
         let function: DynFunc = self.move_runtime_func_obj().unwrap();
 
-        // Check the given arguments match the exported function signature.
-        let signature = function.signature();
-        let parameters = signature.params();
-
-        let number_of_parameters = parameters.len() as isize;
-        let number_of_arguments = arguments.len() as isize;
-        let diff: isize = number_of_parameters - number_of_arguments;
-
-        match diff.cmp(&0) {
-            Ordering::Greater => {
-                return Err(RuntimeError::py_err(format!(
-                    "Missing {} argument(s) when calling `{}`: Expect {} argument(s), given {}.",
-                    diff, self.function_name, number_of_parameters, number_of_arguments,
-                )))
-            }
-            Ordering::Less => return Err(RuntimeError::py_err(format!(
-                "Given {} extra argument(s) when calling `{}`: Expect {} argument(s), given {}.",
-                diff.abs(),
-                self.function_name,
-                number_of_parameters,
-                number_of_arguments,
-            ))),
-            Ordering::Equal => {}
-        }
-
-        // Map Python arguments to WebAssembly values.
-        let mut function_arguments = Vec::<WasmValue>::with_capacity(number_of_parameters as usize);
-
-        for (parameter, argument) in parameters.iter().zip(arguments.iter()) {
-            let value = match argument.downcast_ref::<Value>() {
-                Ok(value) => value.value.clone(),
-                Err(_) => match parameter {
-                    Type::I32 => {
-                        WasmValue::I32(argument.downcast_ref::<PyLong>()?.extract::<i32>()?)
-                    }
-                    Type::I64 => {
-                        WasmValue::I64(argument.downcast_ref::<PyLong>()?.extract::<i64>()?)
-                    }
-                    Type::F32 => {
-                        WasmValue::F32(argument.downcast_ref::<PyFloat>()?.extract::<f32>()?)
-                    }
-                    Type::F64 => {
-                        WasmValue::F64(argument.downcast_ref::<PyFloat>()?.extract::<f64>()?)
-                    }
-                    Type::V128 => {
-                        WasmValue::V128(argument.downcast_ref::<PyLong>()?.extract::<u128>()?)
-                    }
-                },
-            };
-
-            function_arguments.push(value);
-        }
-
-        // Call the exported function.
-        let results = match function.call(function_arguments.as_slice()) {
-            Ok(results) => results,
-            Err(e) => return Err(RuntimeError::py_err(format!("{}", e))),
-        };
-
-        // Map the WebAssembly first result to a Python value.
-        if !results.is_empty() {
-            Ok(match results[0] {
-                WasmValue::I32(result) => result.to_object(py),
-                WasmValue::I64(result) => result.to_object(py),
-                WasmValue::F32(result) => result.to_object(py),
-                WasmValue::F64(result) => result.to_object(py),
-                WasmValue::V128(result) => result.to_object(py),
-            })
-        } else {
-            Ok(py.None())
-        }
+        call_dyn_func(py, &self.function_name, function, arguments)
     }
 
     #[getter]
