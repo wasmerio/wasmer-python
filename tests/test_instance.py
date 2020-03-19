@@ -76,11 +76,7 @@ def test_memory_view():
 
 def test_getfullargspec():
     instance = Instance(TEST_BYTES)
-    assert instance.exports.sum.getfullargspec == "sum: FuncSig { params: [I32, I32], returns: [I32] }"
-
-def test_getargs():
-    instance = Instance(TEST_BYTES)
-    assert instance.exports.sum.getargs == "sum: [I32, I32]"
+    assert instance.exports.sum.getfullargspec == inspect.FullArgSpec(args=['x0', 'x1'], varargs=None, varkw=None, defaults=None, kwonlyargs=None, kwonlydefaults=None, annotations={'x0': 0, 'x1': 0, 'return': 0})
 
 def test_resolve_exported_function():
     assert Instance(TEST_BYTES).resolve_exported_function(0) == "sum"
