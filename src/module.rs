@@ -127,10 +127,10 @@ impl Module {
             dict.set_item(
                 "kind",
                 match export_index {
-                    ExportIndex::Func(_) => ExportImportKind::Function as u8,
-                    ExportIndex::Memory(_) => ExportImportKind::Memory as u8,
-                    ExportIndex::Global(_) => ExportImportKind::Global as u8,
-                    ExportIndex::Table(_) => ExportImportKind::Table as u8,
+                    ExportIndex::Func(_) => ExportImportKind::Function,
+                    ExportIndex::Memory(_) => ExportImportKind::Memory,
+                    ExportIndex::Global(_) => ExportImportKind::Global,
+                    ExportIndex::Table(_) => ExportImportKind::Table,
                 },
             )?;
             dict.set_item("name", name)?;

@@ -1,18 +1,17 @@
 //! The `ExportedFunction` and relative collection that encapsulate Wasmer
 //!  memory and instances.
 
-use super::inspect::InspectExportedFunction;
-use crate::value::Value;
+use crate::{instance::inspect::InspectExportedFunction, r#type::Type, value::Value};
 use pyo3::{
     class::basic::PyObjectProtocol,
     exceptions::{LookupError, RuntimeError},
     prelude::*,
-    types::{PyFloat, PyLong, PyTuple},
+    types::{PyDict, PyFloat, PyLong, PyTuple},
     ToPyObject,
 };
 use std::{cmp::Ordering, convert::From, rc::Rc, slice};
 use wasmer_runtime::{self as runtime, Value as WasmValue};
-use wasmer_runtime_core::{instance::DynFunc, types::Type};
+use wasmer_runtime_core::{instance::DynFunc, types::Type as WasmType};
 
 #[repr(u8)]
 pub enum ExportImportKind {
@@ -46,6 +45,17 @@ impl From<&ExportImportKind> for &'static str {
     }
 }
 
+impl ToPyObject for ExportImportKind {
+    fn to_object(&self, py: Python) -> PyObject {
+        match self {
+            ExportImportKind::Function => (ExportImportKind::Function as u8).into_py(py),
+            ExportImportKind::Memory => (ExportImportKind::Memory as u8).into_py(py),
+            ExportImportKind::Global => (ExportImportKind::Global as u8).into_py(py),
+            ExportImportKind::Table => (ExportImportKind::Table as u8).into_py(py),
+        }
+    }
+}
+
 #[pyclass]
 /// `ExportedFunction` is a Python class that represents a WebAssembly
 /// exported function. Such a function can be invoked from Python by using the
@@ -60,7 +70,7 @@ pub struct ExportedFunction {
 
 /// Implement the `InspectExportedFunction` trait.
 impl InspectExportedFunction for ExportedFunction {
-    fn move_runtime_func_obj(&self) -> Result<DynFunc, PyErr> {
+    fn function(&self) -> PyResult<DynFunc> {
         match self.instance.dyn_func(&self.function_name) {
             Ok(function) => Ok(function),
             Err(_) => Err(RuntimeError::py_err(format!(
@@ -68,20 +78,6 @@ impl InspectExportedFunction for ExportedFunction {
                 self.function_name
             ))),
         }
-    }
-
-    fn signature(&self) -> String {
-        let function = &self.move_runtime_func_obj().unwrap();
-        let signature = function.signature();
-
-        format!("{}: {:?}", &self.function_name, signature)
-    }
-
-    fn params(&self) -> String {
-        let function = &self.move_runtime_func_obj().unwrap();
-        let signature = function.signature();
-
-        format!("{}: {:?}", &self.function_name, signature.params())
     }
 }
 
@@ -125,11 +121,19 @@ pub(super) fn call_dyn_func(
         let value = match argument.downcast_ref::<Value>() {
             Ok(value) => value.value.clone(),
             Err(_) => match parameter {
-                Type::I32 => WasmValue::I32(argument.downcast_ref::<PyLong>()?.extract::<i32>()?),
-                Type::I64 => WasmValue::I64(argument.downcast_ref::<PyLong>()?.extract::<i64>()?),
-                Type::F32 => WasmValue::F32(argument.downcast_ref::<PyFloat>()?.extract::<f32>()?),
-                Type::F64 => WasmValue::F64(argument.downcast_ref::<PyFloat>()?.extract::<f64>()?),
-                Type::V128 => {
+                WasmType::I32 => {
+                    WasmValue::I32(argument.downcast_ref::<PyLong>()?.extract::<i32>()?)
+                }
+                WasmType::I64 => {
+                    WasmValue::I64(argument.downcast_ref::<PyLong>()?.extract::<i64>()?)
+                }
+                WasmType::F32 => {
+                    WasmValue::F32(argument.downcast_ref::<PyFloat>()?.extract::<f32>()?)
+                }
+                WasmType::F64 => {
+                    WasmValue::F64(argument.downcast_ref::<PyFloat>()?.extract::<f64>()?)
+                }
+                WasmType::V128 => {
                     WasmValue::V128(argument.downcast_ref::<PyLong>()?.extract::<u128>()?)
                 }
             },
@@ -160,28 +164,57 @@ pub(super) fn call_dyn_func(
 #[pymethods]
 /// Implement methods on the `ExportedFunction` Python class.
 impl ExportedFunction {
-    #[call]
-    #[args(arguments = "*")]
     // The `ExportedFunction.__call__` method.
     // The `#[args(arguments = "*")]` means that the method has an
     // unfixed arity. All parameters will be received in the
     // `arguments` argument.
+    #[call]
+    #[args(arguments = "*")]
     fn __call__(&self, py: Python, arguments: &PyTuple) -> PyResult<PyObject> {
-        // Get the exported function.
-        let function: DynFunc = self.move_runtime_func_obj().unwrap();
-
-        call_dyn_func(py, &self.function_name, function, arguments)
+        call_dyn_func(py, &self.function_name, self.function()?, arguments)
     }
 
-    #[getter]
     // On the blueprint of Python's `inpect.getfullargspec`
-    fn getfullargspec(&self) -> PyResult<String> {
-        Ok(self.signature())
-    }
-
     #[getter]
-    fn getargs(&self) -> PyResult<String> {
-        Ok(self.params())
+    fn getfullargspec(&self, py: Python) -> PyResult<PyObject> {
+        let function = self.function()?;
+        let signature = function.signature();
+        let annotations = PyDict::new(py);
+
+        for (nth, ty) in &signature
+            .params()
+            .iter()
+            .enumerate()
+            .map(|(nth, ty)| (nth, ty.into()))
+            .collect::<Vec<(usize, Type)>>()
+        {
+            annotations.set_item(format!("x{}", nth), ty)?;
+        }
+
+        let args = annotations.keys();
+
+        for ty in &signature
+            .returns()
+            .iter()
+            .map(Into::into)
+            .collect::<Vec<Type>>()
+        {
+            annotations.set_item("return", ty)?;
+        }
+
+        let inspect = py.import("inspect")?;
+        let args: Py<PyTuple> = (
+            args,
+            py.None(), // varargs
+            py.None(), // varkw
+            py.None(), // defaults
+            py.None(), // kwonlyargs
+            py.None(), // kwonlydefaults
+            annotations,
+        )
+            .into_py(py);
+
+        Ok(inspect.call1("FullArgSpec", args)?.to_object(py))
     }
 }
 
