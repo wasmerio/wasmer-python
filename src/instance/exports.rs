@@ -46,6 +46,17 @@ impl From<&ExportImportKind> for &'static str {
     }
 }
 
+impl ToPyObject for ExportImportKind {
+    fn to_object(&self, py: Python) -> PyObject {
+        match self {
+            ExportImportKind::Function => (ExportImportKind::Function as u8).into_py(py),
+            ExportImportKind::Memory => (ExportImportKind::Memory as u8).into_py(py),
+            ExportImportKind::Global => (ExportImportKind::Global as u8).into_py(py),
+            ExportImportKind::Table => (ExportImportKind::Table as u8).into_py(py),
+        }
+    }
+}
+
 #[pyclass]
 /// `ExportedFunction` is a Python class that represents a WebAssembly
 /// exported function. Such a function can be invoked from Python by using the
