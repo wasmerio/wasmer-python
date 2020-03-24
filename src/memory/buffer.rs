@@ -24,14 +24,14 @@ pub struct Buffer {
 
 #[pyproto]
 impl PyBufferProtocol for Buffer {
-    fn bf_getbuffer(&self, view: *mut Py_buffer, flags: c_int) -> PyResult<()> {
+    fn bf_getbuffer(slf: PyRefMut<Self>, view: *mut Py_buffer, flags: c_int) -> PyResult<()> {
         if view.is_null() {
             return Err(BufferError::py_err(
                 "`Py_buffer` cannot be filled because it is null.",
             ));
         }
 
-        let memory_view = self.memory.view::<u8>();
+        let memory_view = slf.memory.view::<u8>();
 
         // Fill `Py_buffer` according to https://docs.python.org/3/c-api/buffer.html.
         unsafe {
@@ -183,7 +183,7 @@ impl PyBufferProtocol for Buffer {
         Ok(())
     }
 
-    fn bf_releasebuffer(&self, _view: *mut Py_buffer) -> PyResult<()> {
+    fn bf_releasebuffer(_slf: PyRefMut<Self>, _view: *mut Py_buffer) -> PyResult<()> {
         Ok(())
     }
 }

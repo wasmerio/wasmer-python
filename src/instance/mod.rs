@@ -22,7 +22,7 @@ use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
     types::{PyAny, PyBytes},
-    PyNativeType, PyTryFrom, Python,
+    PyTryFrom, Python,
 };
 use std::{collections::HashMap, rc::Rc};
 use wasmer_runtime::{self as runtime, imports, instantiate, Export};
@@ -79,7 +79,7 @@ impl Instance {
     /// on WebAssembly bytes (represented by the Python bytes type).
     #[new]
     #[allow(clippy::new_ret_no_self)]
-    fn new(object: &PyRawObject, bytes: &PyAny) -> PyResult<()> {
+    fn new(py: Python, bytes: &PyAny) -> PyResult<Self> {
         // Read the bytes.
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
 
@@ -94,8 +94,6 @@ impl Instance {
                 )))
             }
         };
-
-        let py = object.py();
 
         let exports = instance.exports();
 
@@ -116,31 +114,26 @@ impl Instance {
             }
         }
 
-        // Instantiate the `Instance` Python class.
-        object.init({
-            Self::inner_new(
-                instance.clone(),
-                Py::new(
-                    py,
-                    ExportedFunctions {
-                        instance: instance.clone(),
-                        functions: exported_functions,
-                    },
-                )?,
-                match exported_memory {
-                    Some(memory) => Some(Py::new(py, Memory { memory })?),
-                    None => None,
+        Ok(Self::inner_new(
+            instance.clone(),
+            Py::new(
+                py,
+                ExportedFunctions {
+                    instance: instance.clone(),
+                    functions: exported_functions,
                 },
-                Py::new(
-                    py,
-                    ExportedGlobals {
-                        globals: exported_globals,
-                    },
-                )?,
-            )
-        });
-
-        Ok(())
+            )?,
+            match exported_memory {
+                Some(memory) => Some(Py::new(py, Memory { memory })?),
+                None => None,
+            },
+            Py::new(
+                py,
+                ExportedGlobals {
+                    globals: exported_globals,
+                },
+            )?,
+        ))
     }
 
     /// The `exports` getter.

@@ -118,23 +118,15 @@ pub(super) fn call_dyn_func(
     let mut function_arguments = Vec::<WasmValue>::with_capacity(number_of_parameters as usize);
 
     for (parameter, argument) in parameters.iter().zip(arguments.iter()) {
-        let value = match argument.downcast_ref::<Value>() {
+        let value = match argument.downcast::<Value>() {
             Ok(value) => value.value.clone(),
             Err(_) => match parameter {
-                WasmType::I32 => {
-                    WasmValue::I32(argument.downcast_ref::<PyLong>()?.extract::<i32>()?)
-                }
-                WasmType::I64 => {
-                    WasmValue::I64(argument.downcast_ref::<PyLong>()?.extract::<i64>()?)
-                }
-                WasmType::F32 => {
-                    WasmValue::F32(argument.downcast_ref::<PyFloat>()?.extract::<f32>()?)
-                }
-                WasmType::F64 => {
-                    WasmValue::F64(argument.downcast_ref::<PyFloat>()?.extract::<f64>()?)
-                }
+                WasmType::I32 => WasmValue::I32(argument.downcast::<PyLong>()?.extract::<i32>()?),
+                WasmType::I64 => WasmValue::I64(argument.downcast::<PyLong>()?.extract::<i64>()?),
+                WasmType::F32 => WasmValue::F32(argument.downcast::<PyFloat>()?.extract::<f32>()?),
+                WasmType::F64 => WasmValue::F64(argument.downcast::<PyFloat>()?.extract::<f64>()?),
                 WasmType::V128 => {
-                    WasmValue::V128(argument.downcast_ref::<PyLong>()?.extract::<u128>()?)
+                    WasmValue::V128(argument.downcast::<PyLong>()?.extract::<u128>()?)
                 }
             },
         };
