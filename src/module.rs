@@ -36,7 +36,7 @@ impl Module {
     /// Compile bytes into a WebAssembly module.
     #[new]
     #[allow(clippy::new_ret_no_self)]
-    fn new(object: &PyRawObject, bytes: &PyAny) -> PyResult<()> {
+    fn new(bytes: &PyAny) -> PyResult<Self> {
         // Read the bytes.
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
 
@@ -45,10 +45,7 @@ impl Module {
             RuntimeError::py_err(format!("Failed to compile the module:\n    {}", error))
         })?;
 
-        // Instantiate the `Module` Python clas.
-        object.init({ Self { module } });
-
-        Ok(())
+        Ok(Self { module })
     }
 
     // Instantiate the module into an `Instance` Python object.

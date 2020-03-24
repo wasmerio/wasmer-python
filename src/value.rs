@@ -1,6 +1,6 @@
 //! The `Value` Python class to build WebAssembly values.
 
-use pyo3::{class::basic::PyObjectProtocol, prelude::*};
+use pyo3::{class::basic::PyObjectProtocol, prelude::*, PyNativeType};
 use wasmer_runtime::Value as WasmValue;
 
 #[pyclass]
@@ -8,6 +8,8 @@ use wasmer_runtime::Value as WasmValue;
 pub struct Value {
     pub value: WasmValue,
 }
+
+unsafe impl PyNativeType for Value {}
 
 #[pymethods]
 impl Value {
