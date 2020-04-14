@@ -7,17 +7,46 @@ use pyo3::{
     types::{PyDict, PyFloat, PyLong, PyString, PyTuple},
     AsPyPointer, PyObject, ToPyObject,
 };
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 use wasmer_runtime::{
-    types::{FuncSig, Type},
+    self as runtime,
+    types::{FuncIndex, FuncSig, Type},
     ImportObject, Value,
 };
-use wasmer_runtime_core::{import::Namespace, typed_func::DynamicFunc};
+use wasmer_runtime_core::{import::Namespace, structures::TypedIndex, typed_func::DynamicFunc};
 
 pub(crate) fn build_import_object(
     py: &Python,
+    module: &runtime::Module,
     imported_functions: &'static PyDict,
 ) -> PyResult<(ImportObject, Vec<PyObject>)> {
+    let module_info = &module.info();
+    let import_descriptors: HashMap<(String, String), &FuncSig> = module_info
+        .imported_functions
+        .iter()
+        .map(|(import_index, import_name)| {
+            let namespace = module_info
+                .namespace_table
+                .get(import_name.namespace_index)
+                .to_string();
+            let name = module_info
+                .name_table
+                .get(import_name.name_index)
+                .to_string();
+            let signature = module_info
+                .signatures
+                .get(
+                    *module_info
+                        .func_assoc
+                        .get(FuncIndex::new(import_index.index()))
+                        .unwrap(),
+                )
+                .unwrap();
+
+            ((namespace, name), signature)
+        })
+        .collect();
+
     let mut import_object = ImportObject::new();
     let mut host_function_references = Vec::with_capacity(imported_functions.len());
 
@@ -46,6 +75,20 @@ pub(crate) fn build_import_object(
                 )));
             }
 
+            let imported_function_signature = import_descriptors
+                .get(&(namespace_name.to_string(), function_name.to_string()))
+                .ok_or_else(|| RuntimeError::py_err(
+                    format!(
+                        "The imported function `{}.{}` does not have a signature in the WebAssembly module.",
+                        namespace_name,
+                        function_name
+                    )
+                )
+            )?;
+
+            let mut input_types = vec![];
+            let mut output_types = vec![];
+
             if !function.hasattr("__annotations__")? {
                 return Err(RuntimeError::py_err(format!(
                     "Function `{}` must have type annotations for parameters and results.",
@@ -53,10 +96,7 @@ pub(crate) fn build_import_object(
                 )));
             }
 
-            let mut input_types = vec![];
-            let mut output_types = vec![];
-
-            for (name, value) in function
+            let annotations = function
                 .getattr("__annotations__")?
                 .downcast::<PyDict>()
                 .map_err(|_| {
@@ -64,30 +104,42 @@ pub(crate) fn build_import_object(
                         "Failed to read annotations of function `{}`.",
                         function_name
                     ))
-                })?
-            {
-                let ty = match value.to_string().as_str() {
-                    "i32" | "I32" => Type::I32,
-                    "i64" | "I64" => Type::I64,
-                    "f32" | "F32" => Type::F32,
-                    "f64" | "F64" => Type::F64,
-                    _ => {
-                        return Err(RuntimeError::py_err(
-                            "Type `{}` is not supported as a WebAssembly type.".to_string(),
-                        ))
+                })?;
+
+            if annotations.len() > 0 {
+                for ((annotation_name, annotation_value), expected_type) in annotations.iter().zip(
+                    imported_function_signature
+                        .params()
+                        .iter()
+                        .chain(imported_function_signature.returns().iter()),
+                ) {
+                    let ty = match annotation_value.to_string().as_str() {
+                        "i32" | "I32" | "<class 'int'>" if expected_type == &Type::I32 => Type::I32,
+                        "i64" | "I64" | "<class 'int'>" if expected_type == &Type::I64 => Type::I64,
+                        "f32" | "F32" | "<class 'float'>" if expected_type == &Type::F32 => Type::F32,
+                        "f64" | "F64" | "<class 'float'>" if expected_type == &Type::F64 => Type::F64,
+                        t @ _ => {
+                            return Err(RuntimeError::py_err(format!(
+                                "Type `{}` is not a supported type, or is not the expected type (`{}`).",
+                                t, expected_type
+                            )))
+                        }
+                    };
+
+                    match annotation_name.to_string().as_str() {
+                        "return" => output_types.push(ty),
+                        _ => input_types.push(ty),
                     }
-                };
-
-                match name.to_string().as_str() {
-                    "return" => output_types.push(ty),
-                    _ => input_types.push(ty),
                 }
-            }
 
-            if output_types.len() > 1 {
-                return Err(RuntimeError::py_err(
-                    "Function must return only one type, many given.".to_string(),
-                ));
+                if output_types.len() > 1 {
+                    return Err(RuntimeError::py_err(
+                        "Function must return only one type, many given.".to_string(),
+                    ));
+                }
+            } else {
+                input_types.extend(imported_function_signature.params());
+                output_types.extend(imported_function_signature.returns());
             }
 
             let function = function.to_object(*py);

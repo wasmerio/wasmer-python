@@ -26,7 +26,7 @@ use pyo3::{
     PyObject, PyTryFrom, Python,
 };
 use std::{collections::HashMap, rc::Rc};
-use wasmer_runtime::{self as runtime, instantiate, Export};
+use wasmer_runtime::{self as runtime, Export};
 
 #[pyclass]
 /// `Instance` is a Python class that represents a WebAssembly instance.
@@ -91,11 +91,16 @@ impl Instance {
         // Read the bytes.
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
 
+        // Compile the module.
+        let module = runtime::compile(bytes).map_err(|error| {
+            RuntimeError::py_err(format!("Failed to compile the module:\n    {}", error))
+        })?;
+
         let (import_object, host_function_references) =
-            build_import_object(&py, imported_functions)?;
+            build_import_object(&py, &module, imported_functions)?;
 
         // Instantiate the WebAssembly module.
-        let instance = match instantiate(bytes, &import_object) {
+        let instance = match module.instantiate(&import_object) {
             Ok(instance) => Rc::new(instance),
             Err(e) => {
                 return Err(RuntimeError::py_err(format!(
