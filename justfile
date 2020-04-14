@@ -67,6 +67,9 @@ inspect:
 publish version:
 	maturin publish -i {{version}} -u wasmer
 
+publish-any:
+	twine upload --repository-url https://upload.pypi.org/legacy/ target/wheels/wasmer-*-py3-none-any.whl -u wasmer
+
 # Local Variables:
 # mode: makefile
 # End:
