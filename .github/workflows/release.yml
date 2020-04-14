@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    name: Release
+    name: Release tailored wheels
 
     strategy:
       matrix:
@@ -73,5 +73,63 @@ jobs:
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          just build-any
           just publish python${{ matrix.python }}
+
+  release-any:
+    name: Release any wheels
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          default: true
+          override: true
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache Cargo bin
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/bin
+          key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache Cargo build
+        uses: actions/cache@v1
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Set up just
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          test -f $HOME/.cargo/bin/just || cargo install just
+
+      - name: Prelude
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          just prelude
+
+      - name: Build
+        shell: bash
+        env:
+          TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
+        run: |
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          pip3 install twine
+          just publish-any
