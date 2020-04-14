@@ -15,17 +15,18 @@ pub(crate) mod exports;
 pub(crate) mod globals;
 pub(crate) mod inspect;
 
-use crate::{import::build_import_object, memory::Memory};
-use exports::ExportedFunctions;
-use globals::ExportedGlobals;
+use crate::{
+    import::build_import_object, instance::exports::ExportedFunctions,
+    instance::globals::ExportedGlobals, memory::Memory,
+};
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
     types::{PyAny, PyBytes, PyDict},
-    PyNativeType, PyObject, PyTryFrom, Python,
+    PyObject, PyTryFrom, Python,
 };
-use std::rc::Rc;
-use wasmer_runtime::{instantiate, Export};
+use std::{collections::HashMap, rc::Rc};
+use wasmer_runtime::{self as runtime, instantiate, Export};
 
 #[pyclass]
 /// `Instance` is a Python class that represents a WebAssembly instance.
@@ -38,6 +39,8 @@ use wasmer_runtime::{instantiate, Export};
 /// instance = Instance(wasm_bytes)
 /// ```
 pub struct Instance {
+    pub(crate) instance: Rc<runtime::Instance>,
+
     /// All WebAssembly exported functions represented by an
     /// `ExportedFunctions` object.
     pub(crate) exports: Py<ExportedFunctions>,
@@ -54,6 +57,27 @@ pub struct Instance {
     /// reference to host function `PyObject`.
     #[allow(unused)]
     pub(crate) host_function_references: Vec<PyObject>,
+
+    exports_index_to_name: Option<HashMap<usize, String>>,
+}
+
+impl Instance {
+    pub(crate) fn inner_new(
+        instance: Rc<runtime::Instance>,
+        exports: Py<ExportedFunctions>,
+        memory: Option<Py<Memory>>,
+        globals: Py<ExportedGlobals>,
+        host_function_references: Vec<PyObject>,
+    ) -> Self {
+        Self {
+            instance,
+            exports,
+            memory,
+            globals,
+            exports_index_to_name: None,
+            host_function_references,
+        }
+    }
 }
 
 #[pymethods]
@@ -63,13 +87,7 @@ impl Instance {
     /// on WebAssembly bytes (represented by the Python bytes type).
     #[new]
     #[allow(clippy::new_ret_no_self)]
-    fn new(
-        object: &PyRawObject,
-        bytes: &PyAny,
-        imported_functions: &'static PyDict,
-    ) -> PyResult<()> {
-        let py = object.py();
-
+    fn new(py: Python, bytes: &PyAny, imported_functions: &'static PyDict) -> PyResult<Self> {
         // Read the bytes.
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
 
@@ -106,31 +124,27 @@ impl Instance {
             }
         }
 
-        // Instantiate the `Instance` Python class.
-        object.init({
-            Self {
-                exports: Py::new(
-                    py,
-                    ExportedFunctions {
-                        instance: instance.clone(),
-                        functions: exported_functions,
-                    },
-                )?,
-                memory: match exported_memory {
-                    Some(memory) => Some(Py::new(py, Memory { memory })?),
-                    None => None,
+        Ok(Self::inner_new(
+            instance.clone(),
+            Py::new(
+                py,
+                ExportedFunctions {
+                    instance: instance.clone(),
+                    functions: exported_functions,
                 },
-                globals: Py::new(
-                    py,
-                    ExportedGlobals {
-                        globals: exported_globals,
-                    },
-                )?,
-                host_function_references,
-            }
-        });
-
-        Ok(())
+            )?,
+            match exported_memory {
+                Some(memory) => Some(Py::new(py, Memory { memory })?),
+                None => None,
+            },
+            Py::new(
+                py,
+                ExportedGlobals {
+                    globals: exported_globals,
+                },
+            )?,
+            host_function_references,
+        ))
     }
 
     /// The `exports` getter.
@@ -152,5 +166,32 @@ impl Instance {
     #[getter]
     fn globals(&self) -> &Py<ExportedGlobals> {
         &self.globals
+    }
+
+    /// Find the export _name_ associated to an index if it is valid.
+    fn resolve_exported_function(&mut self, py: Python, index: usize) -> PyResult<String> {
+        match &self.exports_index_to_name {
+            Some(exports_index_to_name) => exports_index_to_name
+                .get(&index)
+                .map(|name| name.clone())
+                .ok_or_else(|| {
+                    RuntimeError::py_err(format!("Function at index `{}` does not exist.", index))
+                }),
+
+            None => {
+                self.exports_index_to_name = Some(
+                    self.instance
+                        .exports()
+                        .filter(|(_, export)| match export {
+                            Export::Function { .. } => true,
+                            _ => false,
+                        })
+                        .map(|(name, _)| (self.instance.resolve_func(&name).unwrap(), name.clone()))
+                        .collect(),
+                );
+
+                self.resolve_exported_function(py, index)
+            }
+        }
     }
 }

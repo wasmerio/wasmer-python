@@ -1,9 +1,6 @@
 from setuptools import setup
 from setuptools.dist import Distribution
 
-# with open('../README.md', 'rb') as f:
-#     readme = f.read().decode('utf-8')
-
 setup(
     name='wasmer',
     version='0.4.1',
@@ -12,8 +9,6 @@ setup(
     license='MIT',
     packages=['wasmer'],
     description='Python extension to run WebAssembly binaries',
-    # long_description=readme,
-    # long_description_content_type='text/markdown',
     zip_safe=False,
     platforms='any',
     classifiers=[

@@ -39,7 +39,7 @@ macro_rules! memory_view {
                 let view = self.memory.view::<$wasm_type>();
                 let offset = self.offset;
                 let range = if let Ok(slice) = index.cast_as::<PySlice>() {
-                    let slice = slice.indices(view.len() as i64)?;
+                    let slice = slice.indices(view.len() as _)?;
 
                     if slice.start >= slice.stop {
                         return Err(IndexError::py_err(format!(
@@ -118,7 +118,7 @@ macro_rules! memory_view {
                         })
                         .and_then(|sequence| sequence.list()),
                 ) {
-                    let slice = slice.indices(view.len() as i64)?;
+                    let slice = slice.indices(view.len() as _)?;
 
                     if slice.start >= slice.stop {
                         return Err(IndexError::py_err(format!(

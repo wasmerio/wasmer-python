@@ -48,11 +48,11 @@ impl ExportedGlobal {
         }
 
         self.global.set(match descriptor.ty {
-            Type::I32 => WasmValue::I32(value.downcast_ref::<PyLong>()?.extract::<i32>()?),
-            Type::I64 => WasmValue::I64(value.downcast_ref::<PyLong>()?.extract::<i64>()?),
-            Type::F32 => WasmValue::F32(value.downcast_ref::<PyFloat>()?.extract::<f32>()?),
-            Type::F64 => WasmValue::F64(value.downcast_ref::<PyFloat>()?.extract::<f64>()?),
-            Type::V128 => WasmValue::V128(value.downcast_ref::<PyLong>()?.extract::<u128>()?),
+            Type::I32 => WasmValue::I32(value.downcast::<PyLong>()?.extract::<i32>()?),
+            Type::I64 => WasmValue::I64(value.downcast::<PyLong>()?.extract::<i64>()?),
+            Type::F32 => WasmValue::F32(value.downcast::<PyFloat>()?.extract::<f32>()?),
+            Type::F64 => WasmValue::F64(value.downcast::<PyFloat>()?.extract::<f64>()?),
+            Type::V128 => WasmValue::V128(value.downcast::<PyLong>()?.extract::<u128>()?),
         });
 
         Ok(())

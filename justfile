@@ -11,33 +11,26 @@ compile-wasm FILE='examples/simple':
 # Install the environment to develop the extension.
 prelude:
 	#!/usr/bin/env bash
+	set -x
+
 	pip3 install virtualenv
-	virtualenv -p $(which python3) .env
-	source .env/bin/activate
+	virtualenv .env
+	if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
 	pip3 install maturin pytest pytest-benchmark
 
-	echo -n 'maturin -- path: '
 	which maturin
-
-	echo -n 'maturin -- version: '
 	maturin --version
-
-	echo -n 'python -- path: '
 	which python
-
-	echo -n 'python -- version: '
 	python --version
-
-	echo -n 'python-config -- path: '
 	which python-config
-
-	echo -n 'python-config -- abiflags: '
 	python-config --abiflags || true
+	pwd
+	ls -l .env
 
 # Setup the environment to develop the extension.
 wakeup:
 	#!/usr/bin/env bash
-	source .env/bin/activate
+	if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
 
 # Unset the development environment.
 sleep:
@@ -45,7 +38,7 @@ sleep:
 
 # Compile and install the Python library.
 build:
-	export PYTHON_SYS_EXECUTABLE=$(which python3)
+	export PYTHON_SYS_EXECUTABLE=$(which python)
 	cargo check
 	maturin develop --binding-crate pyo3 --release --strip
 
@@ -73,6 +66,9 @@ inspect:
 
 publish version:
 	maturin publish -i {{version}} -u wasmer
+
+publish-any:
+	twine upload --repository-url https://upload.pypi.org/legacy/ target/wheels/wasmer-*-py3-none-any.whl -u wasmer
 
 # Local Variables:
 # mode: makefile

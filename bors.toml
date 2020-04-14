@@ -1,5 +1,13 @@
 status = [
-    "Test %",
+    "Test (ubuntu-latest, 3.6)",
+    "Test (ubuntu-latest, 3.7)",
+    "Test (ubuntu-latest, 3.8)",
+    "Test (macos-latest, 3.6)",
+    "Test (macos-latest, 3.7)",
+    "Test (macos-latest, 3.8)",
+    "Test (windows-latest, 3.6)",
+    "Test (windows-latest, 3.7)",
+    "Test (windows-latest, 3.8)",
 ]
 required_approvals = 0
 timeout_sec = 900

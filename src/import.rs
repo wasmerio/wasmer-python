@@ -23,19 +23,19 @@ pub(crate) fn build_import_object(
 
     for (namespace_name, namespace) in imported_functions.iter() {
         let namespace_name = namespace_name
-            .downcast_ref::<PyString>()
+            .downcast::<PyString>()
             .map_err(|_| RuntimeError::py_err("Namespace name must be a string.".to_string()))?
             .to_string()?;
 
         let mut import_namespace = Namespace::new();
 
         for (function_name, function) in namespace
-            .downcast_ref::<PyDict>()
+            .downcast::<PyDict>()
             .map_err(|_| RuntimeError::py_err("Namespace must be a dictionnary.".to_string()))?
             .into_iter()
         {
             let function_name = function_name
-                .downcast_ref::<PyString>()
+                .downcast::<PyString>()
                 .map_err(|_| RuntimeError::py_err("Function name must be a string.".to_string()))?
                 .to_string()?;
 
@@ -58,7 +58,7 @@ pub(crate) fn build_import_object(
 
             for (name, value) in function
                 .getattr("__annotations__")?
-                .downcast_ref::<PyDict>()
+                .downcast::<PyDict>()
                 .map_err(|_| {
                     RuntimeError::py_err(format!(
                         "Failed to read annotations of function `{}`.",
@@ -130,35 +130,35 @@ pub(crate) fn build_import_object(
                         .map(|(result, output)| match output {
                             Type::I32 => Value::I32(
                                 result
-                                    .downcast_ref::<PyLong>()
+                                    .downcast::<PyLong>()
                                     .unwrap()
                                     .extract::<i32>()
                                     .unwrap(),
                             ),
                             Type::I64 => Value::I64(
                                 result
-                                    .downcast_ref::<PyLong>()
+                                    .downcast::<PyLong>()
                                     .unwrap()
                                     .extract::<i64>()
                                     .unwrap(),
                             ),
                             Type::F32 => Value::F32(
                                 result
-                                    .downcast_ref::<PyFloat>()
+                                    .downcast::<PyFloat>()
                                     .unwrap()
                                     .extract::<f32>()
                                     .unwrap(),
                             ),
                             Type::F64 => Value::F64(
                                 result
-                                    .downcast_ref::<PyFloat>()
+                                    .downcast::<PyFloat>()
                                     .unwrap()
                                     .extract::<f64>()
                                     .unwrap(),
                             ),
                             Type::V128 => Value::V128(
                                 result
-                                    .downcast_ref::<PyLong>()
+                                    .downcast::<PyLong>()
                                     .unwrap()
                                     .extract::<u128>()
                                     .unwrap(),

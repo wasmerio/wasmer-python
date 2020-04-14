@@ -36,7 +36,7 @@ impl Module {
     /// Compile bytes into a WebAssembly module.
     #[new]
     #[allow(clippy::new_ret_no_self)]
-    fn new(object: &PyRawObject, bytes: &PyAny) -> PyResult<()> {
+    fn new(bytes: &PyAny) -> PyResult<Self> {
         // Read the bytes.
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
 
@@ -45,10 +45,7 @@ impl Module {
             RuntimeError::py_err(format!("Failed to compile the module:\n    {}", error))
         })?;
 
-        // Instantiate the `Module` Python clas.
-        object.init({ Self { module } });
-
-        Ok(())
+        Ok(Self { module })
     }
 
     // Instantiate the module into an `Instance` Python object.
@@ -88,26 +85,27 @@ impl Module {
         // Instantiate the `Instance` Python class.
         Ok(Py::new(
             py,
-            Instance {
-                exports: Py::new(
+            Instance::inner_new(
+                instance.clone(),
+                Py::new(
                     py,
                     ExportedFunctions {
                         instance: instance.clone(),
                         functions: exported_functions,
                     },
                 )?,
-                memory: match exported_memory {
+                match exported_memory {
                     Some(memory) => Some(Py::new(py, Memory { memory })?),
                     None => None,
                 },
-                globals: Py::new(
+                Py::new(
                     py,
                     ExportedGlobals {
                         globals: exported_globals,
                     },
                 )?,
-                host_function_references: Vec::new(),
-            },
+                Vec::new(),
+            ),
         )?)
     }
 
@@ -127,10 +125,10 @@ impl Module {
             dict.set_item(
                 "kind",
                 match export_index {
-                    ExportIndex::Func(_) => ExportImportKind::Function as u8,
-                    ExportIndex::Memory(_) => ExportImportKind::Memory as u8,
-                    ExportIndex::Global(_) => ExportImportKind::Global as u8,
-                    ExportIndex::Table(_) => ExportImportKind::Table as u8,
+                    ExportIndex::Func(_) => ExportImportKind::Function,
+                    ExportIndex::Memory(_) => ExportImportKind::Memory,
+                    ExportIndex::Global(_) => ExportImportKind::Global,
+                    ExportIndex::Table(_) => ExportImportKind::Table,
                 },
             )?;
             dict.set_item("name", name)?;
@@ -309,9 +307,13 @@ impl Module {
     }
 
     /// Read a specific custom section.
-    fn custom_section<'p>(&self, py: Python<'p>, name: String) -> PyObject {
+    #[args(index = "0")]
+    fn custom_section<'p>(&self, py: Python<'p>, name: String, index: usize) -> PyObject {
         match self.module.info().custom_sections.get(&name) {
-            Some(bytes) => PyBytes::new(py, bytes).into_py(py),
+            Some(bytes) => match bytes.get(index) {
+                Some(bytes) => PyBytes::new(py, bytes).into_py(py),
+                None => py.None(),
+            },
             None => py.None(),
         }
     }

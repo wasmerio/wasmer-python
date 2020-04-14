@@ -6,10 +6,12 @@ mod import;
 mod instance;
 mod memory;
 mod module;
+mod r#type;
 mod value;
 
 use instance::{exports::ExportImportKind, Instance};
 use module::Module;
+use r#type::Type;
 use value::Value;
 
 /// This extension allows to manipulate and to execute WebAssembly binaries.
@@ -31,27 +33,44 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
 
     {
         let enum_module = py.import("enum")?;
-        let mut variants = String::new();
 
-        for kind in ExportImportKind::iter() {
-            variants.push_str(kind.into());
-            variants.push(' ');
+        {
+            let mut variants = String::new();
+
+            for ty in Type::iter() {
+                variants.push_str(ty.into());
+                variants.push(' ');
+            }
+
+            module.add(
+                "Type",
+                enum_module.call1("IntEnum", PyTuple::new(py, &["Type", variants.as_str()]))?,
+            )?;
         }
 
-        module.add(
-            "ExportKind",
-            enum_module.call1(
-                "IntEnum",
-                PyTuple::new(py, &["ExportKind", variants.as_str()]),
-            )?,
-        )?;
-        module.add(
-            "ImportKind",
-            enum_module.call1(
-                "IntEnum",
-                PyTuple::new(py, &["ImportKind", variants.as_str()]),
-            )?,
-        )?;
+        {
+            let mut variants = String::new();
+
+            for kind in ExportImportKind::iter() {
+                variants.push_str(kind.into());
+                variants.push(' ');
+            }
+
+            module.add(
+                "ExportKind",
+                enum_module.call1(
+                    "IntEnum",
+                    PyTuple::new(py, &["ExportKind", variants.as_str()]),
+                )?,
+            )?;
+            module.add(
+                "ImportKind",
+                enum_module.call1(
+                    "IntEnum",
+                    PyTuple::new(py, &["ImportKind", variants.as_str()]),
+                )?,
+            )?;
+        }
     }
 
     Ok(())
