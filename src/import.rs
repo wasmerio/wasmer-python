@@ -39,13 +39,23 @@ pub(crate) fn build_import_object(
                     *module_info
                         .func_assoc
                         .get(FuncIndex::new(import_index.index()))
-                        .unwrap(),
+                        .ok_or_else(|| {
+                            RuntimeError::py_err(format!(
+                                "Failed to retrieve the signature index of the imported function {}.",
+                                import_index.index()
+                            ))
+                        })?,
                 )
-                .unwrap();
+                .ok_or_else(|| {
+                    RuntimeError::py_err(format!(
+                        "Failed to retrieve the signature of the imported function {}.",
+                        import_index.index()
+                            ))
+                })?;
 
-            ((namespace, name), signature)
+            Ok(((namespace, name), signature))
         })
-        .collect();
+        .collect::<PyResult<HashMap<(String, String), &FuncSig>>>()?;
 
     let mut import_object = ImportObject::new();
     let mut host_function_references = Vec::with_capacity(imported_functions.len());
