@@ -20,8 +20,23 @@ wasmer-runtime-core = "0.16"
 pyo3 = { version = "0.9", features = ["extension-module"] }
 
 [package.metadata.maturin]
+project-url = [
+    "Source Code: https://github.com/wasmerio/python-ext-wasm/",
+    "Bug Tracker, https://github.com/wasmerio/python-ext-wasm/issues",
+    "Documentation, https://github.com/wasmerio/python-ext-wasm/",
+]
 classifier = [
     "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Rust",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Compilers",
+    "Topic :: Software Development :: Interpreters",
+    "Topic :: Software Development :: Interpreters",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
