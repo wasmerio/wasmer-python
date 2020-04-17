@@ -1,25 +1,37 @@
 //! This module contains a helper to build an `ImportObject` and build
 //! the host function logic.
 
-use pyo3::{
-    exceptions::RuntimeError,
-    prelude::*,
-    types::{PyDict, PyFloat, PyLong, PyString, PyTuple},
-    AsPyPointer, PyObject, ToPyObject,
-};
-use std::{collections::HashMap, sync::Arc};
-use wasmer_runtime::{
-    self as runtime,
-    types::{FuncIndex, FuncSig, Type},
-    ImportObject, Value,
-};
-use wasmer_runtime_core::{import::Namespace, structures::TypedIndex, typed_func::DynamicFunc};
+use pyo3::{exceptions::RuntimeError, prelude::*, types::PyDict, PyObject};
+use wasmer_runtime::{self as runtime, ImportObject};
 
+#[cfg(not(all(unix, target_arch = "x86_64")))]
+pub(crate) fn build_import_object(
+    _py: &Python,
+    _module: &runtime::Module,
+    _imported_functions: &'static PyDict,
+) -> PyResult<(ImportObject, Vec<PyObject>)> {
+    Err(RuntimeError::py_err(
+        "Imported functions are not yet supported on Windows.",
+    ))
+}
+
+#[cfg(all(unix, target_arch = "x86_64"))]
 pub(crate) fn build_import_object(
     py: &Python,
     module: &runtime::Module,
     imported_functions: &'static PyDict,
 ) -> PyResult<(ImportObject, Vec<PyObject>)> {
+    use pyo3::{
+        types::{PyFloat, PyLong, PyString, PyTuple},
+        AsPyPointer,
+    };
+    use std::{collections::HashMap, sync::Arc};
+    use wasmer_runtime::{
+        types::{FuncIndex, FuncSig, Type},
+        Value,
+    };
+    use wasmer_runtime_core::{import::Namespace, structures::TypedIndex, typed_func::DynamicFunc};
+
     let module_info = &module.info();
     let import_descriptors: HashMap<(String, String), &FuncSig> = module_info
         .imported_functions
