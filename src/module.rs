@@ -104,6 +104,7 @@ impl Module {
                         globals: exported_globals,
                     },
                 )?,
+                Vec::new(),
             ),
         )?)
     }
@@ -306,9 +307,13 @@ impl Module {
     }
 
     /// Read a specific custom section.
-    fn custom_section<'p>(&self, py: Python<'p>, name: String) -> PyObject {
+    #[args(index = "0")]
+    fn custom_section<'p>(&self, py: Python<'p>, name: String, index: usize) -> PyObject {
         match self.module.info().custom_sections.get(&name) {
-            Some(bytes) => PyBytes::new(py, bytes).into_py(py),
+            Some(bytes) => match bytes.get(index) {
+                Some(bytes) => PyBytes::new(py, bytes).into_py(py),
+                None => py.None(),
+            },
             None => py.None(),
         }
     }

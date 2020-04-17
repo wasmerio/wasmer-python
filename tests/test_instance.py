@@ -29,7 +29,7 @@ def test_failed_to_instantiate():
 
     exception = context_manager.value
     assert str(exception) == (
-        'Failed to instantiate the module:\n    compile error: Validation error "Invalid type"'
+        'Failed to compile the module:\n    Validation error "Invalid type"'
     )
 
 def test_function_does_not_exist():

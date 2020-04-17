@@ -16,16 +16,17 @@ pub(crate) mod globals;
 pub(crate) mod inspect;
 
 use crate::{
-    instance::exports::ExportedFunctions, instance::globals::ExportedGlobals, memory::Memory,
+    import::build_import_object, instance::exports::ExportedFunctions,
+    instance::globals::ExportedGlobals, memory::Memory,
 };
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
-    types::{PyAny, PyBytes},
-    PyTryFrom, Python,
+    types::{PyAny, PyBytes, PyDict},
+    PyObject, PyTryFrom, Python,
 };
 use std::{collections::HashMap, rc::Rc};
-use wasmer_runtime::{self as runtime, imports, instantiate, Export};
+use wasmer_runtime::{self as runtime, Export};
 
 #[pyclass]
 /// `Instance` is a Python class that represents a WebAssembly instance.
@@ -52,6 +53,11 @@ pub struct Instance {
     /// `ExportedGlobals` object.
     pub(crate) globals: Py<ExportedGlobals>,
 
+    /// This field is unused as is, but is required to keep a
+    /// reference to host function `PyObject`.
+    #[allow(unused)]
+    pub(crate) host_function_references: Vec<PyObject>,
+
     exports_index_to_name: Option<HashMap<usize, String>>,
 }
 
@@ -61,6 +67,7 @@ impl Instance {
         exports: Py<ExportedFunctions>,
         memory: Option<Py<Memory>>,
         globals: Py<ExportedGlobals>,
+        host_function_references: Vec<PyObject>,
     ) -> Self {
         Self {
             instance,
@@ -68,6 +75,7 @@ impl Instance {
             memory,
             globals,
             exports_index_to_name: None,
+            host_function_references,
         }
     }
 }
@@ -78,14 +86,21 @@ impl Instance {
     /// The constructor instantiates a new WebAssembly instance basde
     /// on WebAssembly bytes (represented by the Python bytes type).
     #[new]
-    #[allow(clippy::new_ret_no_self)]
-    fn new(py: Python, bytes: &PyAny) -> PyResult<Self> {
+    #[args(imported_functions = "PyDict::new(_py)")]
+    fn new(py: Python, bytes: &PyAny, imported_functions: &'static PyDict) -> PyResult<Self> {
         // Read the bytes.
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
 
+        // Compile the module.
+        let module = runtime::compile(bytes).map_err(|error| {
+            RuntimeError::py_err(format!("Failed to compile the module:\n    {}", error))
+        })?;
+
+        let (import_object, host_function_references) =
+            build_import_object(&py, &module, imported_functions)?;
+
         // Instantiate the WebAssembly module.
-        let imports = imports! {};
-        let instance = match instantiate(bytes, &imports) {
+        let instance = match module.instantiate(&import_object) {
             Ok(instance) => Rc::new(instance),
             Err(e) => {
                 return Err(RuntimeError::py_err(format!(
@@ -133,6 +148,7 @@ impl Instance {
                     globals: exported_globals,
                 },
             )?,
+            host_function_references,
         ))
     }
 

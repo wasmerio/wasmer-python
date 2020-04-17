@@ -71,7 +71,7 @@ pub struct ExportedFunction {
 /// Implement the `InspectExportedFunction` trait.
 impl InspectExportedFunction for ExportedFunction {
     fn function(&self) -> PyResult<DynFunc> {
-        match self.instance.dyn_func(&self.function_name) {
+        match self.instance.exports.get(&self.function_name) {
             Ok(function) => Ok(function),
             Err(_) => Err(RuntimeError::py_err(format!(
                 "Function `{}` does not exist.",
@@ -81,7 +81,7 @@ impl InspectExportedFunction for ExportedFunction {
     }
 }
 
-pub(super) fn call_dyn_func(
+pub(super) fn call_exported_func(
     py: Python,
     function_name_as_str: &str,
     function: DynFunc,
@@ -163,7 +163,7 @@ impl ExportedFunction {
     #[call]
     #[args(arguments = "*")]
     fn __call__(&self, py: Python, arguments: &PyTuple) -> PyResult<PyObject> {
-        call_dyn_func(py, &self.function_name, self.function()?, arguments)
+        call_exported_func(py, &self.function_name, self.function()?, arguments)
     }
 
     // On the blueprint of Python's `inpect.getfullargspec`

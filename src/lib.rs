@@ -1,7 +1,6 @@
 #![deny(warnings)]
 
-use pyo3::{prelude::*, types::PyTuple};
-
+mod import;
 mod instance;
 mod memory;
 mod module;
@@ -10,6 +9,7 @@ mod value;
 
 use instance::{exports::ExportImportKind, Instance};
 use module::Module;
+use pyo3::{prelude::*, types::PyTuple};
 use r#type::Type;
 use value::Value;
 
