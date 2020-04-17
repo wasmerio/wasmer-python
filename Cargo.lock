@@ -283,9 +283,9 @@ dependencies = [
 
 [[package]]
 name = "hermit-abi"
-version = "0.1.10"
+version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "725cf19794cf90aa94e65050cb4191ff5d8fa87a498383774c47b332e3af952e"
+checksum = "8a0d737e0f947a1864e93d33fdef4af8445a00d1ed8dc0c8ddb73139ea6abf15"
 dependencies = [
  "libc",
 ]
@@ -436,9 +436,9 @@ dependencies = [
 
 [[package]]
 name = "num_cpus"
-version = "1.12.0"
+version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46203554f085ff89c235cd12f7075f3233af9b11ed7c9e16dfe2560d03313ce6"
+checksum = "05499f3756671c15885fee9034446956fff3f243d6077b91e5767df161f766b3"
 dependencies = [
  "hermit-abi",
  "libc",
@@ -799,7 +799,7 @@ dependencies = [
 [[package]]
 name = "wasmer-clif-backend"
 version = "0.16.2"
-source = "git+https://github.com/wasmerio/wasmer#6661ca73a6d132258617d483b9b489ea08bbe162"
+source = "git+https://github.com/wasmerio/wasmer#0fd49664ca503b078905322f99d29be9a8e01e79"
 dependencies = [
  "byteorder",
  "cranelift-codegen",
@@ -850,7 +850,7 @@ dependencies = [
 [[package]]
 name = "wasmer-runtime"
 version = "0.16.2"
-source = "git+https://github.com/wasmerio/wasmer#6661ca73a6d132258617d483b9b489ea08bbe162"
+source = "git+https://github.com/wasmerio/wasmer#0fd49664ca503b078905322f99d29be9a8e01e79"
 dependencies = [
  "lazy_static",
  "memmap",
@@ -863,7 +863,7 @@ dependencies = [
 [[package]]
 name = "wasmer-runtime-core"
 version = "0.16.2"
-source = "git+https://github.com/wasmerio/wasmer#6661ca73a6d132258617d483b9b489ea08bbe162"
+source = "git+https://github.com/wasmerio/wasmer#0fd49664ca503b078905322f99d29be9a8e01e79"
 dependencies = [
  "bincode",
  "blake3",
@@ -891,7 +891,7 @@ dependencies = [
 [[package]]
 name = "wasmer-win-exception-handler"
 version = "0.16.2"
-source = "git+https://github.com/wasmerio/wasmer#6661ca73a6d132258617d483b9b489ea08bbe162"
+source = "git+https://github.com/wasmerio/wasmer#0fd49664ca503b078905322f99d29be9a8e01e79"
 dependencies = [
  "cc",
  "libc",
