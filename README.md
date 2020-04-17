@@ -118,6 +118,57 @@ view = instance.memory.uint8_view()
 
 See below for more information.
 
+### Imported functions
+
+A WebAssembly module can _import_ functions, also called host
+functions. It means that the implementation lands in the host, not in
+the module. This feature is, for the moment, only supported on Unix
+platforms, with a x86-64 architecture (it means that Windows is not
+supported).
+
+Example of a Rust program that defines a `sum_plus_one` exported
+function, and a `sum` imported function:
+
+```rust
+extern "C" {
+    // This function is defined somehwere else.
+    fn sum(x: i32, y: i32) -> i32;
+}
+
+#[no_mangle]
+pub extern "C" fn sum_plus_one(x: i32, y: i32) -> i32 {
+    unsafe { sum(x, y) + 1 }
+}
+```
+
+An imported function is defined by a namespace, and a name. It is
+defined by a Python dictionnary, as follows:
+
+```python
+from wasmer import Instance
+
+# Get the Wasm module as bytes.
+wasm_bytes = open('my_program.wasm', 'rb').read()
+
+# Declare the `sum` function, which will be the implementation for the `env.sum` imported function.
+def sum(x: int, y: int) -> int:
+    return x + y
+
+# Create the import object.
+import_object = {
+    "env": {
+        "sum": sum
+    }
+}
+
+# Instantiate the Wasm module, with the import object.
+instance = Instance(wasm_bytes, import_object)
+
+result = instance.exports.sum_plus_one(1, 2)
+
+print(result) # 4
+```
+
 ## The `Module` class
 
 Compiles a sequence of bytes into a WebAssembly module. From here, it
