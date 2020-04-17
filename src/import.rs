@@ -8,11 +8,15 @@ use wasmer_runtime::{self as runtime, ImportObject};
 pub(crate) fn build_import_object(
     _py: &Python,
     _module: &runtime::Module,
-    _imported_functions: &'static PyDict,
+    imported_functions: &'static PyDict,
 ) -> PyResult<(ImportObject, Vec<PyObject>)> {
-    Err(RuntimeError::py_err(
-        "Imported functions are not yet supported on Windows.",
-    ))
+    if imported_functions.is_empty() {
+        Ok((ImportObject::new(), Vec::new()))
+    } else {
+        Err(RuntimeError::py_err(
+            "Imported functions are not yet supported on Windows.",
+        ))
+    }
 }
 
 #[cfg(all(unix, target_arch = "x86_64"))]
