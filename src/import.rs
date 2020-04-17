@@ -14,7 +14,7 @@ pub(crate) fn build_import_object(
         Ok((ImportObject::new(), Vec::new()))
     } else {
         Err(RuntimeError::py_err(
-            "Imported functions are not yet supported on Windows.",
+            "Imported functions are not yet supported for this platform and architecture.",
         ))
     }
 }
