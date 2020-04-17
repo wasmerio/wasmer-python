@@ -3,6 +3,6 @@ extern "C" {
 }
 
 #[no_mangle]
-pub extern "C" fn add_one(x: i32, y: i32) -> i32 {
+pub extern "C" fn sum_plus_one(x: i32, y: i32) -> i32 {
     unsafe { sum(x, y) + 1 }
 }

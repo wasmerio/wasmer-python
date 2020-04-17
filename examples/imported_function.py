@@ -17,4 +17,4 @@ instance = Instance(
     }
 )
 
-print(instance.exports.add_one(1, 2))
+print(instance.exports.sum_plus_one(1, 2))
