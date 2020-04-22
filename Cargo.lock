@@ -799,7 +799,7 @@ dependencies = [
 [[package]]
 name = "wasmer-clif-backend"
 version = "0.16.2"
-source = "git+https://github.com/wasmerio/wasmer#0fd49664ca503b078905322f99d29be9a8e01e79"
+source = "git+https://github.com/wasmerio/wasmer#ab106af422a5c9e263d08c1f8a8ae1fd859e55b8"
 dependencies = [
  "byteorder",
  "cranelift-codegen",
@@ -850,7 +850,7 @@ dependencies = [
 [[package]]
 name = "wasmer-runtime"
 version = "0.16.2"
-source = "git+https://github.com/wasmerio/wasmer#0fd49664ca503b078905322f99d29be9a8e01e79"
+source = "git+https://github.com/wasmerio/wasmer#ab106af422a5c9e263d08c1f8a8ae1fd859e55b8"
 dependencies = [
  "lazy_static",
  "memmap",
@@ -863,7 +863,7 @@ dependencies = [
 [[package]]
 name = "wasmer-runtime-core"
 version = "0.16.2"
-source = "git+https://github.com/wasmerio/wasmer#0fd49664ca503b078905322f99d29be9a8e01e79"
+source = "git+https://github.com/wasmerio/wasmer#ab106af422a5c9e263d08c1f8a8ae1fd859e55b8"
 dependencies = [
  "bincode",
  "blake3",
@@ -891,7 +891,7 @@ dependencies = [
 [[package]]
 name = "wasmer-win-exception-handler"
 version = "0.16.2"
-source = "git+https://github.com/wasmerio/wasmer#0fd49664ca503b078905322f99d29be9a8e01e79"
+source = "git+https://github.com/wasmerio/wasmer#ab106af422a5c9e263d08c1f8a8ae1fd859e55b8"
 dependencies = [
  "cc",
  "libc",
