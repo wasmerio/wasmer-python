@@ -22,6 +22,7 @@ use wasmer_runtime_core::{
     module::{ExportIndex, ImportName},
     types::{ElementType, Type},
 };
+use wasmer_wasi as wasi;
 
 #[pyclass]
 /// `Module` is a Python class that represents a WebAssembly module.
@@ -363,5 +364,10 @@ impl Module {
             Ok(bytes) => Ok(validate(bytes.as_bytes())),
             _ => Ok(false),
         }
+    }
+
+    #[getter]
+    fn is_wasi_module(&self) -> bool {
+        wasi::is_wasi_module(&self.module)
     }
 }

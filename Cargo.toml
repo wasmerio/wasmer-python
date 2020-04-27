@@ -17,6 +17,7 @@ crate-type = ["cdylib"]
 [dependencies]
 wasmer-runtime = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
 wasmer-runtime-core = { git = "https://github.com/wasmerio/wasmer", branch = "master", features = ["dynamicfunc-fat-closures"] }
+wasmer-wasi = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
 pyo3 = { version = "0.9", features = ["extension-module"] }
 
 [package.metadata.maturin]
