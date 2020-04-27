@@ -4,6 +4,7 @@ use pyo3::prelude::*;
 use std::slice;
 use wasmer_runtime_core::types::Type as WasmType;
 
+#[derive(Copy, Clone)]
 #[repr(u8)]
 pub enum Type {
     I32 = 1,
@@ -47,12 +48,6 @@ impl From<&WasmType> for Type {
 
 impl ToPyObject for Type {
     fn to_object(&self, py: Python) -> PyObject {
-        match self {
-            Type::I32 => (Type::I32 as u8).into_py(py),
-            Type::I64 => (Type::I64 as u8).into_py(py),
-            Type::F32 => (Type::F32 as u8).into_py(py),
-            Type::F64 => (Type::F64 as u8).into_py(py),
-            Type::V128 => (Type::V128 as u8).into_py(py),
-        }
+        (*self as u8).into_py(py)
     }
 }

@@ -13,6 +13,7 @@ use std::{cmp::Ordering, convert::From, rc::Rc, slice};
 use wasmer_runtime::{self as runtime, Value as WasmValue};
 use wasmer_runtime_core::{instance::DynFunc, types::Type as WasmType};
 
+#[derive(Copy, Clone)]
 #[repr(u8)]
 pub enum ExportImportKind {
     Function = 1,
@@ -47,12 +48,7 @@ impl From<&ExportImportKind> for &'static str {
 
 impl ToPyObject for ExportImportKind {
     fn to_object(&self, py: Python) -> PyObject {
-        match self {
-            ExportImportKind::Function => (ExportImportKind::Function as u8).into_py(py),
-            ExportImportKind::Memory => (ExportImportKind::Memory as u8).into_py(py),
-            ExportImportKind::Global => (ExportImportKind::Global as u8).into_py(py),
-            ExportImportKind::Table => (ExportImportKind::Table as u8).into_py(py),
-        }
+        (*self as u8).into_py(py)
     }
 }
 
