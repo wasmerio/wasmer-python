@@ -7,6 +7,7 @@ use crate::{
         Instance,
     },
     memory::Memory,
+    wasi,
 };
 use pyo3::{
     exceptions::RuntimeError,
@@ -22,7 +23,7 @@ use wasmer_runtime_core::{
     module::{ExportIndex, ImportName},
     types::{ElementType, Type},
 };
-use wasmer_wasi as wasi;
+use wasmer_wasi;
 
 #[pyclass]
 /// `Module` is a Python class that represents a WebAssembly module.
@@ -366,8 +367,20 @@ impl Module {
         }
     }
 
+    /// Checks whether the module contains WASI definitions.
     #[getter]
     fn is_wasi_module(&self) -> bool {
-        wasi::is_wasi_module(&self.module)
+        wasmer_wasi::is_wasi_module(&self.module)
+    }
+
+    /// Checks the WASI version if any.
+    fn wasi_version<'p>(&self, py: Python<'p>, strict: bool) -> PyObject {
+        let version: Option<wasi::Version> =
+            wasmer_wasi::get_wasi_version(&self.module, strict).map(Into::into);
+
+        match version {
+            Some(version) => version.to_object(py),
+            None => py.None(),
+        }
     }
 }

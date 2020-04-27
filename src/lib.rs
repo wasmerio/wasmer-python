@@ -6,6 +6,7 @@ mod memory;
 mod module;
 mod r#type;
 mod value;
+mod wasi;
 
 use instance::{exports::ExportImportKind, Instance};
 use module::Module;
@@ -67,6 +68,23 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
                 enum_module.call1(
                     "IntEnum",
                     PyTuple::new(py, &["ImportKind", variants.as_str()]),
+                )?,
+            )?;
+        }
+
+        {
+            let mut variants = String::new();
+
+            for kind in wasi::Version::iter() {
+                variants.push_str(kind.into());
+                variants.push(' ');
+            }
+
+            module.add(
+                "WasiVersion",
+                enum_module.call1(
+                    "IntEnum",
+                    PyTuple::new(py, &["WasiVersion", variants.as_str()]),
                 )?,
             )?;
         }
