@@ -1,4 +1,4 @@
-from wasmer import Module
+from wasmer import Module, ImportKind
 import inspect
 import os
 import pytest
@@ -21,4 +21,6 @@ def test_import_object_extend():
 
     import_descriptors = import_object.import_descriptors()
 
-    assert len(import_descriptors) == 1
+    assert import_object.import_descriptors() == [
+        {'kind': ImportKind.FUNCTION, 'name': 'sum', 'namespace': 'env'}
+    ]
