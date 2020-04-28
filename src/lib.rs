@@ -8,6 +8,7 @@ mod r#type;
 mod value;
 mod wasi;
 
+use import::ImportObject;
 use instance::{exports::ExportImportKind, Instance};
 use module::Module;
 use pyo3::{prelude::*, types::PyTuple};
@@ -22,6 +23,7 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     module.add_class::<Instance>()?;
     module.add_class::<Module>()?;
     module.add_class::<Value>()?;
+    module.add_class::<ImportObject>()?;
     module.add_class::<memory::Memory>()?;
     module.add_class::<memory::view::Int16Array>()?;
     module.add_class::<memory::view::Int32Array>()?;

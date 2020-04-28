@@ -16,14 +16,15 @@ pub(crate) mod globals;
 pub(crate) mod inspect;
 
 use crate::{
-    import::build_import_object, instance::exports::ExportedFunctions,
-    instance::globals::ExportedGlobals, memory::Memory,
+    import::ImportObject, instance::exports::ExportedFunctions, instance::globals::ExportedGlobals,
+    memory::Memory,
 };
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
+    pycell::PyCell,
     types::{PyAny, PyBytes, PyDict},
-    PyObject, PyTryFrom, Python,
+    PyObject, Python,
 };
 use std::{collections::HashMap, rc::Rc};
 use wasmer_runtime::{self as runtime, Export};
@@ -53,11 +54,6 @@ pub struct Instance {
     /// `ExportedGlobals` object.
     pub(crate) globals: Py<ExportedGlobals>,
 
-    /// This field is unused as is, but is required to keep a
-    /// reference to host function `PyObject`.
-    #[allow(unused)]
-    pub(crate) host_function_references: Vec<PyObject>,
-
     exports_index_to_name: Option<HashMap<usize, String>>,
 }
 
@@ -67,7 +63,6 @@ impl Instance {
         exports: Py<ExportedFunctions>,
         memory: Option<Py<Memory>>,
         globals: Py<ExportedGlobals>,
-        host_function_references: Vec<PyObject>,
     ) -> Self {
         Self {
             instance,
@@ -75,7 +70,6 @@ impl Instance {
             memory,
             globals,
             exports_index_to_name: None,
-            host_function_references,
         }
     }
 }
@@ -83,32 +77,39 @@ impl Instance {
 #[pymethods]
 /// Implement methods on the `Instance` Python class.
 impl Instance {
-    /// The constructor instantiates a new WebAssembly instance basde
+    /// The constructor instantiates a new WebAssembly instance based
     /// on WebAssembly bytes (represented by the Python bytes type).
     #[new]
-    #[args(imported_functions = "PyDict::new(_py)")]
-    fn new(py: Python, bytes: &PyAny, imported_functions: &'static PyDict) -> PyResult<Self> {
+    #[args(import_object = "PyDict::new(_py).as_ref()")]
+    fn new(py: Python, bytes: &PyAny, import_object: &'static PyAny) -> PyResult<Self> {
         // Read the bytes.
-        let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
+        let bytes = bytes.downcast::<PyBytes>()?.as_bytes();
 
         // Compile the module.
         let module = runtime::compile(bytes).map_err(|error| {
             RuntimeError::py_err(format!("Failed to compile the module:\n    {}", error))
         })?;
 
-        let (import_object, host_function_references) =
-            build_import_object(&py, &module, imported_functions)?;
+        // Instantiate the WebAssembly module, with an import object.
+        let instance = if let Ok(import_object) = import_object.downcast::<PyCell<ImportObject>>() {
+            let import_object = import_object.borrow();
 
-        // Instantiate the WebAssembly module.
-        let instance = match module.instantiate(&import_object) {
-            Ok(instance) => Rc::new(instance),
-            Err(e) => {
-                return Err(RuntimeError::py_err(format!(
-                    "Failed to instantiate the module:\n    {}",
-                    e
-                )))
-            }
+            module.instantiate(&(*import_object).inner)
+        } else if let Ok(imported_functions) = import_object.downcast::<PyDict>() {
+            let module = Rc::new(module);
+            let mut import_object = ImportObject::new(module.clone());
+            import_object.extend_with_pydict(&py, imported_functions)?;
+
+            module.instantiate(&import_object.inner)
+        } else {
+            return Err(RuntimeError::py_err(
+                "The `imported_functions` parameter contains an unknown value. Python dictionnaries or `wasmer.ImportObject` are the only supported values.".to_string()
+            ));
         };
+
+        let instance = instance.map(|i| Rc::new(i)).map_err(|e| {
+            RuntimeError::py_err(format!("Failed to instantiate the module:\n    {}", e))
+        })?;
 
         let exports = instance.exports();
 
@@ -148,7 +149,6 @@ impl Instance {
                     globals: exported_globals,
                 },
             )?,
-            host_function_references,
         ))
     }
 

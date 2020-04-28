@@ -1,6 +1,7 @@
 //! The `wasmer.Module` Python object to build WebAssembly modules.
 
 use crate::{
+    import::ImportObject,
     instance::{
         exports::{ExportImportKind, ExportedFunctions},
         globals::ExportedGlobals,
@@ -16,7 +17,7 @@ use pyo3::{
     PyTryFrom,
 };
 use std::rc::Rc;
-use wasmer_runtime::{self as runtime, imports, validate, Export};
+use wasmer_runtime::{self as runtime, validate, Export};
 use wasmer_runtime_core::{
     self as runtime_core,
     cache::Artifact,
@@ -29,12 +30,21 @@ use wasmer_wasi;
 /// `Module` is a Python class that represents a WebAssembly module.
 pub struct Module {
     /// The underlying Rust WebAssembly module.
-    module: runtime::Module,
+    inner: Rc<runtime::Module>,
 }
 
 #[pymethods]
 /// Implement methods on the `Module` Python class.
 impl Module {
+    /// Check that given bytes represent a valid WebAssembly module.
+    #[staticmethod]
+    fn validate(bytes: &PyAny) -> PyResult<bool> {
+        match <PyBytes as PyTryFrom>::try_from(bytes) {
+            Ok(bytes) => Ok(validate(bytes.as_bytes())),
+            _ => Ok(false),
+        }
+    }
+
     /// Compile bytes into a WebAssembly module.
     #[new]
     #[allow(clippy::new_ret_no_self)]
@@ -47,23 +57,34 @@ impl Module {
             RuntimeError::py_err(format!("Failed to compile the module:\n    {}", error))
         })?;
 
-        Ok(Self { module })
+        Ok(Self {
+            inner: Rc::new(module),
+        })
     }
 
     // Instantiate the module into an `Instance` Python object.
-    fn instantiate(&self, py: Python) -> PyResult<Py<Instance>> {
-        let imports = imports! {};
+    #[args(import_object = "PyDict::new(_py).as_ref()")]
+    fn instantiate(&self, py: Python, import_object: &'static PyAny) -> PyResult<Py<Instance>> {
+        // Instantiate the WebAssembly module, with an import object.
+        let instance = if let Ok(import_object) = import_object.downcast::<PyCell<ImportObject>>() {
+            let import_object = import_object.borrow();
+
+            self.inner.instantiate(&(*import_object).inner)
+        } else if let Ok(imported_functions) = import_object.downcast::<PyDict>() {
+            let mut import_object = ImportObject::new(self.inner.clone());
+            import_object.extend_with_pydict(&py, imported_functions)?;
+
+            self.inner.instantiate(&import_object.inner)
+        } else {
+            return Err(RuntimeError::py_err(
+                "The `imported_functions` parameter contains an unknown value. Python dictionnaries or `wasmer.ImportObject` are the only supported values.".to_string()
+            ));
+        };
 
         // Instantiate the module.
-        let instance = match self.module.instantiate(&imports) {
-            Ok(instance) => Rc::new(instance),
-            Err(e) => {
-                return Err(RuntimeError::py_err(format!(
-                    "Failed to instantiate the module:\n    {}",
-                    e
-                )))
-            }
-        };
+        let instance = instance.map(|i| Rc::new(i)).map_err(|e| {
+            RuntimeError::py_err(format!("Failed to instantiate the module:\n    {}", e))
+        })?;
 
         let exports = instance.exports();
 
@@ -106,7 +127,6 @@ impl Module {
                         globals: exported_globals,
                     },
                 )?,
-                Vec::new(),
             ),
         )?)
     }
@@ -118,7 +138,7 @@ impl Module {
     ///   2. `"name": <name>`, where the name is a string,
     #[getter]
     fn exports<'p>(&self, py: Python<'p>) -> PyResult<&'p PyList> {
-        let exports = &self.module.info().exports;
+        let exports = &self.inner.info().exports;
         let mut items: Vec<&PyDict> = Vec::with_capacity(exports.len());
 
         for (name, export_index) in exports.iter() {
@@ -159,7 +179,7 @@ impl Module {
     ///     pairs.
     #[getter]
     fn imports<'p>(&self, py: Python<'p>) -> PyResult<&'p PyList> {
-        let module_info = &self.module.info();
+        let module_info = &self.inner.info();
         let functions = &module_info.imported_functions;
         let memories = &module_info.imported_memories;
         let globals = &module_info.imported_globals;
@@ -305,13 +325,13 @@ impl Module {
     /// function. This designed is motivated by saving memory.
     #[getter]
     fn custom_section_names<'p>(&self, py: Python<'p>) -> &'p PyList {
-        PyList::new(py, self.module.info().custom_sections.keys())
+        PyList::new(py, self.inner.info().custom_sections.keys())
     }
 
     /// Read a specific custom section.
     #[args(index = "0")]
     fn custom_section<'p>(&self, py: Python<'p>, name: String, index: usize) -> PyObject {
-        match self.module.info().custom_sections.get(&name) {
+        match self.inner.info().custom_sections.get(&name) {
             Some(bytes) => match bytes.get(index) {
                 Some(bytes) => PyBytes::new(py, bytes).into_py(py),
                 None => py.None(),
@@ -323,7 +343,7 @@ impl Module {
     /// Serialize the module into Python bytes.
     fn serialize<'p>(&self, py: Python<'p>) -> PyResult<&'p PyBytes> {
         // Get the module artifact.
-        match self.module.cache() {
+        match self.inner.cache() {
             // Serialize the artifact.
             Ok(artifact) => match artifact.serialize() {
                 Ok(serialized_artifact) => Ok(PyBytes::new(py, serialized_artifact.as_slice())),
@@ -339,7 +359,7 @@ impl Module {
     #[staticmethod]
     fn deserialize(bytes: &PyAny, py: Python) -> PyResult<Py<Module>> {
         // Read the bytes.
-        let serialized_module = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
+        let serialized_module = bytes.downcast::<PyBytes>()?.as_bytes();
 
         // Deserialize the artifact.
         match Artifact::deserialize(serialized_module) {
@@ -348,7 +368,12 @@ impl Module {
                 match unsafe {
                     runtime_core::load_cache_with(artifact, &runtime::default_compiler())
                 } {
-                    Ok(module) => Ok(Py::new(py, Self { module })?),
+                    Ok(module) => Ok(Py::new(
+                        py,
+                        Self {
+                            inner: Rc::new(module),
+                        },
+                    )?),
                     Err(_) => Err(RuntimeError::py_err(
                         "Failed to compile the serialized module.",
                     )),
@@ -358,25 +383,21 @@ impl Module {
         }
     }
 
-    /// Check that given bytes represent a valid WebAssembly module.
-    #[staticmethod]
-    fn validate(bytes: &PyAny) -> PyResult<bool> {
-        match <PyBytes as PyTryFrom>::try_from(bytes) {
-            Ok(bytes) => Ok(validate(bytes.as_bytes())),
-            _ => Ok(false),
-        }
+    /// Generates a fresh `ImportObject` object.
+    fn generate_import_object(&self) -> ImportObject {
+        ImportObject::new(self.inner.clone())
     }
 
     /// Checks whether the module contains WASI definitions.
     #[getter]
     fn is_wasi_module(&self) -> bool {
-        wasmer_wasi::is_wasi_module(&self.module)
+        wasmer_wasi::is_wasi_module(&self.inner)
     }
 
     /// Checks the WASI version if any.
     fn wasi_version<'p>(&self, py: Python<'p>, strict: bool) -> PyObject {
         let version: Option<wasi::Version> =
-            wasmer_wasi::get_wasi_version(&self.module, strict).map(Into::into);
+            wasmer_wasi::get_wasi_version(&self.inner, strict).map(Into::into);
 
         match version {
             Some(version) => version.to_object(py),
