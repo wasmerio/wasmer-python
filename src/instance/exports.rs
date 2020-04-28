@@ -46,6 +46,17 @@ impl From<&ExportImportKind> for &'static str {
     }
 }
 
+impl From<&runtime::Export> for ExportImportKind {
+    fn from(value: &runtime::Export) -> Self {
+        match value {
+            runtime::Export::Function { .. } => ExportImportKind::Function,
+            runtime::Export::Memory(..) => ExportImportKind::Memory,
+            runtime::Export::Global(..) => ExportImportKind::Global,
+            runtime::Export::Table(..) => ExportImportKind::Table,
+        }
+    }
+}
+
 impl ToPyObject for ExportImportKind {
     fn to_object(&self, py: Python) -> PyObject {
         (*self as u8).into_py(py)
