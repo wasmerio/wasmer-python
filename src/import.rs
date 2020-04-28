@@ -1,7 +1,13 @@
 //! This module contains a helper to build an `ImportObject` and build
 //! the host function logic.
 
-use pyo3::{exceptions::RuntimeError, prelude::*, types::PyDict, PyObject};
+use crate::instance::exports::ExportImportKind;
+use pyo3::{
+    exceptions::RuntimeError,
+    prelude::*,
+    types::{PyDict, PyList},
+    PyObject,
+};
 use std::rc::Rc;
 use wasmer_runtime as runtime;
 
@@ -295,5 +301,22 @@ impl ImportObject {
 impl ImportObject {
     pub fn extend(&mut self, py: Python, imported_functions: &'static PyDict) -> PyResult<()> {
         self.extend_with_pydict(&py, imported_functions)
+    }
+
+    pub fn import_descriptors<'p>(&self, py: Python<'p>) -> PyResult<&'p PyList> {
+        let iterator = self.inner.clone_ref().into_iter();
+        let mut items: Vec<&PyDict> = Vec::with_capacity(iterator.size_hint().0);
+
+        for (namespace, name, import) in iterator {
+            let dict = PyDict::new(py);
+
+            dict.set_item("kind", ExportImportKind::from(&import) as u8)?;
+            dict.set_item("namespace", namespace)?;
+            dict.set_item("name", name)?;
+
+            items.push(dict);
+        }
+
+        Ok(PyList::new(py, items))
     }
 }
