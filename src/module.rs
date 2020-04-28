@@ -11,12 +11,12 @@ use crate::{
     wasi,
 };
 use pyo3::{
-    exceptions::RuntimeError,
+    exceptions::{RuntimeError, ValueError},
     prelude::*,
     types::{PyAny, PyBytes, PyDict, PyList},
     PyTryFrom,
 };
-use std::rc::Rc;
+use std::{convert::TryInto, path::PathBuf, rc::Rc};
 use wasmer_runtime::{self as runtime, validate, Export};
 use wasmer_runtime_core::{
     self as runtime_core,
@@ -386,6 +386,59 @@ impl Module {
     /// Generates a fresh `ImportObject` object.
     fn generate_import_object(&self) -> ImportObject {
         ImportObject::new(self.inner.clone())
+    }
+
+    /// Generates a fresh `ImportObject` prefilled for WASI.
+    #[args(
+        args = "PyList::empty(_py)",
+        envs = "PyDict::new(_py)",
+        preopened_files = "PyList::empty(_py)",
+        mapped_dirs = "PyDict::new(_py)"
+    )]
+    fn generate_wasi_import_object(
+        &self,
+        version: u8,
+        args: &PyList,
+        envs: &PyDict,
+        preopened_files: &PyList,
+        mapped_dirs: &PyDict,
+    ) -> PyResult<ImportObject> {
+        Ok(ImportObject::new_wasi(
+            self.inner.clone(),
+            version
+                .try_into()
+                .map_err(|e: String| ValueError::py_err(e))?,
+            args.iter()
+                .map(|any_item| any_item.to_string().into_bytes())
+                .collect(),
+            envs.iter()
+                .map(|(any_key, any_value)| {
+                    let key = any_key.to_string().into_bytes();
+                    let value = any_value.to_string().into_bytes();
+                    let length = key.len() + value.len() + 1;
+                    let mut bytes = Vec::with_capacity(length);
+
+                    bytes.extend_from_slice(&key);
+                    bytes.push(b'=');
+                    bytes.extend_from_slice(&value);
+
+                    bytes
+                })
+                .collect(),
+            preopened_files
+                .iter()
+                .map(|any_item| PathBuf::from(any_item.to_string()))
+                .collect(),
+            mapped_dirs
+                .iter()
+                .map(|(any_key, any_value)| {
+                    let key = any_key.to_string();
+                    let value = PathBuf::from(any_value.to_string());
+
+                    (key, value)
+                })
+                .collect(),
+        ))
     }
 
     /// Checks whether the module contains WASI definitions.
