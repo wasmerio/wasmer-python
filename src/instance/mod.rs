@@ -29,6 +29,7 @@ use std::{collections::HashMap, rc::Rc};
 use wasmer_runtime::{self as runtime, Export};
 
 #[pyclass]
+#[text_signature = "(bytes, imported_functions={})"]
 /// `Instance` is a Python class that represents a WebAssembly instance.
 ///
 /// # Examples
@@ -174,6 +175,7 @@ impl Instance {
     }
 
     /// Find the export _name_ associated to an index if it is valid.
+    #[text_signature = "($self, index)"]
     fn resolve_exported_function(&mut self, py: Python, index: usize) -> PyResult<String> {
         match &self.exports_index_to_name {
             Some(exports_index_to_name) => exports_index_to_name
