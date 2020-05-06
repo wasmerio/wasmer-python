@@ -24,6 +24,7 @@ use wasmer_runtime_core::{
 };
 
 #[pyclass]
+#[text_signature = "(bytes)"]
 /// `Module` is a Python class that represents a WebAssembly module.
 pub struct Module {
     /// The underlying Rust WebAssembly module.
@@ -49,6 +50,7 @@ impl Module {
     }
 
     // Instantiate the module into an `Instance` Python object.
+    #[text_signature = "($self)"]
     fn instantiate(&self, py: Python) -> PyResult<Py<Instance>> {
         let imports = imports! {};
 
@@ -307,6 +309,7 @@ impl Module {
     }
 
     /// Read a specific custom section.
+    #[text_signature = "($self, name, index=0)"]
     #[args(index = "0")]
     fn custom_section<'p>(&self, py: Python<'p>, name: String, index: usize) -> PyObject {
         match self.module.info().custom_sections.get(&name) {
@@ -319,6 +322,7 @@ impl Module {
     }
 
     /// Serialize the module into Python bytes.
+    #[text_signature = "($self)"]
     fn serialize<'p>(&self, py: Python<'p>) -> PyResult<&'p PyBytes> {
         // Get the module artifact.
         match self.module.cache() {
@@ -335,6 +339,7 @@ impl Module {
 
     /// Deserialize Python bytes into a module instance.
     #[staticmethod]
+    #[text_signature = "(bytes)"]
     fn deserialize(bytes: &PyAny, py: Python) -> PyResult<Py<Module>> {
         // Read the bytes.
         let serialized_module = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
@@ -358,6 +363,7 @@ impl Module {
 
     /// Check that given bytes represent a valid WebAssembly module.
     #[staticmethod]
+    #[text_signature = "(bytes)"]
     fn validate(bytes: &PyAny) -> PyResult<bool> {
         match <PyBytes as PyTryFrom>::try_from(bytes) {
             Ok(bytes) => Ok(validate(bytes.as_bytes())),

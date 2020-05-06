@@ -14,6 +14,7 @@ unsafe impl PyNativeType for Value {}
 #[pymethods]
 impl Value {
     #[staticmethod]
+    #[text_signature = "(value)"]
     fn i32(value: i32) -> PyResult<Self> {
         Ok(Self {
             value: WasmValue::I32(value),
@@ -21,6 +22,7 @@ impl Value {
     }
 
     #[staticmethod]
+    #[text_signature = "(value)"]
     fn i64(value: i64) -> PyResult<Self> {
         Ok(Self {
             value: WasmValue::I64(value),
@@ -28,6 +30,7 @@ impl Value {
     }
 
     #[staticmethod]
+    #[text_signature = "(value)"]
     fn f32(value: f32) -> PyResult<Self> {
         Ok(Self {
             value: WasmValue::F32(value),
@@ -35,6 +38,7 @@ impl Value {
     }
 
     #[staticmethod]
+    #[text_signature = "(value)"]
     fn f64(value: f64) -> PyResult<Self> {
         Ok(Self {
             value: WasmValue::F64(value),
@@ -42,6 +46,7 @@ impl Value {
     }
 
     #[staticmethod]
+    #[text_signature = "(value)"]
     fn v128(value: u128) -> PyResult<Self> {
         Ok(Self {
             value: WasmValue::V128(value),

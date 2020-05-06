@@ -25,6 +25,7 @@ impl Memory {
         )
     }
 
+    #[text_signature = "($self, offset=0)"]
     #[args(offset = 0)]
     fn uint8_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Uint8Array>> {
         Py::new(
@@ -36,6 +37,7 @@ impl Memory {
         )
     }
 
+    #[text_signature = "($self, offset=0)"]
     #[args(offset = 0)]
     fn int8_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Int8Array>> {
         Py::new(
@@ -47,6 +49,7 @@ impl Memory {
         )
     }
 
+    #[text_signature = "($self, offset=0)"]
     #[args(offset = 0)]
     fn uint16_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Uint16Array>> {
         Py::new(
@@ -58,6 +61,7 @@ impl Memory {
         )
     }
 
+    #[text_signature = "($self, offset=0)"]
     #[args(offset = 0)]
     fn int16_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Int16Array>> {
         Py::new(
@@ -69,6 +73,7 @@ impl Memory {
         )
     }
 
+    #[text_signature = "($self, offset=0)"]
     #[args(offset = 0)]
     fn uint32_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Uint32Array>> {
         Py::new(
@@ -80,6 +85,7 @@ impl Memory {
         )
     }
 
+    #[text_signature = "($self, offset=0)"]
     #[args(offset = 0)]
     fn int32_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Int32Array>> {
         Py::new(
@@ -91,6 +97,7 @@ impl Memory {
         )
     }
 
+    #[text_signature = "($self, number_of_pages)"]
     fn grow(&self, number_of_pages: u32) -> PyResult<u32> {
         self.memory
             .grow(Pages(number_of_pages))
