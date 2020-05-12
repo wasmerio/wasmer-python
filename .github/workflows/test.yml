@@ -89,43 +89,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
         
-      - name: Set up Rust with cross target
-        uses: actions-rs/toolchain@v1
-        with:
-          default: true
-          override: true
-          target: aarch64-unknown-linux-gnu
-
-      - name: Install GNU C compiler (multilib support)
-        shell: bash
-        run: |
-          sudo apt install gcc-8-multilib-arm-linux-gnueabihf
-
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.7
-
-      - name: Set up just
-        shell: bash
-        run: |
-          export PATH="$HOME/.cargo/bin:$PATH"
-          test -f $HOME/.cargo/bin/just || cargo install just
-
-      - name: Prelude
-        shell: bash
-        run: |
-          export PATH="$HOME/.cargo/bin:$PATH"
-          just prelude
-
-      - name: Compile the library
-        shell: bash
-        run: |
-          export PATH="$HOME/.cargo/bin:$PATH"
-          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          RUSTFLAGS='--target aarch64-unknown-linux-gnu' just build
-          just build-any
-
       - name: Test on aarch64 emulation
         uses: uraimo/run-on-arch-action@v1.0.8
         id: runcmd
@@ -135,6 +98,20 @@ jobs:
           run: |
             uname -a
             echo ::set-output name=uname::$(uname -a)
+
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+            rustup toolchain install nightly
+            export PATH="$HOME/.cargo/bin:$PATH"
+
+            sudo apt install python3 python3-pip
+
+            test -f $HOME/.cargo/bin/just || cargo install just
+
+            source .env/bin/activate
+
+            just prelude
+            just build
+            just test
 
       - name: Get the output
         run: |
