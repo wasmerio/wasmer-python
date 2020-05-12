@@ -4,77 +4,101 @@ on: [push, pull_request]
 
 jobs:
   # The `test` job.
-  test:
-    name: Test
+  #test:
+    #name: Test
+#
+    #strategy:
+      #matrix:
+        ## The job runs on different OS.
+        #os: [ubuntu-latest, macos-latest, windows-latest]
+        ## The job runs on different Python versions.
+        #python: ['3.6', '3.7', '3.8']
+      ## As soon as one job fails in the matrix, all the other
+      ## in-progress jobs are canceled.
+      #fail-fast: true
+#
+    #runs-on: ${{ matrix.os }}
+#
+    #steps:
+      #- name: Check out code
+        #uses: actions/checkout@v2
+#
+      #- name: Set up Rust
+        #uses: actions-rs/toolchain@v1
+        #with:
+          #default: true
+          #override: true
+#
+      #- name: Cache Cargo registry
+        #uses: actions/cache@v1
+        #with:
+          #path: ~/.cargo/registry
+          #key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+#
+      #- name: Cache Cargo bin
+        #uses: actions/cache@v1
+        #with:
+          #path: ~/.cargo/bin
+          #key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
+#
+      #- name: Cache Cargo build
+        #uses: actions/cache@v1
+        #with:
+          #path: target
+          #key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+#
+      #- name: Set up Python ${{ matrix.python }}
+        #uses: actions/setup-python@v1
+        #with:
+          #python-version: ${{ matrix.python }}
+#
+      #- name: Set up just
+        #shell: bash
+        #run: |
+          #export PATH="$HOME/.cargo/bin:$PATH"
+          #test -f $HOME/.cargo/bin/just || cargo install just
+#
+      #- name: Prelude
+        #shell: bash
+        #run: |
+          #export PATH="$HOME/.cargo/bin:$PATH"
+          #just prelude
+#
+      #- name: Compile the library
+        #shell: bash
+        #run: |
+          #export PATH="$HOME/.cargo/bin:$PATH"
+          #if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          #just build
+          #just build-any
+#
+      #- name: Run all the tests
+        #shell: bash
+        #run: |
+          #export PATH="$HOME/.cargo/bin:$PATH"
+          #if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          #just test
 
-    strategy:
-      matrix:
-        # The job runs on 3 different OS.
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        # The job runs on 3 different Python versions.
-        python: ['3.6', '3.7', '3.8']
-      # As soon as one job fails in the matrix, all the other
-      # in-progress jobs are canceled.
-      fail-fast: true
-
-    runs-on: ${{ matrix.os }}
+  # The `exotic-test` job, to test on exotic platforms.
+  exotic-test:
+    name: Exotic Test
+    
+    run-on: ubuntu20.04
 
     steps:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+      - name: Run on aarch64
+        uses: uraimo/run-on-arch-action@v1.0.8
+        id: runcmd
         with:
-          default: true
-          override: true
+          architecture: aarch64
+          distribution: ubuntu20.04
+          run: |
+            uname -a
+            echo ::set-output name=uname::$(uname -a)
 
-      - name: Cache Cargo registry
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Cache Cargo bin
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/bin
-          key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Cache Cargo build
-        uses: actions/cache@v1
-        with:
-          path: target
-          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python }}
-
-      - name: Set up just
-        shell: bash
+      - name: Get the output
         run: |
-          export PATH="$HOME/.cargo/bin:$PATH"
-          test -f $HOME/.cargo/bin/just || cargo install just
-
-      - name: Prelude
-        shell: bash
-        run: |
-          export PATH="$HOME/.cargo/bin:$PATH"
-          just prelude
-
-      - name: Compile the library
-        shell: bash
-        run: |
-          export PATH="$HOME/.cargo/bin:$PATH"
-          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          just build
-          just build-any
-
-      - name: Run all the tests
-        shell: bash
-        run: |
-          export PATH="$HOME/.cargo/bin:$PATH"
-          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          just test
+          echo ">>> ${{ steps.runcmd.output.uname }}"
