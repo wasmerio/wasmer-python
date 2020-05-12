@@ -90,11 +90,11 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Test on aarch64 emulation
-        uses: uraimo/run-on-arch-action@v1.0.8
+        uses: uraimo/run-on-arch-action@v1.0.7
         id: runcmd
         with:
           architecture: aarch64
-          distribution: ubuntu18.04
+          distribution: buster
           run: |
             uname -a
             echo ::set-output name=uname::$(uname -a)
