@@ -83,7 +83,7 @@ jobs:
   exotic-test:
     name: Exotic Test
     
-    runs-on: ubuntu20.04
+    runs-on: ubuntu-18.04
 
     steps:
       - name: Check out code
@@ -94,7 +94,7 @@ jobs:
         id: runcmd
         with:
           architecture: aarch64
-          distribution: ubuntu20.04
+          distribution: ubuntu18.04
           run: |
             uname -a
             echo ::set-output name=uname::$(uname -a)
