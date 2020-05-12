@@ -83,7 +83,7 @@ jobs:
   exotic-test:
     name: Exotic Test
     
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
 
     steps:
       - name: Check out code
@@ -99,7 +99,7 @@ jobs:
       - name: Install GNU C compiler (multilib support)
         shell: bash
         run: |
-          sudo apt install gcc-10-multilib
+          sudo apt install gcc-8-multilib-arm-linux-gnueabihf
 
       - name: Cache Cargo registry
         uses: actions/cache@v1
@@ -149,7 +149,7 @@ jobs:
         id: runcmd
         with:
           architecture: aarch64
-          distribution: ubuntu20.04
+          distribution: ubuntu18.04
           run: |
             uname -a
             echo ::set-output name=uname::$(uname -a)

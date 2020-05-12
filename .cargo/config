@@ -5,4 +5,4 @@ rustflags = [
 ]
 
 [target.aarch64-unknown-linux-gnu]
-linker = "arm-linux-gnu-gcc-10"
+linker = "arm-linux-gnueabihf-gcc-8"
