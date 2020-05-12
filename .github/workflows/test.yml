@@ -90,16 +90,14 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Test on aarch64 emulation
-        uses: uraimo/run-on-arch-action@v1.0.7
+        uses: uraimo/run-on-arch-action@v1.0.8
         id: runcmd
         with:
           architecture: aarch64
-          distribution: buster
+          distribution: ubuntu18.04
           run: |
-            uname -a
-            echo ::set-output name=uname::$(uname -a)
-
-            sudo apt install curl python3 python3-pip
+            apt update
+            apt install curl python3 python3-pip
 
             curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
             rustup toolchain install nightly
