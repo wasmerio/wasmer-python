@@ -83,18 +83,73 @@ jobs:
   exotic-test:
     name: Exotic Test
     
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Check out code
         uses: actions/checkout@v2
+        
+      - name: Set up Rust with cross target
+        uses: actions-rs/toolchain@v1
+        with:
+          default: true
+          override: true
+          target: aarch64-unknown-linux-gnu
 
-      - name: Run on aarch64
+      - name: Install GNU C compiler (multilib support)
+        shell: bash
+        run: |
+          sudo apt install gcc-10-multilib
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache Cargo bin
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/bin
+          key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache Cargo build
+        uses: actions/cache@v1
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
+      - name: Set up just
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          test -f $HOME/.cargo/bin/just || cargo install just
+
+      - name: Prelude
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          just prelude
+
+      - name: Compile the library
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          RUSTFLAGS='--target aarch64-unknown-linux-gnu' just build
+          just build-any
+
+      - name: Test on aarch64 emulation
         uses: uraimo/run-on-arch-action@v1.0.8
         id: runcmd
         with:
           architecture: aarch64
-          distribution: ubuntu18.04
+          distribution: ubuntu20.04
           run: |
             uname -a
             echo ::set-output name=uname::$(uname -a)
