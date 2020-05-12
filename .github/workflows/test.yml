@@ -83,7 +83,7 @@ jobs:
   exotic-test:
     name: Exotic Test
     
-    run-on: ubuntu20.04
+    runs-on: ubuntu20.04
 
     steps:
       - name: Check out code
