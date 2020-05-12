@@ -101,4 +101,4 @@ jobs:
 
       - name: Get the output
         run: |
-          echo ">>> ${{ steps.runcmd.output.uname }}"
+          echo ">>> ${{ steps.runcmd.outputs.uname }}"
