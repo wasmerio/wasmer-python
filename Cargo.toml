@@ -17,7 +17,7 @@ crate-type = ["cdylib"]
 [dependencies]
 wasmer-runtime = "0.17"
 wasmer-runtime-core = { version = "0.17", features = ["dynamicfunc-fat-closures"] }
-pyo3 = { version = "0.9", features = ["extension-module"] }
+pyo3 = { version = "0.10", features = ["extension-module"] }
 
 [package.metadata.maturin]
 project-url = [
