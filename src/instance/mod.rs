@@ -178,12 +178,11 @@ impl Instance {
     #[text_signature = "($self, index)"]
     fn resolve_exported_function(&mut self, py: Python, index: usize) -> PyResult<String> {
         match &self.exports_index_to_name {
-            Some(exports_index_to_name) => exports_index_to_name
-                .get(&index)
-                .map(|name| name.clone())
-                .ok_or_else(|| {
+            Some(exports_index_to_name) => {
+                exports_index_to_name.get(&index).cloned().ok_or_else(|| {
                     RuntimeError::py_err(format!("Function at index `{}` does not exist.", index))
-                }),
+                })
+            }
 
             None => {
                 self.exports_index_to_name = Some(
