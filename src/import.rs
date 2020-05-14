@@ -6,9 +6,9 @@ use wasmer_runtime::{self as runtime, ImportObject};
 
 #[cfg(not(all(unix, target_arch = "x86_64")))]
 pub(crate) fn build_import_object(
-    _py: &Python,
+    _py: Python,
     _module: &runtime::Module,
-    imported_functions: &'static PyDict,
+    imported_functions: &PyDict,
 ) -> PyResult<(ImportObject, Vec<PyObject>)> {
     if imported_functions.is_empty() {
         Ok((ImportObject::new(), Vec::new()))
@@ -21,9 +21,9 @@ pub(crate) fn build_import_object(
 
 #[cfg(all(unix, target_arch = "x86_64"))]
 pub(crate) fn build_import_object(
-    py: &Python,
+    py: Python,
     module: &runtime::Module,
-    imported_functions: &'static PyDict,
+    imported_functions: &PyDict,
 ) -> PyResult<(ImportObject, Vec<PyObject>)> {
     use pyo3::{
         types::{PyFloat, PyLong, PyString, PyTuple},
@@ -132,7 +132,7 @@ pub(crate) fn build_import_object(
                     ))
                 })?;
 
-            if annotations.len() > 0 {
+            if !annotations.is_empty() {
                 for ((annotation_name, annotation_value), expected_type) in annotations.iter().zip(
                     imported_function_signature
                         .params()
@@ -144,7 +144,7 @@ pub(crate) fn build_import_object(
                         "i64" | "I64" | "<class 'int'>" if expected_type == &Type::I64 => Type::I64,
                         "f32" | "F32" | "<class 'float'>" if expected_type == &Type::F32 => Type::F32,
                         "f64" | "F64" | "<class 'float'>" if expected_type == &Type::F64 => Type::F64,
-                        t @ _ => {
+                        t => {
                             return Err(RuntimeError::py_err(format!(
                                 "Type `{}` is not a supported type, or is not the expected type (`{}`).",
                                 t, expected_type
@@ -168,9 +168,9 @@ pub(crate) fn build_import_object(
                 output_types.extend(imported_function_signature.returns());
             }
 
-            let function = function.to_object(*py);
+            let function = function.to_object(py);
 
-            host_function_references.push(function.clone_ref(*py));
+            host_function_references.push(function.clone_ref(py));
 
             let function_implementation = DynamicFunc::new(
                 Arc::new(FuncSig::new(input_types, output_types.clone())),
@@ -202,7 +202,7 @@ pub(crate) fn build_import_object(
                         Err(_) => PyTuple::new(py, vec![results]),
                     };
 
-                    let outputs = results
+                    results
                         .iter()
                         .zip(output_types.iter())
                         .map(|(result, output)| match output {
@@ -242,9 +242,7 @@ pub(crate) fn build_import_object(
                                     .unwrap(),
                             ),
                         })
-                        .collect();
-
-                    outputs
+                        .collect()
                 },
             );
 
