@@ -9,15 +9,24 @@ jobs:
 
     strategy:
       matrix:
-        # The job runs on 3 different OS.
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        # The job runs on 3 different Python versions.
-        python: ['3.6', '3.7', '3.8']
+        # The job runs on different OS.
+        target: [
+          # Linux, amd64
+          { os: 'ubuntu-latest', rust-target: 'x86_64-unknown-linux-gnu' },
+          # macOS, amd64
+          { os: 'macos-latest', rust-target: 'x86_64-apple-darwin' },
+          # Windows, amd64
+          { os: 'windows-latest', rust-target: 'x86_64-pc-windows-msvc' },
+          # Windows, x86
+          { os: 'windows-latest', rust-target: 'i686-pc-windows-msvc' },
+        ]
+        # The job runs on different Python versions.
+        python: [3.5, 3.6, 3.7, 3.8]
       # As soon as one job fails in the matrix, all the other
       # in-progress jobs are canceled.
       fail-fast: true
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.target.os }}
 
     steps:
       - name: Check out code
@@ -28,6 +37,7 @@ jobs:
         with:
           default: true
           override: true
+          target: ${{ matrix.target.rust-target }}
 
       - name: Cache Cargo registry
         uses: actions/cache@v1
