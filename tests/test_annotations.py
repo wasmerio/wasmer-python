@@ -91,16 +91,16 @@ def test_value():
 def helper_single_param(func, *, param_name: str):
     """Check text_signature and signature for function with one parameter (except `self`)"""
 
-    assert func.__text_signature__ == f"({param_name})"
+    assert func.__text_signature__ == "({})".format(param_name)
     assert signature(func) == Signature_Class(
-        [Parameter(f"{param_name}", Parameter.POSITIONAL_OR_KEYWORD)]
+        [Parameter(param_name, Parameter.POSITIONAL_OR_KEYWORD)]
     )
 
 
 def helper_self(func):
     assert func.__text_signature__ == "($self)"
     assert signature(func) == Signature_Class(
-        [Parameter(f"self", Parameter.POSITIONAL_ONLY)]
+        [Parameter("self", Parameter.POSITIONAL_ONLY)]
     )
 
 
