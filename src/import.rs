@@ -5,10 +5,10 @@ use pyo3::{exceptions::RuntimeError, prelude::*, types::PyDict, PyObject};
 use wasmer_runtime::{self as runtime, ImportObject};
 
 #[cfg(not(all(unix, target_arch = "x86_64")))]
-pub(crate) fn build_import_object(
-    _py: &Python,
+pub(crate) fn build_import_object<'py>(
+    _py: &'py Python,
     _module: &runtime::Module,
-    imported_functions: &'static PyDict,
+    imported_functions: &'py PyDict,
 ) -> PyResult<(ImportObject, Vec<PyObject>)> {
     if imported_functions.is_empty() {
         Ok((ImportObject::new(), Vec::new()))
@@ -20,10 +20,10 @@ pub(crate) fn build_import_object(
 }
 
 #[cfg(all(unix, target_arch = "x86_64"))]
-pub(crate) fn build_import_object(
-    py: &Python,
+pub(crate) fn build_import_object<'py>(
+    py: &'py Python,
     module: &runtime::Module,
-    imported_functions: &'static PyDict,
+    imported_functions: &'py PyDict,
 ) -> PyResult<(ImportObject, Vec<PyObject>)> {
     use pyo3::{
         types::{PyFloat, PyLong, PyString, PyTuple},

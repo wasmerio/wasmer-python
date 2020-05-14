@@ -88,7 +88,11 @@ impl Instance {
     /// on WebAssembly bytes (represented by the Python bytes type).
     #[new]
     #[args(imported_functions = "PyDict::new(_py)")]
-    fn new(py: Python, bytes: &PyAny, imported_functions: &'static PyDict) -> PyResult<Self> {
+    fn new<'py>(
+        py: Python<'py>,
+        bytes: &'py PyAny,
+        imported_functions: &'py PyDict,
+    ) -> PyResult<Self> {
         // Read the bytes.
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
 
