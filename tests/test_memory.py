@@ -170,9 +170,9 @@ def test_memory_views_share_the_same_buffer():
     assert int8[1] == 0b00000100
     assert int8[2] == 0b00010000
     assert int8[3] == 0b01000000
-    assert int16[0] == 0b00000100_00000001
-    assert int16[1] == 0b01000000_00010000
-    assert int32[0] == 0b01000000_00010000_00000100_00000001
+    assert int16[0] == 0b0000010000000001
+    assert int16[1] == 0b0100000000010000
+    assert int32[0] == 0b01000000000100000000010000000001
     assert byte_array[0] == 0b00000001
     assert byte_array[1] == 0b00000100
     assert byte_array[2] == 0b00010000
