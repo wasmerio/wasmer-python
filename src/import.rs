@@ -5,10 +5,10 @@ use pyo3::{exceptions::RuntimeError, prelude::*, types::PyDict, PyObject};
 use wasmer_runtime::{self as runtime, ImportObject};
 
 #[cfg(not(all(unix, target_arch = "x86_64")))]
-pub(crate) fn build_import_object<'py>(
-    _py: &'py Python,
+pub(crate) fn build_import_object(
+    _py: Python,
     _module: &runtime::Module,
-    imported_functions: &'py PyDict,
+    imported_functions: &PyDict,
 ) -> PyResult<(ImportObject, Vec<PyObject>)> {
     if imported_functions.is_empty() {
         Ok((ImportObject::new(), Vec::new()))
@@ -20,10 +20,10 @@ pub(crate) fn build_import_object<'py>(
 }
 
 #[cfg(all(unix, target_arch = "x86_64"))]
-pub(crate) fn build_import_object<'py>(
-    py: &'py Python,
+pub(crate) fn build_import_object(
+    py: Python,
     module: &runtime::Module,
-    imported_functions: &'py PyDict,
+    imported_functions: &PyDict,
 ) -> PyResult<(ImportObject, Vec<PyObject>)> {
     use pyo3::{
         types::{PyFloat, PyLong, PyString, PyTuple},
@@ -168,9 +168,9 @@ pub(crate) fn build_import_object<'py>(
                 output_types.extend(imported_function_signature.returns());
             }
 
-            let function = function.to_object(*py);
+            let function = function.to_object(py);
 
-            host_function_references.push(function.clone_ref(*py));
+            host_function_references.push(function.clone_ref(py));
 
             let function_implementation = DynamicFunc::new(
                 Arc::new(FuncSig::new(input_types, output_types.clone())),

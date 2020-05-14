@@ -88,11 +88,7 @@ impl Instance {
     /// on WebAssembly bytes (represented by the Python bytes type).
     #[new]
     #[args(imported_functions = "PyDict::new(_py)")]
-    fn new<'py>(
-        py: Python<'py>,
-        bytes: &'py PyAny,
-        imported_functions: &'py PyDict,
-    ) -> PyResult<Self> {
+    fn new(py: Python, bytes: &PyAny, imported_functions: &PyDict) -> PyResult<Self> {
         // Read the bytes.
         let bytes = <PyBytes as PyTryFrom>::try_from(bytes)?.as_bytes();
 
@@ -102,7 +98,7 @@ impl Instance {
         })?;
 
         let (import_object, host_function_references) =
-            build_import_object(&py, &module, imported_functions)?;
+            build_import_object(py, &module, imported_functions)?;
 
         // Instantiate the WebAssembly module.
         let instance = match module.instantiate(&import_object) {
