@@ -3,6 +3,7 @@ from wasmer import Instance, Uint8Array, Value, Type
 import inspect
 import os
 import pytest
+import sys
 
 here = os.path.dirname(os.path.realpath(__file__))
 TEST_BYTES = open(here + '/tests.wasm', 'rb').read()
@@ -74,6 +75,7 @@ def test_call_void():
 def test_memory_view():
     assert isinstance(Instance(TEST_BYTES).memory.uint8_view(), Uint8Array)
 
+@pytest.mark.skipif(sys.version_info < (3, 6), reason='require Python 3.6+ to run')
 def test_getfullargspec():
     instance = Instance(TEST_BYTES)
     assert instance.exports.sum.getfullargspec == inspect.FullArgSpec(
