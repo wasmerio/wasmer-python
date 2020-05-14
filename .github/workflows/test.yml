@@ -21,7 +21,7 @@ jobs:
           { os: 'windows-latest', rust-target: 'i686-pc-windows-msvc' },
         ]
         # The job runs on different Python versions.
-        python: [3.6, 3.7, 3.8]
+        python: [3.5, 3.6, 3.7, 3.8]
       # As soon as one job fails in the matrix, all the other
       # in-progress jobs are canceled.
       fail-fast: true
