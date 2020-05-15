@@ -28,11 +28,6 @@ def test_failed_to_instantiate():
     with pytest.raises(RuntimeError) as context_manager:
         Instance(INVALID_TEST_BYTES)
 
-    exception = context_manager.value
-    assert str(exception) == (
-        'Failed to compile the module:\n    Validation error "Invalid type"'
-    )
-
 def test_function_does_not_exist():
     with pytest.raises(LookupError) as context_manager:
         Instance(TEST_BYTES).exports.foo
