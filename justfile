@@ -36,11 +36,32 @@ wakeup:
 sleep:
 	deactivate
 
+build_features := ""
+
 # Compile and install the Python library.
+# Run with `--set build_features` to compile with specific Cargo features.
 build:
-	export PYTHON_SYS_EXECUTABLE=$(which python)
-	cargo check
-	maturin develop --binding-crate pyo3 --release --strip
+        #!/usr/bin/env bash
+        export PYTHON_SYS_EXECUTABLE=$(which python)
+
+        build_features="{{build_features}}"
+
+        if test -z "${build_features}"; then
+                if test "{{arch()}}" = "aarch64"; then
+                        build_features="backend-singlepass";
+                fi
+        fi
+
+        build_args=""
+
+        if test ! -z "${build_features}"; then
+                build_args="--no-default-features --features ${build_features}"
+        fi
+
+        echo "Build arguments: ${build_args}"
+
+        cargo check ${build_args}
+        maturin develop --binding-crate pyo3 --release --strip --cargo-extra-args="${build_args}"
 
 # Create a distribution of wasmer that can be installed
 # anywhere (it will fail on import)
