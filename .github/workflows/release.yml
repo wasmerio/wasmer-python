@@ -113,7 +113,8 @@ jobs:
           export PATH="$HOME/.cargo/bin:$PATH"
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          just publish python${{ matrix.python }}
+          maturin list-python
+          #just publish python${{ matrix.python }}
 
   release-any:
     name: Release any wheels
@@ -173,4 +174,4 @@ jobs:
         run: |
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
           pip3 install twine
-          just publish-any
+          #just publish-any
