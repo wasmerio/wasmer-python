@@ -69,7 +69,7 @@ jobs:
         if: matrix.target.id != 'linux-aarch64'
         shell: bash
         run: |
-          touch .python-version
+          echo "${{ matrix.python }}" > .python-version
 
       - name: Cache Python version
         if: matrix.target.id == 'linux-aarch64'
@@ -110,6 +110,8 @@ jobs:
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
           maturin list-python
+          echo -n 'Selected interpreter: '
+          maturin list-python | grep -o "CPython $(cat .python-version) at .*" | cut -d' ' -f 4
           just build
           just build-any
 
