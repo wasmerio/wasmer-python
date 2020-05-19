@@ -37,6 +37,8 @@ jobs:
   release:
     name: Build and publish wheels
 
+    needs: [create_pre_release]
+
     strategy:
       matrix:
         # The job runs on different OS.
@@ -184,6 +186,8 @@ jobs:
 
   release-any:
     name: Release any wheels
+
+    needs: [create_pre_release]
 
     runs-on: ubuntu-latest
 
