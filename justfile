@@ -64,7 +64,7 @@ build:
         maturin develop --binding-crate pyo3 --release --strip --cargo-extra-args="${build_args}"
 
 # Build the wheel.
-build-wheel version:
+build-wheel python_version rust_target:
         #!/usr/bin/env bash
         export PYTHON_SYS_EXECUTABLE=$(which python)
 
@@ -84,7 +84,7 @@ build-wheel version:
 
         echo "Build arguments: ${build_args}"
 
-        maturin build --bindings pyo3 --release --strip --cargo-extra-args="${build_args}" --interpreter "{{version}}"
+        maturin build --bindings pyo3 --release --target "{{ rust_target }}" --strip --cargo-extra-args="${build_args}" --interpreter "{{python_version}}"
 
 # Create a distribution of wasmer that can be installed
 # anywhere (it will fail on import)
