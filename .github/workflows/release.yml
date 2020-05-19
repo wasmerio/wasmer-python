@@ -176,4 +176,5 @@ jobs:
         run: |
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
           pip3 install twine
+          just build-any
           just publish-any
