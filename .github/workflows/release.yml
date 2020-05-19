@@ -6,8 +6,36 @@ on:
       - '**'
 
 jobs:
+  create_pre_release:
+    name: Create pre-release
+
+    runs-on: ubuntu-latest
+
+    steps:
+      # The pre-release must be created only once, hence the split
+      # into multiple jobs with different `strategy`.
+      - name: Create a Github pre-release
+        id: create_pre_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: true
+
+      - name: Output `release_url` into a temporary file
+        run: echo "${{ steps.create_pre_release.outputs.upload_url }}" > release_url.txt
+
+      - name: Save the `release_url` temporary file
+        uses: actions/upload-artifact@v1
+        with:
+          name: release_url
+          path: release_url.txt
+
   release:
-    name: Release tailored wheels
+    name: Build and publish wheels
 
     strategy:
       matrix:
@@ -105,10 +133,9 @@ jobs:
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           just prelude
 
-      - name: Build wheels and Publish on Pypi
+      - name: Build the wheel
+        id: create_wheel
         shell: bash
-        env:
-          MATURIN_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
@@ -116,7 +143,44 @@ jobs:
           maturin list-python
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4)
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
-          just publish $PYTHON_INTERPRETER
+          just build-wheel $PYTHON_INTERPRETER
+          wheel=$(ls target/wheels/wasmer-*.whl)
+          echo ${wheel}
+          echo ::set-output name=path::${wheel}
+          echo ::set-output name=name::$(basename ${wheel})
+
+      - name: Load the `release_url` from the temporary file
+        uses: actions/download-artifact@v1
+        with:
+          name: release_url
+
+      - name: Read the `release_url` temporary file
+        id: get_release_info
+        shell: bash
+        run: |
+          value=$(cat release_url/release_url.txt)
+          echo ::set-output name=upload_url::$value
+
+      - name: Upload the wheel as Github pre-release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          asset_path: ${{ steps.create_wheel.outputs.path }}
+          asset_name: ${{ steps.create_wheel.outputs.name }}
+          asset_content_type: application/x-pywheel+zip
+
+      - name: Publish the wheel on Pypi
+        if: matrix.target.id != 'linux-aarch64'
+        shell: bash
+        env:
+          TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          just publish
 
   release-any:
     name: Release any wheels
@@ -169,12 +233,44 @@ jobs:
           export PATH="$HOME/.cargo/bin:$PATH"
           just prelude
 
-      - name: Build
+      - name: Build the wheel
+        id: create_wheel
+        shell: bash
+        run: |
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          just build-any-wheel
+          wheel=$(ls target/wheels/wasmer-*.whl)
+          echo ${wheel}
+          echo ::set-output name=path::${wheel}
+          echo ::set-output name=name::$(basename ${wheel})
+
+      - name: Load the `release_url` from the temporary file
+        uses: actions/download-artifact@v1
+        with:
+          name: release_url
+
+      - name: Read the `release_url` temporary file
+        id: get_release_info
+        shell: bash
+        run: |
+          value=$(cat release_url/release_url.txt)
+          echo ::set-output name=upload_url::$value
+
+      - name: Upload the wheel as Github pre-release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          asset_path: ${{ steps.create_wheel.outputs.path }}
+          asset_name: ${{ steps.create_wheel.outputs.name }}
+          asset_content_type: application/x-pywheel+zip
+
+      - name: Publish the wheel on Pypi
         shell: bash
         env:
           TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
         run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          pip3 install twine
-          just build-any
           just publish-any
