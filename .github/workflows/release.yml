@@ -146,7 +146,7 @@ jobs:
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
           just build-wheel "${PYTHON_INTERPRETER}" "${{ matrix.target.rust-target }}"
-          wheel=$(ls target/wheels/wasmer-*.whl)
+          wheel=$(ls target/wheels/wasmer-*.whl | grep "cp$(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+' | tr -d '.')" | tail -n1)
           echo ${wheel}
           echo ::set-output name=path::${wheel}
           echo ::set-output name=name::$(basename ${wheel})
