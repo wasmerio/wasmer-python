@@ -114,9 +114,9 @@ jobs:
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
           maturin list-python
-          PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version) at .*" | cut -d' ' -f 4)
+          PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version).* at .*" | cut -d' ' -f 4)
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
-          just publish $PYTHON_INTERPRETER
+          #just publish $PYTHON_INTERPRETER
 
   release-any:
     name: Release any wheels
@@ -176,4 +176,4 @@ jobs:
         run: |
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
           pip3 install twine
-          just publish-any
+          #just publish-any
