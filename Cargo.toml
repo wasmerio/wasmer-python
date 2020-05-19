@@ -27,7 +27,7 @@ backend-llvm = ["wasmer-runtime/default-backend-llvm"]
 
 [package.metadata.maturin]
 project-url = [
-    "Source Code: https://github.com/wasmerio/python-ext-wasm/",
+    "Source Code, https://github.com/wasmerio/python-ext-wasm/",
     "Bug Tracker, https://github.com/wasmerio/python-ext-wasm/issues",
     "Documentation, https://github.com/wasmerio/python-ext-wasm/",
 ]
