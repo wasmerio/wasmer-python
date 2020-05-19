@@ -84,7 +84,7 @@ build-wheel version:
 
         echo "Build arguments: ${build_args}"
 
-        maturin build --bindings pyo3 --release --strip --cargo-extra-args="${build_args}" --interpreter {{version}}
+        maturin build --bindings pyo3 --release --strip --cargo-extra-args="${build_args}" --interpreter "{{version}}"
 
 # Create a distribution of wasmer that can be installed
 # anywhere (it will fail on import)
