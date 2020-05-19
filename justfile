@@ -109,10 +109,10 @@ inspect:
 	@python -c "help('wasmer')"
 
 publish:
-	twine upload --repository-url https://upload.pypi.org/legacy/ target/wheels/wasmer-*.whl -u wasmer
+	twine upload --repository testpypi target/wheels/wasmer-*.whl -u wasmer
 
 publish-any:
-	twine upload --repository-url https://upload.pypi.org/legacy/ target/wheels/wasmer-*-py3-none-any.whl -u wasmer
+	twine upload --repository testpypi target/wheels/wasmer-*-py3-none-any.whl -u wasmer
 
 # Local Variables:
 # mode: makefile
