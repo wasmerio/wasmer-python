@@ -55,6 +55,8 @@ supported platforms and architectures:
 | Windows | `amd64` | `x86_64-pc-windows-msvc` | Cranelift |
 | Windows | `x86` | `i686-pc-windows-msvc` | Cranelift |
 
+*Note: it's also possible to [build Wasmer in Python with a specific backend](https://github.com/wasmerio/python-ext-wasm#use-a-particular-wasmer-compiler-backend), for example using LLVM for extra speed*
+
 Wheels are all built for the following Python versions:
 
 * Python 3.5,
