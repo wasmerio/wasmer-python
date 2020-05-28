@@ -40,7 +40,7 @@ build_features := ""
 
 # Compile and install the Python library.
 # Run with `--set build_features` to compile with specific Cargo features.
-build:
+build rust_target='':
         #!/usr/bin/env bash
         export PYTHON_SYS_EXECUTABLE=$(which python)
 
@@ -56,6 +56,10 @@ build:
 
         if test ! -z "${build_features}"; then
                 build_args="--no-default-features --features ${build_features}"
+        fi
+
+        if test ! -z "{{ rust_target }}"; then
+                build_args="${build_args} --target {{ rust_target }}"
         fi
 
         echo "Build arguments: ${build_args}"
