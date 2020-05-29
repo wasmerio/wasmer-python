@@ -1,31 +1,45 @@
-extern "C" {
-    fn host_print(ptr: u32, len: u32);
-}
+use std::{env, fs};
 
 fn main() {
-    let args = std::env::args().collect::<Vec<String>>();
+    // Arguments
+    {
+        let mut arguments = env::args().collect::<Vec<String>>();
 
-    println!("Found {} args on program {}", args.len(), args[0]);
+        println!("Found program name: `{}`", arguments[0]);
 
-    let env_vars = std::env::vars()
-        .map(|(arg, val)| format!("{}={}", arg, val))
-        .collect::<Vec<String>>();
-    let env_var_list = env_vars.join(", ");
+        arguments = arguments[1..].to_vec();
+        println!(
+            "Found {} arguments: {}",
+            arguments.len(),
+            arguments.join(", ")
+        );
+    }
 
-    println!("Found {} env vars: {}", env_vars.len(), env_var_list);
+    // Environment variables
+    {
+        let environment_variables = env::vars()
+            .map(|(arg, val)| format!("{}={}", arg, val))
+            .collect::<Vec<String>>();
 
-    let dirs_in_root = std::fs::read_dir("/")
-        .unwrap()
-        .map(|e| e.map(|inner| format!("{:?}", inner)))
-        .collect::<Result<Vec<String>, _>>()
-        .unwrap();
+        println!(
+            "Found {} environment variables: {}",
+            environment_variables.len(),
+            environment_variables.join(", ")
+        );
+    }
 
-    println!(
-        "Found {} pre opened dirs: {}",
-        dirs_in_root.len(),
-        dirs_in_root.join(", ")
-    );
+    // Directories.
+    {
+        let root = fs::read_dir("/")
+            .unwrap()
+            .map(|e| e.map(|inner| format!("{:?}", inner)))
+            .collect::<Result<Vec<String>, _>>()
+            .unwrap();
 
-    const HOST_STR: &str = "This string came from a WASI module";
-    unsafe { host_print(HOST_STR.as_ptr() as u32, HOST_STR.len() as u32) };
+        println!(
+            "Found {} preopened directories: {}",
+            root.len(),
+            root.join(", ")
+        );
+    }
 }

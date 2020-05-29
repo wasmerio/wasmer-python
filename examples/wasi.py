@@ -18,14 +18,5 @@ import_object = module.generate_wasi_import_object(
     module.wasi_version(False)
 )
 
-def host_print(ptr: int, len: int):
-    print("host_print: {} {}".format(ptr, len))
-
-import_object.extend({
-    "env": {
-        "host_print": host_print
-    }
-})
-
 instance = module.instantiate(import_object)
 instance.exports._start()
