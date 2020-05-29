@@ -81,7 +81,7 @@ impl Instance {
     /// The constructor instantiates a new WebAssembly instance based
     /// on WebAssembly bytes (represented by the Python bytes type).
     #[new]
-    #[args(imported_functions = "PyDict::new(_py).as_ref()")]
+    #[args(import_object = "PyDict::new(_py).as_ref()")]
     fn new(py: Python, bytes: &PyAny, import_object: &PyAny) -> PyResult<Self> {
         // Read the bytes.
         let bytes = bytes.downcast::<PyBytes>()?.as_bytes();
