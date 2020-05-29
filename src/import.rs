@@ -35,11 +35,7 @@ impl ImportObject {
     }
 
     #[cfg(not(all(unix, target_arch = "x86_64")))]
-    pub fn extend_with_pydict(
-        &mut self,
-        _py: &Python,
-        imported_functions: &'static PyDict,
-    ) -> PyResult<()> {
+    pub fn extend_with_pydict(&mut self, _py: Python, imported_functions: &PyDict) -> PyResult<()> {
         if imported_functions.is_empty() {
             Ok(())
         } else {
@@ -50,10 +46,10 @@ impl ImportObject {
     }
 
     #[cfg(all(unix, target_arch = "x86_64"))]
-    pub fn extend_with_pydict(
+    pub fn extend_with_pydict<'py>(
         &mut self,
-        py: &Python,
-        imported_functions: &'static PyDict,
+        py: Python,
+        imported_functions: &PyDict,
     ) -> PyResult<()> {
         use pyo3::{
             types::{PyFloat, PyLong, PyString, PyTuple},
@@ -204,9 +200,9 @@ impl ImportObject {
                     output_types.extend(imported_function_signature.returns());
                 }
 
-                let function = function.to_object(*py);
+                let function = function.to_object(py);
 
-                host_function_references.push(function.clone_ref(*py));
+                host_function_references.push(function.clone_ref(py));
 
                 let function_implementation = DynamicFunc::new(
                     Arc::new(FuncSig::new(input_types, output_types.clone())),
@@ -299,12 +295,12 @@ impl ImportObject {
 #[pymethods]
 /// Implement methods on the `ImportObject` Python class.
 impl ImportObject {
-    pub fn extend(&mut self, py: Python, imported_functions: &'static PyDict) -> PyResult<()> {
-        self.extend_with_pydict(&py, imported_functions)
+    pub fn extend(&mut self, py: Python, imported_functions: &PyDict) -> PyResult<()> {
+        self.extend_with_pydict(py, imported_functions)
     }
 
-    pub fn import_descriptors<'p>(&self, py: Python<'p>) -> PyResult<&'p PyList> {
-        let iterator = self.inner.clone_ref().into_iter();
+    pub fn import_descriptors<'py>(&self, py: Python<'py>) -> PyResult<&'py PyList> {
+        let iterator = self.inner.clone().into_iter();
         let mut items: Vec<&PyDict> = Vec::with_capacity(iterator.size_hint().0);
 
         for (namespace, name, import) in iterator {

@@ -148,6 +148,10 @@ pub(super) fn call_exported_func(
 
     // Map the WebAssembly first result to a Python value.
     if !results.is_empty() {
+        // Clippy proposes to use `results.get(0)` because direct
+        // indexing may panic. But in this particular case, we know
+        // `results` is not empty because of the previous line.
+        #[allow(clippy::match_on_vec_items)]
         Ok(match results[0] {
             WasmValue::I32(result) => result.to_object(py),
             WasmValue::I64(result) => result.to_object(py),

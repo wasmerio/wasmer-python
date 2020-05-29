@@ -30,6 +30,7 @@ use std::{collections::HashMap, rc::Rc};
 use wasmer_runtime::{self as runtime, Export};
 
 #[pyclass]
+#[text_signature = "(bytes, imported_functions={})"]
 /// `Instance` is a Python class that represents a WebAssembly instance.
 ///
 /// # Examples
@@ -80,8 +81,8 @@ impl Instance {
     /// The constructor instantiates a new WebAssembly instance based
     /// on WebAssembly bytes (represented by the Python bytes type).
     #[new]
-    #[args(import_object = "PyDict::new(_py).as_ref()")]
-    fn new(py: Python, bytes: &PyAny, import_object: &'static PyAny) -> PyResult<Self> {
+    #[args(imported_functions = "PyDict::new(_py).as_ref()")]
+    fn new(py: Python, bytes: &PyAny, import_object: &PyAny) -> PyResult<Self> {
         // Read the bytes.
         let bytes = bytes.downcast::<PyBytes>()?.as_bytes();
 
@@ -98,7 +99,7 @@ impl Instance {
         } else if let Ok(imported_functions) = import_object.downcast::<PyDict>() {
             let module = Rc::new(module);
             let mut import_object = ImportObject::new(module.clone());
-            import_object.extend_with_pydict(&py, imported_functions)?;
+            import_object.extend_with_pydict(py, imported_functions)?;
 
             module.instantiate(&import_object.inner)
         } else {
@@ -107,7 +108,7 @@ impl Instance {
             ));
         };
 
-        let instance = instance.map(|i| Rc::new(i)).map_err(|e| {
+        let instance = instance.map(Rc::new).map_err(|e| {
             RuntimeError::py_err(format!("Failed to instantiate the module:\n    {}", e))
         })?;
 
@@ -174,14 +175,14 @@ impl Instance {
     }
 
     /// Find the export _name_ associated to an index if it is valid.
+    #[text_signature = "($self, index)"]
     fn resolve_exported_function(&mut self, py: Python, index: usize) -> PyResult<String> {
         match &self.exports_index_to_name {
-            Some(exports_index_to_name) => exports_index_to_name
-                .get(&index)
-                .map(|name| name.clone())
-                .ok_or_else(|| {
+            Some(exports_index_to_name) => {
+                exports_index_to_name.get(&index).cloned().ok_or_else(|| {
                     RuntimeError::py_err(format!("Function at index `{}` does not exist.", index))
-                }),
+                })
+            }
 
             None => {
                 self.exports_index_to_name = Some(

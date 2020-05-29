@@ -16,7 +16,7 @@ prelude:
 	pip3 install virtualenv
 	virtualenv .env
 	if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-	pip3 install maturin pytest pytest-benchmark
+	pip3 install maturin pytest pytest-benchmark twine
 
 	which maturin
 	maturin --version
@@ -36,15 +36,63 @@ wakeup:
 sleep:
 	deactivate
 
+build_features := ""
+
 # Compile and install the Python library.
-build:
-	export PYTHON_SYS_EXECUTABLE=$(which python)
-	cargo check
-	maturin develop --binding-crate pyo3 --release --strip
+# Run with `--set build_features` to compile with specific Cargo features.
+build rust_target='':
+        #!/usr/bin/env bash
+        export PYTHON_SYS_EXECUTABLE=$(which python)
+
+        build_features="{{build_features}}"
+
+        if test -z "${build_features}"; then
+                if test "{{arch()}}" = "aarch64"; then
+                        build_features="backend-singlepass";
+                fi
+        fi
+
+        build_args=""
+
+        if test ! -z "${build_features}"; then
+                build_args="--no-default-features --features ${build_features}"
+        fi
+
+        if test ! -z "{{ rust_target }}"; then
+                build_args="${build_args} --target {{ rust_target }}"
+        fi
+
+        echo "Build arguments: ${build_args}"
+
+        cargo check ${build_args}
+        maturin develop --binding-crate pyo3 --release --strip --cargo-extra-args="${build_args}"
+
+# Build the wheel.
+build-wheel python_version rust_target:
+        #!/usr/bin/env bash
+        export PYTHON_SYS_EXECUTABLE=$(which python)
+
+        build_features="{{build_features}}"
+
+        if test -z "${build_features}"; then
+                if test "{{arch()}}" = "aarch64"; then
+                        build_features="backend-singlepass";
+                fi
+        fi
+
+        build_args=""
+
+        if test ! -z "${build_features}"; then
+                build_args="--no-default-features --features ${build_features}"
+        fi
+
+        echo "Build arguments: ${build_args}"
+
+        maturin build --bindings pyo3 --release --target "{{ rust_target }}" --strip --cargo-extra-args="${build_args}" --interpreter "{{python_version}}"
 
 # Create a distribution of wasmer that can be installed
 # anywhere (it will fail on import)
-build-any:
+build-any-wheel:
 	mkdir -p ./target/wheels/
 	cd wasmer-any && pip3 wheel . -w ../target/wheels/
 
@@ -64,11 +112,11 @@ benchmark benchmark-filename='':
 inspect:
 	@python -c "help('wasmer')"
 
-publish version:
-	maturin publish -i {{version}} -u wasmer
+publish:
+	twine upload --repository pypi target/wheels/wasmer-*.whl -u wasmer
 
 publish-any:
-	twine upload --repository-url https://upload.pypi.org/legacy/ target/wheels/wasmer-*-py3-none-any.whl -u wasmer
+	twine upload --repository pypi target/wheels/wasmer-*-py3-none-any.whl -u wasmer
 
 # Local Variables:
 # mode: makefile

@@ -1,7 +1,7 @@
 [package]
 name = "wasmer"
-version = "0.4.1"
-authors = ["The Wasmer Engineering Team <engineering@wasmer.io>"]
+version = "0.4.2-beta-11"
+authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
 description = "Python extension to run WebAssembly binaries"
 readme = "README.md"
@@ -15,14 +15,20 @@ name = "wasmer"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer-runtime = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
-wasmer-runtime-core = { git = "https://github.com/wasmerio/wasmer", branch = "master", features = ["dynamicfunc-fat-closures"] }
-wasmer-wasi = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
-pyo3 = { version = "0.9", features = ["extension-module"] }
+wasmer-runtime = { version = "0.17", default-features = false }
+wasmer-runtime-core = { version = "0.17", features = ["dynamicfunc-fat-closures"] }
+wasmer-wasi = { version = "0.17" }
+pyo3 = { version = "0.10", features = ["extension-module"] }
+
+[features]
+default = ["backend-cranelift"]
+backend-cranelift = ["wasmer-runtime/default-backend-cranelift"]
+backend-singlepass = ["wasmer-runtime/default-backend-singlepass"]
+backend-llvm = ["wasmer-runtime/default-backend-llvm"]
 
 [package.metadata.maturin]
 project-url = [
-    "Source Code: https://github.com/wasmerio/python-ext-wasm/",
+    "Source Code, https://github.com/wasmerio/python-ext-wasm/",
     "Bug Tracker, https://github.com/wasmerio/python-ext-wasm/issues",
     "Documentation, https://github.com/wasmerio/python-ext-wasm/",
 ]

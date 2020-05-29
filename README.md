@@ -37,6 +37,49 @@ coming.
 
 [View the `wasmer` on Pypi](https://pypi.org/project/wasmer/).
 
+## Wheels
+
+We try to provide wheels for as many platforms and architectures as
+possible. [Wasmer, the runtime](https://github.com/wasmerio/wasmer),
+provides several compiler backends, which address different needs and
+contexts ([learn more][compiler-backends]). While it is possible to
+force one compiler backend for your own setup, the wheels come
+pre-packaged with a particular one. For the moment, here are the
+supported platforms and architectures:
+
+| Platform | Architecture | Triple | Compiler backend |
+|-|-|-|-|
+| Linux | `amd64` | `x86_64-unknown-linux-gnu` | Cranelift |
+| Linux | `aarch64` | `aarch64-unknown-linux-gnu` | Singlepass |
+| Darwin | `amd64` | `x86_64-apple-darwin` | Cranelift |
+| Windows | `amd64` | `x86_64-pc-windows-msvc` | Cranelift |
+| Windows | `x86` | `i686-pc-windows-msvc` | Cranelift |
+
+*Note: it's also possible to [build Wasmer in Python with a specific backend](https://github.com/wasmerio/python-ext-wasm#use-a-particular-wasmer-compiler-backend), for example using LLVM for extra speed*
+
+Wheels are all built for the following Python versions:
+
+* Python 3.5,
+* Python 3.6,
+* Python 3.7,
+* Python 3.8.
+
+<details>
+<summary>Learn about the <code>py3-none-any</code> wheel</summary>
+
+### `py3-none-any.whl`
+
+A special `wasmer-$(version)-py3-none-any` wheel is built as a
+fallback. The `wasmer` libray will be installable, but it will raise
+an `ImportError` exception saying that “Wasmer is not available on
+this system”.
+
+This wheel will be installed if none matches before (learn more by
+reading the [PEP 425, Compatibility Tags for Built
+Distributions](https://www.python.org/dev/peps/pep-0425/)).
+
+</details>
+
 # Example
 
 There is a toy program in `examples/simple.rs`, written in Rust (or
@@ -551,12 +594,23 @@ and write. Chose them wisely.
 
 # Development
 
-The Python extension is written in Rust, with [`pyo3`] and
+The Python extension is written in [Rust], with [`pyo3`] and
 [`maturin`].
 
-To set up your environment, run only once:
+First, you need to install Rust and Python. We will not make you the
+affront to explain to you how to install Python (if you really need,
+check [`pyenv`](https://github.com/pyenv/pyenv/)). For Rust though, we
+advise to use [`rustup`](https://rustup.rs/), then:
 
 ```sh
+$ rustup install nightly
+```
+
+To set up your environment, you'll need [`just`], and then, install
+the prelude of this project:
+
+```sh
+$ cargo install just
 $ just prelude
 ```
 
@@ -566,7 +620,7 @@ also install [`virtualenv`].
 Then, simply run:
 
 ```sh
-$ .env/bin/activate
+$ source .env/bin/activate
 $ just build
 $ just python-run examples/simple.py
 ```
@@ -585,12 +639,26 @@ Finally, to inspect the extension; run:
 $ just inspect
 ```
 
-(Yes, you need [`just`]).
+## Use a particular Wasmer compiler backend
+
+Wasmer, the runtime, comes with several compiler backends addressing
+particular needs or contexts ([learn more][compiler-backends]). To set
+the compiler backend to use, the `Cargo.toml` file exposes 3 features:
+
+* `backend-singlepass`,
+* `backend-cranelift` and
+* `backend-llvm`.
+
+To enable those features with `just build`, use such syntax:
+
+```sh
+$ just --set build_features backend-llvm build
+```
 
 # Testing
 
-Once the extension is compiled and installed (just run `just build`),
-run the following command:
+Once the extension is compiled and installed (with `just build`), run
+the following command:
 
 ```sh
 $ just test
@@ -630,3 +698,5 @@ The entire project is under the MIT License. Please read [the
 [`virtualenv`]: https://virtualenv.pypa.io/
 [`just`]: https://github.com/casey/just/
 [license]: https://github.com/wasmerio/wasmer/blob/master/LICENSE
+[Rust]: https://www.rust-lang.org/
+[compiler-backends]: https://medium.com/wasmer/a-webassembly-compiler-tale-9ef37aa3b537

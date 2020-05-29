@@ -27,6 +27,7 @@ use wasmer_runtime_core::{
 use wasmer_wasi;
 
 #[pyclass]
+#[text_signature = "(bytes)"]
 /// `Module` is a Python class that represents a WebAssembly module.
 pub struct Module {
     /// The underlying Rust WebAssembly module.
@@ -37,6 +38,7 @@ pub struct Module {
 /// Implement methods on the `Module` Python class.
 impl Module {
     /// Check that given bytes represent a valid WebAssembly module.
+    #[text_signature = "(bytes)"]
     #[staticmethod]
     fn validate(bytes: &PyAny) -> PyResult<bool> {
         match <PyBytes as PyTryFrom>::try_from(bytes) {
@@ -63,8 +65,9 @@ impl Module {
     }
 
     // Instantiate the module into an `Instance` Python object.
+    #[text_signature = "($self, import_object={})"]
     #[args(import_object = "PyDict::new(_py).as_ref()")]
-    fn instantiate(&self, py: Python, import_object: &'static PyAny) -> PyResult<Py<Instance>> {
+    fn instantiate(&self, py: Python, import_object: &PyAny) -> PyResult<Py<Instance>> {
         // Instantiate the WebAssembly module, with an import object.
         let instance = if let Ok(import_object) = import_object.downcast::<PyCell<ImportObject>>() {
             let import_object = import_object.borrow();
@@ -72,7 +75,7 @@ impl Module {
             self.inner.instantiate(&(*import_object).inner)
         } else if let Ok(imported_functions) = import_object.downcast::<PyDict>() {
             let mut import_object = ImportObject::new(self.inner.clone());
-            import_object.extend_with_pydict(&py, imported_functions)?;
+            import_object.extend_with_pydict(py, imported_functions)?;
 
             self.inner.instantiate(&import_object.inner)
         } else {
@@ -82,7 +85,7 @@ impl Module {
         };
 
         // Instantiate the module.
-        let instance = instance.map(|i| Rc::new(i)).map_err(|e| {
+        let instance = instance.map(Rc::new).map_err(|e| {
             RuntimeError::py_err(format!("Failed to instantiate the module:\n    {}", e))
         })?;
 
@@ -329,6 +332,7 @@ impl Module {
     }
 
     /// Read a specific custom section.
+    #[text_signature = "($self, name, index=0)"]
     #[args(index = "0")]
     fn custom_section<'p>(&self, py: Python<'p>, name: String, index: usize) -> PyObject {
         match self.inner.info().custom_sections.get(&name) {
@@ -341,6 +345,7 @@ impl Module {
     }
 
     /// Serialize the module into Python bytes.
+    #[text_signature = "($self)"]
     fn serialize<'p>(&self, py: Python<'p>) -> PyResult<&'p PyBytes> {
         // Get the module artifact.
         match self.inner.cache() {
@@ -357,6 +362,7 @@ impl Module {
 
     /// Deserialize Python bytes into a module instance.
     #[staticmethod]
+    #[text_signature = "(bytes)"]
     fn deserialize(bytes: &PyAny, py: Python) -> PyResult<Py<Module>> {
         // Read the bytes.
         let serialized_module = bytes.downcast::<PyBytes>()?.as_bytes();
