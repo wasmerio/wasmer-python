@@ -1,3 +1,11 @@
+// Compiled to Wasm as follows:
+//
+// ```sh
+// $ rustc --target wasm32-wasi -O wasi.rs -o wasi.raw.wasm
+// $ wasm-strip wasi.raw.wasm
+// $ wasm-opt -O4 -Oz wasi.raw.wasm -o wasi.wasm
+// ```
+
 use std::{env, fs};
 
 fn main() {
