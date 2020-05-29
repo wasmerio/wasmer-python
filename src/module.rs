@@ -16,7 +16,7 @@ use pyo3::{
     types::{PyAny, PyBytes, PyDict, PyList},
     PyTryFrom,
 };
-use std::{convert::TryInto, path::PathBuf, rc::Rc};
+use std::{convert::TryInto, rc::Rc};
 use wasmer_runtime::{self as runtime, validate, Export};
 use wasmer_runtime_core::{
     self as runtime_core,
@@ -395,56 +395,18 @@ impl Module {
     }
 
     /// Generates a fresh `ImportObject` prefilled for WASI.
-    #[args(
-        args = "PyList::empty(_py)",
-        envs = "PyDict::new(_py)",
-        preopened_files = "PyList::empty(_py)",
-        mapped_dirs = "PyDict::new(_py)"
-    )]
     fn generate_wasi_import_object(
         &self,
+        wasi_state_builder: &mut wasi::WasiStateBuilder,
         version: u8,
-        args: &PyList,
-        envs: &PyDict,
-        preopened_files: &PyList,
-        mapped_dirs: &PyDict,
     ) -> PyResult<ImportObject> {
-        Ok(ImportObject::new_wasi(
+        ImportObject::new_with_wasi(
             self.inner.clone(),
             version
                 .try_into()
                 .map_err(|e: String| ValueError::py_err(e))?,
-            args.iter()
-                .map(|any_item| any_item.to_string().into_bytes())
-                .collect(),
-            envs.iter()
-                .map(|(any_key, any_value)| {
-                    let key = any_key.to_string().into_bytes();
-                    let value = any_value.to_string().into_bytes();
-                    let length = key.len() + value.len() + 1;
-                    let mut bytes = Vec::with_capacity(length);
-
-                    bytes.extend_from_slice(&key);
-                    bytes.push(b'=');
-                    bytes.extend_from_slice(&value);
-
-                    bytes
-                })
-                .collect(),
-            preopened_files
-                .iter()
-                .map(|any_item| PathBuf::from(any_item.to_string()))
-                .collect(),
-            mapped_dirs
-                .iter()
-                .map(|(any_key, any_value)| {
-                    let key = any_key.to_string();
-                    let value = PathBuf::from(any_value.to_string());
-
-                    (key, value)
-                })
-                .collect(),
-        ))
+            wasi_state_builder,
+        )
     }
 
     /// Checks whether the module contains WASI definitions.

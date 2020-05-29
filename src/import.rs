@@ -1,7 +1,7 @@
 //! This module contains a helper to build an `ImportObject` and build
 //! the host function logic.
 
-use crate::instance::exports::ExportImportKind;
+use crate::{instance::exports::ExportImportKind, wasi};
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
@@ -10,6 +10,7 @@ use pyo3::{
 };
 use std::rc::Rc;
 use wasmer_runtime as runtime;
+use wasmer_wasi;
 
 #[pyclass]
 /// `ImportObject` is a Python class that represents the
@@ -32,6 +33,23 @@ impl ImportObject {
             module,
             host_function_references: Vec::new(),
         }
+    }
+
+    pub fn new_with_wasi(
+        module: Rc<runtime::Module>,
+        version: wasi::Version,
+        wasi_state_builder: &mut wasi::WasiStateBuilder,
+    ) -> PyResult<Self> {
+        Ok(Self {
+            inner: wasmer_wasi::generate_import_object_from_state(
+                wasi_state_builder.inner.build().map_err(|error| {
+                    RuntimeError::py_err(format!("Failed to create the WASI state: {}", error))
+                })?,
+                version.into(),
+            ),
+            module,
+            host_function_references: Vec::new(),
+        })
     }
 
     #[cfg(not(all(unix, target_arch = "x86_64")))]
