@@ -1,4 +1,3 @@
-use crate::import::ImportObject;
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
