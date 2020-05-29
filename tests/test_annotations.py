@@ -55,7 +55,13 @@ def test_module():
     # .__init__
     helper_single_param(Module, param_name="bytes")
     # .instantiate
-    helper_self(Module.instantiate)
+    assert Module.instantiate.__text_signature__ == "($self, import_object={})"
+    assert signature(Module.instantiate) == Signature_Class(
+        [
+            Parameter("self", Parameter.POSITIONAL_ONLY),
+            Parameter("import_object", Parameter.POSITIONAL_OR_KEYWORD, default={}),
+        ]
+    )
     # .custom_section
     assert Module.custom_section.__text_signature__ == "($self, name, index=0)"
     assert signature(Module.custom_section) == Signature_Class(
