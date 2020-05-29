@@ -18,6 +18,7 @@ use wasmer_wasi;
 pub struct ImportObject {
     pub(crate) inner: runtime::ImportObject,
 
+    #[allow(unused)]
     pub(crate) module: Rc<runtime::Module>,
 
     /// This field is unused as is, but is required to keep a
