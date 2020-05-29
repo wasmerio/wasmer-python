@@ -1,4 +1,4 @@
-from wasmer import Module, WasiVersion, ImportKind
+from wasmer import Module, WasiVersion, WasiStateBuilder, ImportKind
 from enum import IntEnum
 import inspect
 import os
@@ -15,7 +15,10 @@ def test_wasi_version():
     assert WasiVersion.Latest == 3
 
 def test_wasi_import_object():
-    import_object = Module(TEST_BYTES).generate_wasi_import_object(WasiVersion.Snapshot1)
+    import_object = Module(TEST_BYTES).generate_wasi_import_object(
+        WasiStateBuilder('test-program'),
+        WasiVersion.Snapshot1
+    )
     descriptors = sorted(import_object.import_descriptors(), key=lambda item: item['name'])
 
     assert descriptors == [
