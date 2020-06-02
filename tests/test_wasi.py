@@ -3,6 +3,8 @@ from enum import IntEnum
 import inspect
 import os
 import pytest
+import subprocess
+import sys
 
 here = os.path.dirname(os.path.realpath(__file__))
 TEST_BYTES = open(here + '/wasi.wasm', 'rb').read()
@@ -66,3 +68,24 @@ def test_wasi_import_object():
         {'kind': ImportKind.FUNCTION, 'name': 'sock_send', 'namespace': 'wasi_snapshot_preview1'},
         {'kind': ImportKind.FUNCTION, 'name': 'sock_shutdown', 'namespace': 'wasi_snapshot_preview1'}
     ]
+
+def test_wasi():
+    python = sys.executable
+    result = subprocess.run(
+        [
+            python,
+            '-c',
+            'from wasmer import Module, Wasi; \
+            module = Module(open("tests/wasi.wasm", "rb").read()); \
+            import_object = Wasi("test-program").argument("--foo").environments({"ABC": "DEF", "X": "YZ"}).map_directory("the_host_current_dir", ".").generate_import_object_for_module(module); \
+            instance = module.instantiate(import_object); \
+            instance.exports._start()'
+        ],
+        capture_output=True
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == b'Found program name: `test-program`\n\
+Found 1 arguments: --foo\n\
+Found 2 environment variables: ABC=DEF, X=YZ\n\
+Found 1 preopened directories: DirEntry("/the_host_current_dir")\n'
