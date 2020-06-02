@@ -15,88 +15,83 @@ pub struct Memory {
 
 #[pymethods]
 impl Memory {
+    /// Return a Python buffer over the memory data.
+    ///
+    /// # Examples
+    ///
+    /// ```py
+    /// instance = Instance(wasm_bytes)
+    /// byte_array = bytearray(instance.memory.buffer)
+    /// assert byte_array[0:6].decode() == 'Wasmer'
+    /// ```
     #[getter]
-    fn buffer(&self, py: Python) -> PyResult<Py<buffer::Buffer>> {
-        Py::new(
-            py,
-            buffer::Buffer {
-                memory: self.memory.clone(),
-            },
-        )
+    fn buffer(&self) -> buffer::Buffer {
+        buffer::Buffer {
+            memory: self.memory.clone(),
+        }
     }
 
+    /// Return a uint8 view over the memory data.
     #[text_signature = "($self, offset=0)"]
     #[args(offset = 0)]
-    fn uint8_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Uint8Array>> {
-        Py::new(
-            py,
-            view::Uint8Array {
-                memory: self.memory.clone(),
-                offset,
-            },
-        )
+    fn uint8_view(&self, offset: usize) -> view::Uint8Array {
+        view::Uint8Array {
+            memory: self.memory.clone(),
+            offset,
+        }
     }
 
+    /// Return a int8 view over the memory data.
     #[text_signature = "($self, offset=0)"]
     #[args(offset = 0)]
-    fn int8_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Int8Array>> {
-        Py::new(
-            py,
-            view::Int8Array {
-                memory: self.memory.clone(),
-                offset,
-            },
-        )
+    fn int8_view(&self, offset: usize) -> view::Int8Array {
+        view::Int8Array {
+            memory: self.memory.clone(),
+            offset,
+        }
     }
 
+    /// Return a uint16 view over the memory data.
     #[text_signature = "($self, offset=0)"]
     #[args(offset = 0)]
-    fn uint16_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Uint16Array>> {
-        Py::new(
-            py,
-            view::Uint16Array {
-                memory: self.memory.clone(),
-                offset,
-            },
-        )
+    fn uint16_view(&self, offset: usize) -> view::Uint16Array {
+        view::Uint16Array {
+            memory: self.memory.clone(),
+            offset,
+        }
     }
 
+    /// Return a int16 view over the memory data.
     #[text_signature = "($self, offset=0)"]
     #[args(offset = 0)]
-    fn int16_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Int16Array>> {
-        Py::new(
-            py,
-            view::Int16Array {
-                memory: self.memory.clone(),
-                offset,
-            },
-        )
+    fn int16_view(&self, offset: usize) -> view::Int16Array {
+        view::Int16Array {
+            memory: self.memory.clone(),
+            offset,
+        }
     }
 
+    /// Return a uint32 view over the memory data.
     #[text_signature = "($self, offset=0)"]
     #[args(offset = 0)]
-    fn uint32_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Uint32Array>> {
-        Py::new(
-            py,
-            view::Uint32Array {
-                memory: self.memory.clone(),
-                offset,
-            },
-        )
+    fn uint32_view(&self, offset: usize) -> view::Uint32Array {
+        view::Uint32Array {
+            memory: self.memory.clone(),
+            offset,
+        }
     }
 
+    /// Return a int32 view over the memory data.
     #[text_signature = "($self, offset=0)"]
     #[args(offset = 0)]
-    fn int32_view(&self, py: Python, offset: usize) -> PyResult<Py<view::Int32Array>> {
-        Py::new(
-            py,
-            view::Int32Array {
-                memory: self.memory.clone(),
-                offset,
-            },
-        )
+    fn int32_view(&self, offset: usize) -> view::Int32Array {
+        view::Int32Array {
+            memory: self.memory.clone(),
+            offset,
+        }
     }
 
+    /// Grow the memory by a number of pages.
     #[text_signature = "($self, number_of_pages)"]
     fn grow(&self, number_of_pages: u32) -> PyResult<u32> {
         self.memory
