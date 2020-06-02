@@ -314,10 +314,47 @@ impl ImportObject {
 #[pymethods]
 /// Implement methods on the `ImportObject` Python class.
 impl ImportObject {
+    /// Extend the `ImportObject` by adding host functions stored in a Python directory.
+    ///
+    /// # Examples
+    ///
+    /// ```py
+    /// # Our host function.
+    /// def sum(x: int, y: int) -> int:
+    ///     return x + y
+    ///
+    /// module = Module(wasm_bytes)
+    ///
+    /// # Generate an import object for this module.
+    /// import_object = module.generate_import_object()
+    ///
+    /// # Register the `env.sum` host function.
+    /// import_object.extend({
+    ///     "env": {
+    ///         "sum": sum
+    ///     }
+    /// })
+    ///
+    /// # Ready to instantiate the module.
+    /// instance = module.instantiate(import_object)
+    /// ```
+    #[text_signature = "($self, imported_function)"]
     pub fn extend(&mut self, py: Python, imported_functions: &PyDict) -> PyResult<()> {
         self.extend_with_pydict(py, imported_functions)
     }
 
+    /// Read the descriptors of the imports.
+    ///
+    /// A descriptor for an import a dictionary with the following
+    /// entries:
+    ///
+    ///   1. `kind` of type `ImportKind`, to represent the kind of
+    ///      imported entity,
+    ///   2. `namespace` of type `String`, to represent the namespace
+    ///      of the imported entity,
+    ///   3. `name` of type `String`, to represent the name of the
+    ///      imported entity.
+    #[text_signature = "($self)"]
     pub fn import_descriptors<'py>(&self, py: Python<'py>) -> PyResult<&'py PyList> {
         let iterator = self.inner.clone().into_iter();
         let mut items: Vec<&PyDict> = Vec::with_capacity(iterator.size_hint().0);
