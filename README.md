@@ -47,15 +47,16 @@ force one compiler backend for your own setup, the wheels come
 pre-packaged with a particular one. For the moment, here are the
 supported platforms and architectures:
 
-| Platform | Architecture | Triple | Compiler backend |
+| Platform | Architecture | Triple | Default compiler backend |
 |-|-|-|-|
 | Linux | `amd64` | `x86_64-unknown-linux-gnu` | Cranelift |
 | Linux | `aarch64` | `aarch64-unknown-linux-gnu` | Singlepass |
 | Darwin | `amd64` | `x86_64-apple-darwin` | Cranelift |
 | Windows | `amd64` | `x86_64-pc-windows-msvc` | Cranelift |
-| Windows | `x86` | `i686-pc-windows-msvc` | Cranelift |
 
-*Note: it's also possible to [build Wasmer in Python with a specific backend](https://github.com/wasmerio/python-ext-wasm#use-a-particular-wasmer-compiler-backend), for example using LLVM for extra speed*
+Note: it's also possible to [build Wasmer in Python with a specific
+backend](#use-a-particular-wasmer-compiler-backend), for example using
+LLVM for extra speed.
 
 Wheels are all built for the following Python versions:
 
@@ -65,7 +66,7 @@ Wheels are all built for the following Python versions:
 * Python 3.8.
 
 <details>
-<summary>Learn about the <code>py3-none-any</code> wheel</summary>
+<summary>Learn about the “fallback” <code>py3-none-any</code> wheel</summary>
 
 ### `py3-none-any.whl`
 
@@ -119,6 +120,25 @@ For a soft introduction about how different languages compile to Wasm, it is pos
 
 # API of the `wasmer` extension/module
 
+Table of Contents:
+
+* [The `Instance` class](#the-instance-class)
+  * [Exported functions](#exported-functions)
+  * [Exported memory](#exported-memory)
+  * [Imported functions](#imported-functions)
+* [The `Module` class](#the-module-class)
+  * [Exports, imports, and custom sections](#exports-imports-and-custom-sections)
+  * [Serialization and deserialization](#serialization-and-deserialization)
+* [The `ImportObject` class](#the-importobject-class)
+* [The `Value` class](#the-value-class)
+* [The `Memory` class](#the-memory-class)
+  * [Growing the memory](#growing-the-memory)
+  * [Getting an access to the in-memory data](#getting-an-access-to-the-in-memory-data)
+  * [The `*Array` classes](#the-array-classes)
+  * [Let's see in action](#lets-see-in-action)
+  * [Performance](#performance)
+* [WASI](#wasi)
+
 ## The `Instance` class
 
 Instantiates a WebAssembly module represented by bytes, and calls
@@ -167,7 +187,8 @@ A WebAssembly module can _import_ functions, also called host
 functions. It means that the implementation lands in the host, not in
 the module. This feature is, for the moment, only supported on Unix
 platforms, with a x86-64 architecture (it means that Windows is not
-supported).
+supported). Use `Features.host_functions()` to detect whether this
+feature is available on your system.
 
 Example of a Rust program that defines a `sum_plus_one` exported
 function, and a `sum` imported function:
@@ -184,25 +205,30 @@ pub extern "C" fn sum_plus_one(x: i32, y: i32) -> i32 {
 }
 ```
 
-An imported function is defined by a namespace, and a name. It is
+An imported function is defined by a namespace and a name. It is
 defined by a Python dictionary, as follows:
 
 ```python
 from wasmer import Instance
 
-# Get the Wasm module as bytes.
+# Read the Wasm module as bytes.
 wasm_bytes = open('my_program.wasm', 'rb').read()
 
-# Declare the `sum` function, which will be the implementation for the `env.sum` imported function.
+# Compile those bytes into a real Wasm module.
+module = Module(wasm_bytes)
+
+# Declare the `sum` function, which will be the implementation
+# for the `env.sum` imported function.
 def sum(x: int, y: int) -> int:
     return x + y
 
-# Create the import object.
-import_object = {
+# Create the import object for this module.
+import_object = module.generate_import_object()
+import_object.extend({
     "env": {
         "sum": sum
     }
-}
+})
 
 # Instantiate the Wasm module, with the import object.
 instance = Instance(wasm_bytes, import_object)
@@ -234,6 +260,10 @@ result = instance.exports.sum(1, 2)
 
 print(result) # 3
 ```
+
+The `instantiate` method has an optional `import_object` argument. It
+can be of type `ImportObject` or a Python dictionary. To generate an
+import object, use the `generate_import_object` method.
 
 ### Exports, imports, and custom sections
 
@@ -347,6 +377,37 @@ wasm_bytes = open('my_program.wasm', 'rb').read()
 if not Module.validate(wasm_bytes):
     print('The program seems corrupted.')
 ```
+
+## The `ImportObject` class
+
+The `ImportObject` class aims at holding information relative to
+[WASI](#wasi) or to [host functions](#imported-functions). To get an
+instance of it, the user must use the
+`Module.generate_import_object()` method, or the
+`Wasi.generate_import_object_for_module(module)` method.
+
+After this operation, the user has a pre-configured `ImportObject`. It
+is then possible to extend it to declare host functions, like so:
+
+```py
+import_object = module.generate_import_object()
+import_object.extend({
+    'env': {
+        'sum': sum
+    }
+})
+```
+
+It is also possible to list all the _declared_ import descriptors in
+the `ImportObject` with:
+
+```py
+print(import_object.import_descriptors())
+```
+
+Finally, pass the `ImportObject` object into
+`Module.instantiate(import_object)` or `Instance(import_object)` to
+import all your entities.
 
 ## The `Value` class
 
@@ -591,6 +652,120 @@ Using the direct raw buffer API with
 `instance.memory.uint8_view()` for _reading_. However, the direct raw
 buffer API is _read-only_ for the moment, whilst the views are read
 and write. Chose them wisely.
+
+## [WASI](https://github.com/WebAssembly/WASI)
+
+This project supports WASI `Snapshot0` and `Snapshot1`, i.e. all the
+WASI versions at the time of writing. To use WASI, please use the
+`Wasi` class to build a _WASI state_. Then, based on this object,
+create an `ImportObject` object, which can optionally be extended to
+add [host functions](#imported-functions), to finally be passed to
+`Module.instantiate` or `Instance`, and that's it.
+
+Let's try with the following Rust program that prints various
+information like program arguments, environment variables, and prints
+the root of the file system:
+
+```rust
+use std::{env, fs};
+
+fn main() {
+    // Arguments
+    {
+        let mut arguments = env::args().collect::<Vec<String>>();
+
+        println!("Found program name: `{}`", arguments[0]);
+
+        arguments = arguments[1..].to_vec();
+        println!(
+            "Found {} arguments: {}",
+            arguments.len(),
+            arguments.join(", ")
+        );
+    }
+
+    // Environment variables
+    {
+        let mut environment_variables = env::vars()
+            .map(|(arg, val)| format!("{}={}", arg, val))
+            .collect::<Vec<String>>();
+
+        println!(
+            "Found {} environment variables: {}",
+            environment_variables.len(),
+            environment_variables.join(", ")
+        );
+    }
+
+    // Directories.
+    {
+        let root = fs::read_dir("/")
+            .unwrap()
+            .map(|e| e.map(|inner| format!("{:?}", inner)))
+            .collect::<Result<Vec<String>, _>>()
+            .unwrap();
+
+        println!(
+            "Found {} preopened directories: {}",
+            root.len(),
+            root.join(", ")
+        );
+    }
+}
+```
+
+Let's compile this program to WebAssembly with WASI:
+
+```sh
+$ rustc --target wasm32-wasi -O wasi.rs -o wasi.raw.wasm
+$ wasm-strip wasi.raw.wasm
+$ wasm-opt -O4 -Oz wasi.raw.wasm -o wasi.wasm
+$ rm wasi.raw.wasm
+```
+
+And now let's use it in Python!
+
+```py
+from wasmer import Module, Wasi, WasiVersion
+
+# Compile the Wasm module.
+wasm_bytes = open('wasi.wasm', 'rb').read()
+module = Module(wasm_bytes)
+
+# Assert that it is a WASI module, and look at the WASI version.
+assert module.is_wasi_module == True
+assert module.wasi_version() == WasiVersion.Snapshot1
+
+# Create the WASI object.
+wasi = Wasi(
+    'wasi_test_program',
+    arguments=['--test'],
+    environments={"COLOR": "true", "APP_SHOULD_LOG": "false"},
+    map_directories={"the_host_current_dir": "."},
+)
+
+# Get an `ImportObject` object from the `Wasi` object.
+import_object = wasi.generate_import_object_for_module(module)
+
+# Instantiate the module with the import object.
+instance = module.instantiate(import_object)
+
+# Have fun!
+instance.exports._start()
+```
+
+When running this Python program, we will see the following output:
+
+```txt
+Found program name: `wasi_test_program`
+Found 1 arguments: --test
+Found 2 environment variables: COLOR=true, APP_SHOULD_LOG=false
+Found 1 preopened directories: DirEntry("/the_host_current_dir")
+```
+
+It showcases that WebAssembly with WASI can access to `stdout`, can
+have an environment (with program name, arguments, and environment
+variables), and can have a restricted access to the file system.
 
 # Development
 
