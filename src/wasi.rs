@@ -322,7 +322,7 @@ impl Wasi {
     }
 
     /// Add a single preopened directory with a different name.
-    #[text_signature = "($self, map_directory)"]
+    #[text_signature = "($self, alias, directory)"]
     pub fn map_directory<'py>(
         slf: &'py PyCell<Self>,
         alias: String,
