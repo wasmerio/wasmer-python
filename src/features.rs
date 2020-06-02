@@ -17,4 +17,15 @@ impl Features {
             false
         }
     }
+
+    /// Check wether WASI is enabled.
+    #[text_signature = "()"]
+    #[staticmethod]
+    pub fn wasi() -> bool {
+        if cfg!(target_arch = "x86_64") {
+            true
+        } else {
+            false
+        }
+    }
 }

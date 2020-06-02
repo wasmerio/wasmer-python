@@ -1,4 +1,4 @@
-from wasmer import Module, WasiVersion, Wasi, ImportKind
+from wasmer import Module, WasiVersion, Wasi, ImportKind, Features
 from enum import IntEnum
 import inspect
 import os
@@ -76,6 +76,7 @@ def test_wasi_version_from_module():
     assert module.wasi_version() == WasiVersion.Snapshot1
     assert module.wasi_version(True) == WasiVersion.Snapshot1
 
+@pytest.mark.skipif(Features.wasi() == False, reason='WASI is not supported on aarch64 for the moment')
 def test_wasi():
     python = sys.executable
     result = subprocess.check_output(
