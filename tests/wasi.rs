@@ -25,9 +25,10 @@ fn main() {
 
     // Environment variables
     {
-        let environment_variables = env::vars()
+        let mut environment_variables = env::vars()
             .map(|(arg, val)| format!("{}={}", arg, val))
             .collect::<Vec<String>>();
+        environment_variables.sort();
 
         println!(
             "Found {} environment variables: {}",
