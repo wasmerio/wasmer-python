@@ -1,11 +1,11 @@
-from wasmer import Module, WasiVersion, WasiStateBuilder, ImportKind
+from wasmer import Module, WasiVersion, Wasi, ImportKind
 from enum import IntEnum
 import inspect
 import os
 import pytest
 
 here = os.path.dirname(os.path.realpath(__file__))
-TEST_BYTES = open(here + '/tests.wasm', 'rb').read()
+TEST_BYTES = open(here + '/wasi.wasm', 'rb').read()
 
 def test_wasi_version():
     assert issubclass(WasiVersion, IntEnum)
@@ -15,10 +15,8 @@ def test_wasi_version():
     assert WasiVersion.Latest == 3
 
 def test_wasi_import_object():
-    import_object = Module(TEST_BYTES).generate_wasi_import_object(
-        WasiStateBuilder('test-program'),
-        WasiVersion.Snapshot1
-    )
+    module = Module(TEST_BYTES)
+    import_object = Wasi('test-program').generate_import_object_for_module(module)
     descriptors = sorted(import_object.import_descriptors(), key=lambda item: item['name'])
 
     assert descriptors == [
