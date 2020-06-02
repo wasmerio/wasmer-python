@@ -19,6 +19,7 @@ wasmer-runtime = { version = "0.17", default-features = false }
 wasmer-runtime-core = { version = "0.17", features = ["dynamicfunc-fat-closures"] }
 wasmer-wasi = { version = "0.17" }
 pyo3 = { version = "0.10", features = ["extension-module"] }
+wabt = "0.9"
 
 [features]
 default = ["backend-cranelift"]
