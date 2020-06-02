@@ -76,6 +76,7 @@ def test_wasi_version_from_module():
     assert module.wasi_version() == WasiVersion.Snapshot1
     assert module.wasi_version(True) == WasiVersion.Snapshot1
 
+@pytest.mark.skipif(sys.platform.startswith('win'), reason='subprocess.run has no `capture_output` argument')
 def test_wasi():
     python = sys.executable
     result = subprocess.run(
