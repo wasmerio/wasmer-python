@@ -82,73 +82,32 @@ pub struct Wasi {
     pub(crate) inner: state::WasiStateBuilder,
 }
 
-#[pymethods]
 impl Wasi {
-    #[new]
-    fn new(program_name: String) -> Self {
-        Self {
-            inner: state::WasiState::new(program_name.as_str()),
-        }
+    pub fn self_arguments(&mut self, arguments: &PyList) {
+        self.inner
+            .args(arguments.iter().map(|any_item| any_item.to_string()));
     }
 
-    pub fn environments<'py>(
-        slf: &'py PyCell<Self>,
-        environments: &PyDict,
-    ) -> PyResult<&'py PyCell<Self>> {
-        let mut slf_mut = slf.try_borrow_mut()?;
+    pub fn self_argument(&mut self, argument: String) {
+        self.inner.arg(argument);
+    }
 
-        slf_mut.inner.envs(
+    pub fn self_environments(&mut self, environments: &PyDict) {
+        self.inner.envs(
             environments
                 .iter()
                 .map(|(any_key, any_value)| (any_key.to_string(), any_value.to_string())),
         );
-
-        Ok(slf)
     }
 
-    pub fn environment<'py>(
-        slf: &'py PyCell<Self>,
-        key: String,
-        value: String,
-    ) -> PyResult<&'py PyCell<Self>> {
-        let mut slf_mut = slf.try_borrow_mut()?;
-
-        slf_mut.inner.env(key, value);
-
-        Ok(slf)
+    pub fn self_environment(&mut self, key: String, value: String) {
+        self.inner.env(key, value);
     }
 
-    pub fn arguments<'py>(
-        slf: &'py PyCell<Self>,
-        arguments: &PyList,
-    ) -> PyResult<&'py PyCell<Self>> {
-        let mut slf_mut = slf.try_borrow_mut()?;
-
-        slf_mut
-            .inner
-            .args(arguments.iter().map(|any_item| any_item.to_string()));
-
-        Ok(slf)
-    }
-
-    pub fn argument<'py>(slf: &'py PyCell<Self>, argument: String) -> PyResult<&'py PyCell<Self>> {
-        let mut slf_mut = slf.try_borrow_mut()?;
-
-        slf_mut.inner.arg(argument);
-
-        Ok(slf)
-    }
-
-    pub fn preopen_directories<'py>(
-        slf: &'py PyCell<Self>,
-        preopened_directories: &PyList,
-    ) -> PyResult<&'py PyCell<Self>> {
-        let mut slf_mut = slf.try_borrow_mut()?;
-
-        slf_mut
-            .inner
+    pub fn self_preopen_directories(&mut self, preopen_directories: &PyList) -> PyResult<()> {
+        self.inner
             .preopen_dirs(
-                preopened_directories
+                preopen_directories
                     .iter()
                     .map(|any_item| PathBuf::from(any_item.to_string())),
             )
@@ -159,18 +118,12 @@ impl Wasi {
                 ))
             })?;
 
-        Ok(slf)
+        Ok(())
     }
 
-    pub fn preopen_directory<'py>(
-        slf: &'py PyCell<Self>,
-        preopened_directory: String,
-    ) -> PyResult<&'py PyCell<Self>> {
-        let mut slf_mut = slf.try_borrow_mut()?;
-
-        slf_mut
-            .inner
-            .preopen_dir(PathBuf::from(preopened_directory))
+    pub fn self_preopen_directory(&mut self, preopen_directory: String) -> PyResult<()> {
+        self.inner
+            .preopen_dir(PathBuf::from(preopen_directory))
             .map_err(|error| {
                 RuntimeError::py_err(format!(
                     "Failed to configure the preopened directory when creating the WASI state: {}",
@@ -178,17 +131,11 @@ impl Wasi {
                 ))
             })?;
 
-        Ok(slf)
+        Ok(())
     }
 
-    pub fn map_directories<'py>(
-        slf: &'py PyCell<Self>,
-        map_directories: &PyDict,
-    ) -> PyResult<&'py PyCell<Self>> {
-        let mut slf_mut = slf.try_borrow_mut()?;
-
-        slf_mut
-            .inner
+    pub fn self_map_directories(&mut self, map_directories: &PyDict) -> PyResult<()> {
+        self.inner
             .map_dirs(map_directories.iter().map(|(any_key, any_value)| {
                 (any_key.to_string(), PathBuf::from(any_value.to_string()))
             }))
@@ -199,6 +146,127 @@ impl Wasi {
                 ))
             })?;
 
+        Ok(())
+    }
+
+    pub fn self_map_directory(&mut self, alias: String, directory: String) -> PyResult<()> {
+        self.inner
+            .map_dir(alias.as_str(), PathBuf::from(directory.to_string()))
+            .map_err(|error| {
+                RuntimeError::py_err(format!(
+                    "Failed to configure the map directory when creating the WASI state: {}",
+                    error
+                ))
+            })?;
+
+        Ok(())
+    }
+}
+
+#[pymethods]
+impl Wasi {
+    #[new]
+    #[args(
+        arguments = "PyList::empty(_py)",
+        environments = "PyDict::new(_py)",
+        preopen_directories = "PyList::empty(_py)",
+        map_directories = "PyDict::new(_py)"
+    )]
+    fn new(
+        program_name: String,
+        arguments: &PyList,
+        environments: &PyDict,
+        preopen_directories: &PyList,
+        map_directories: &PyDict,
+    ) -> PyResult<Self> {
+        let mut wasi = Self {
+            inner: state::WasiState::new(program_name.as_str()),
+        };
+
+        if !arguments.is_empty() {
+            wasi.self_arguments(arguments);
+        }
+
+        if !environments.is_empty() {
+            wasi.self_environments(environments);
+        }
+
+        if !preopen_directories.is_empty() {
+            wasi.self_preopen_directories(preopen_directories)?;
+        }
+
+        if !map_directories.is_empty() {
+            wasi.self_map_directories(map_directories)?;
+        }
+
+        Ok(wasi)
+    }
+
+    pub fn arguments<'py>(
+        slf: &'py PyCell<Self>,
+        arguments: &PyList,
+    ) -> PyResult<&'py PyCell<Self>> {
+        let mut slf_mut = slf.try_borrow_mut()?;
+        slf_mut.self_arguments(arguments);
+
+        Ok(slf)
+    }
+
+    pub fn argument<'py>(slf: &'py PyCell<Self>, argument: String) -> PyResult<&'py PyCell<Self>> {
+        let mut slf_mut = slf.try_borrow_mut()?;
+        slf_mut.self_argument(argument);
+
+        Ok(slf)
+    }
+
+    pub fn environments<'py>(
+        slf: &'py PyCell<Self>,
+        environments: &PyDict,
+    ) -> PyResult<&'py PyCell<Self>> {
+        let mut slf_mut = slf.try_borrow_mut()?;
+        slf_mut.self_environments(environments);
+
+        Ok(slf)
+    }
+
+    pub fn environment<'py>(
+        slf: &'py PyCell<Self>,
+        key: String,
+        value: String,
+    ) -> PyResult<&'py PyCell<Self>> {
+        let mut slf_mut = slf.try_borrow_mut()?;
+        slf_mut.self_environment(key, value);
+
+        Ok(slf)
+    }
+
+    pub fn preopen_directories<'py>(
+        slf: &'py PyCell<Self>,
+        preopen_directories: &PyList,
+    ) -> PyResult<&'py PyCell<Self>> {
+        let mut slf_mut = slf.try_borrow_mut()?;
+        slf_mut.self_preopen_directories(preopen_directories)?;
+
+        Ok(slf)
+    }
+
+    pub fn preopen_directory<'py>(
+        slf: &'py PyCell<Self>,
+        preopen_directory: String,
+    ) -> PyResult<&'py PyCell<Self>> {
+        let mut slf_mut = slf.try_borrow_mut()?;
+        slf_mut.self_preopen_directory(preopen_directory)?;
+
+        Ok(slf)
+    }
+
+    pub fn map_directories<'py>(
+        slf: &'py PyCell<Self>,
+        map_directories: &PyDict,
+    ) -> PyResult<&'py PyCell<Self>> {
+        let mut slf_mut = slf.try_borrow_mut()?;
+        slf_mut.self_map_directories(map_directories)?;
+
         Ok(slf)
     }
 
@@ -208,16 +276,7 @@ impl Wasi {
         directory: String,
     ) -> PyResult<&'py PyCell<Self>> {
         let mut slf_mut = slf.try_borrow_mut()?;
-
-        slf_mut
-            .inner
-            .map_dir(alias.as_str(), PathBuf::from(directory.to_string()))
-            .map_err(|error| {
-                RuntimeError::py_err(format!(
-                    "Failed to configure the map directory when creating the WASI state: {}",
-                    error
-                ))
-            })?;
+        slf_mut.self_map_directory(alias, directory)?;
 
         Ok(slf)
     }
