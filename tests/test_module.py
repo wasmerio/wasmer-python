@@ -1,5 +1,5 @@
 import wasmer
-from wasmer import Module, ExportKind, ImportKind
+from wasmer import Module, ExportKind, ImportKind, ImportObject
 from enum import IntEnum
 import inspect
 import os
@@ -151,3 +151,10 @@ def test_deserialize():
     del serialized_module
 
     assert module.instantiate().exports.sum(1, 2) == 3
+
+def test_generate_import_object():
+    module = Module(TEST_BYTES)
+    import_object = module.generate_import_object()
+
+    assert isinstance(import_object, ImportObject)
+    assert len(import_object.import_descriptors()) == 0
