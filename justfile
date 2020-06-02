@@ -102,7 +102,7 @@ python-run file='':
 
 # Run the tests.
 test:
-	@py.test -v tests
+	@py.test -v -s tests
 
 # Run one or more benchmarks.
 benchmark benchmark-filename='':
