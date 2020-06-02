@@ -76,10 +76,9 @@ def test_wasi_version_from_module():
     assert module.wasi_version() == WasiVersion.Snapshot1
     assert module.wasi_version(True) == WasiVersion.Snapshot1
 
-@pytest.mark.skipif(sys.platform.startswith('win'), reason='subprocess.run has no `capture_output` argument')
 def test_wasi():
     python = sys.executable
-    result = subprocess.run(
+    result = subprocess.check_output(
         [
             python,
             '-c',
@@ -88,12 +87,10 @@ def test_wasi():
             import_object = Wasi("test-program").argument("--foo").environments({"ABC": "DEF", "X": "YZ"}).map_directory("the_host_current_dir", ".").generate_import_object_for_module(module); \
             instance = module.instantiate(import_object); \
             instance.exports._start()'
-        ],
-        capture_output=True
+        ]
     )
 
-    assert result.returncode == 0
-    assert result.stdout == b'Found program name: `test-program`\n\
+    assert result == b'Found program name: `test-program`\n\
 Found 1 arguments: --foo\n\
 Found 2 environment variables: ABC=DEF, X=YZ\n\
 Found 1 preopened directories: DirEntry("/the_host_current_dir")\n'
