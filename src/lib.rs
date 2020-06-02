@@ -1,5 +1,6 @@
 #![deny(warnings)]
 
+mod features;
 mod import;
 mod instance;
 mod memory;
@@ -8,6 +9,7 @@ mod r#type;
 mod value;
 mod wasi;
 
+use features::Features;
 use import::ImportObject;
 use instance::{exports::ExportImportKind, Instance};
 use module::Module;
@@ -20,18 +22,19 @@ use value::Value;
 fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     module.add("__version__", env!("CARGO_PKG_VERSION"))?;
     module.add("__core_version__", env!("WASMER_RUNTIME_CORE_VERSION"))?;
+    module.add_class::<Features>()?;
+    module.add_class::<ImportObject>()?;
     module.add_class::<Instance>()?;
     module.add_class::<Module>()?;
     module.add_class::<Value>()?;
-    module.add_class::<ImportObject>()?;
     module.add_class::<memory::Memory>()?;
+    module.add_class::<memory::buffer::Buffer>()?;
     module.add_class::<memory::view::Int16Array>()?;
     module.add_class::<memory::view::Int32Array>()?;
     module.add_class::<memory::view::Int8Array>()?;
     module.add_class::<memory::view::Uint16Array>()?;
     module.add_class::<memory::view::Uint32Array>()?;
     module.add_class::<memory::view::Uint8Array>()?;
-    module.add_class::<memory::buffer::Buffer>()?;
     module.add_class::<wasi::Wasi>()?;
 
     {
