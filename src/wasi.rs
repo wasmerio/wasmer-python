@@ -77,7 +77,11 @@ impl ToPyObject for Version {
     }
 }
 
+/// `Wasi` is a Python class that helps to build a WASI state, i.e. to
+/// define WASI arguments, environments, preopened directories, mapped
+/// directories etc.
 #[pyclass]
+#[text_signature = "(arguments=[], environments={}, preopen_directories=[], map_directories={})"]
 pub struct Wasi {
     pub(crate) inner: state::WasiStateBuilder,
 }
@@ -165,6 +169,33 @@ impl Wasi {
 
 #[pymethods]
 impl Wasi {
+    /// Build a `Wasi` object. The constructor can be used to
+    /// initialize its state, and its methods help to update its
+    /// state.
+    ///
+    /// # Examples
+    ///
+    /// Thus, both next notations are equivalent and can be mixed:
+    ///
+    /// ```py
+    /// wasi = Wasi(
+    ///     program_name="wasi_test_program",
+    ///     arguments=["--test"],
+    ///     environments={"COLOR": "true", "APP_SHOULD_LOG": "false"},
+    ///     map_directories={"the_host_current_dir": "."}
+    /// )
+    /// ```
+    ///
+    /// could be rewritten:
+    ///
+    /// ```py
+    /// wasi = \
+    ///     Wasi("wasi_test_program"). \
+    ///         argument("--test"). \
+    ///         environment("COLOR", "true"). \
+    ///         environment("APP_SHOULD_LOG", "false"). \
+    ///         map_directory("the_host_current_dir", ".")
+    /// ```
     #[new]
     #[args(
         arguments = "PyList::empty(_py)",
@@ -202,6 +233,9 @@ impl Wasi {
         Ok(wasi)
     }
 
+    /// Add a list of arguments to the program.
+    /// The arguments must not contain the `nul` (`0x0`) byte.
+    #[text_signature = "($self, arguments)"]
     pub fn arguments<'py>(
         slf: &'py PyCell<Self>,
         arguments: &PyList,
@@ -212,6 +246,9 @@ impl Wasi {
         Ok(slf)
     }
 
+    /// Add a single argument to the program.
+    /// The argument must not contain the `nul` (`0x0`) byte.
+    #[text_signature = "($self, argument)"]
     pub fn argument<'py>(slf: &'py PyCell<Self>, argument: String) -> PyResult<&'py PyCell<Self>> {
         let mut slf_mut = slf.try_borrow_mut()?;
         slf_mut.self_argument(argument);
@@ -219,6 +256,10 @@ impl Wasi {
         Ok(slf)
     }
 
+    /// Add environment variables to the program.
+    /// The pairs key and value must not contain the `=` (`0x3d`) or
+    /// `nul` (`0x0)` byte.
+    #[text_signature = "($self, environments)"]
     pub fn environments<'py>(
         slf: &'py PyCell<Self>,
         environments: &PyDict,
@@ -229,6 +270,10 @@ impl Wasi {
         Ok(slf)
     }
 
+    /// Add a single environment variable to the program.
+    /// The pair key and value must not contain the `=` (`0x3d`) or
+    /// `nul` (`0x0)` byte.
+    #[text_signature = "($self, key, value)"]
     pub fn environment<'py>(
         slf: &'py PyCell<Self>,
         key: String,
@@ -240,6 +285,8 @@ impl Wasi {
         Ok(slf)
     }
 
+    /// Add preopened directories to the program.
+    #[text_signature = "($self, preopen_directories)"]
     pub fn preopen_directories<'py>(
         slf: &'py PyCell<Self>,
         preopen_directories: &PyList,
@@ -250,6 +297,8 @@ impl Wasi {
         Ok(slf)
     }
 
+    /// Add a single preopened directory to the program.
+    #[text_signature = "($self, preopen_directory)"]
     pub fn preopen_directory<'py>(
         slf: &'py PyCell<Self>,
         preopen_directory: String,
@@ -260,6 +309,8 @@ impl Wasi {
         Ok(slf)
     }
 
+    /// Add preopened directories with different names.
+    #[text_signature = "($self, map_directories)"]
     pub fn map_directories<'py>(
         slf: &'py PyCell<Self>,
         map_directories: &PyDict,
@@ -270,6 +321,8 @@ impl Wasi {
         Ok(slf)
     }
 
+    /// Add a single preopened directory with a different name.
+    #[text_signature = "($self, map_directory)"]
     pub fn map_directory<'py>(
         slf: &'py PyCell<Self>,
         alias: String,
@@ -281,6 +334,20 @@ impl Wasi {
         Ok(slf)
     }
 
+    /// Transform this WASI object into an `ImportObject` object for a
+    /// particular module. The WASI version is optional; if absent, it
+    /// will be guessed with the strict parameter turned off (see
+    /// `Module::wasi_version` to learn more).
+    ///
+    /// # Examples
+    ///
+    /// ```py
+    /// module = Module(wasm_bytes)
+    /// wasi = Wasi("test_program", arguments=["--foobar"], environments={"BAZ": "qux"})
+    /// import_object = wasi.generate_import_object_for_module(module)
+    /// instance = module.instantiate(import_object)
+    /// ```
+    #[text_signature = "($self, module, version=0)"]
     #[args(version = 0)]
     pub fn generate_import_object_for_module(
         &mut self,
