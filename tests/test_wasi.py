@@ -69,6 +69,13 @@ def test_wasi_import_object():
         {'kind': ImportKind.FUNCTION, 'name': 'sock_shutdown', 'namespace': 'wasi_snapshot_preview1'}
     ]
 
+def test_wasi_version_from_module():
+    module = Module(TEST_BYTES)
+
+    assert module.is_wasi_module == True
+    assert module.wasi_version() == WasiVersion.Snapshot1
+    assert module.wasi_version(True) == WasiVersion.Snapshot1
+
 def test_wasi():
     python = sys.executable
     result = subprocess.run(
