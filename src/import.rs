@@ -132,7 +132,7 @@ impl ImportObject {
 
             for (function_name, function) in namespace
                 .downcast::<PyDict>()
-                .map_err(|_| RuntimeError::py_err("Namespace must be a dictionnary.".to_string()))?
+                .map_err(|_| RuntimeError::py_err("Namespace must be a dictionary.".to_string()))?
                 .into_iter()
             {
                 let function_name = function_name

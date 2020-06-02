@@ -185,7 +185,7 @@ pub extern "C" fn sum_plus_one(x: i32, y: i32) -> i32 {
 ```
 
 An imported function is defined by a namespace, and a name. It is
-defined by a Python dictionnary, as follows:
+defined by a Python dictionary, as follows:
 
 ```python
 from wasmer import Instance

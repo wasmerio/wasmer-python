@@ -104,7 +104,7 @@ impl Instance {
             module.instantiate(&import_object.inner)
         } else {
             return Err(RuntimeError::py_err(
-                "The `imported_functions` parameter contains an unknown value. Python dictionnaries or `wasmer.ImportObject` are the only supported values.".to_string()
+                "The `imported_functions` parameter contains an unknown value. Python dictionaries or `wasmer.ImportObject` are the only supported values.".to_string()
             ));
         };
 
