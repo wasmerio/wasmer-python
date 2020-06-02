@@ -1,10 +1,15 @@
+use crate::{import::ImportObject, module::Module};
 use pyo3::{
-    exceptions::RuntimeError,
+    exceptions::{RuntimeError, ValueError},
     prelude::*,
     pycell::PyCell,
     types::{PyDict, PyList},
 };
-use std::{convert::TryFrom, path::PathBuf, slice};
+use std::{
+    convert::{TryFrom, TryInto},
+    path::PathBuf,
+    slice,
+};
 use wasmer_wasi::{state, WasiVersion};
 
 #[derive(Copy, Clone)]
@@ -73,12 +78,12 @@ impl ToPyObject for Version {
 }
 
 #[pyclass]
-pub struct WasiStateBuilder {
+pub struct Wasi {
     pub(crate) inner: state::WasiStateBuilder,
 }
 
 #[pymethods]
-impl WasiStateBuilder {
+impl Wasi {
     #[new]
     fn new(program_name: String) -> Self {
         Self {
@@ -215,5 +220,27 @@ impl WasiStateBuilder {
             })?;
 
         Ok(slf)
+    }
+
+    #[args(version = 0)]
+    pub fn generate_import_object_for_module(
+        &mut self,
+        module: &Module,
+        version: u8,
+    ) -> PyResult<ImportObject> {
+        let version: Version = if version == 0 {
+            wasmer_wasi::get_wasi_version(&module.inner, false)
+                .ok_or(())
+                .map(Into::into)
+                .map_err(|_| {
+                    RuntimeError::py_err("Failed to generate an import object from a WASI state because the given module has no WASI imports")
+                })?
+        } else {
+            version
+                .try_into()
+                .map_err(|e: String| ValueError::py_err(e))?
+        };
+
+        ImportObject::new_with_wasi(module.inner.clone(), version, self)
     }
 }

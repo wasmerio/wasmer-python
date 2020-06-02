@@ -39,11 +39,11 @@ impl ImportObject {
     pub fn new_with_wasi(
         module: Rc<runtime::Module>,
         version: wasi::Version,
-        wasi_state_builder: &mut wasi::WasiStateBuilder,
+        wasi: &mut wasi::Wasi,
     ) -> PyResult<Self> {
         Ok(Self {
             inner: wasmer_wasi::generate_import_object_from_state(
-                wasi_state_builder.inner.build().map_err(|error| {
+                wasi.inner.build().map_err(|error| {
                     RuntimeError::py_err(format!("Failed to create the WASI state: {}", error))
                 })?,
                 version.into(),

@@ -11,12 +11,12 @@ use crate::{
     wasi,
 };
 use pyo3::{
-    exceptions::{RuntimeError, ValueError},
+    exceptions::RuntimeError,
     prelude::*,
     types::{PyAny, PyBytes, PyDict, PyList},
     PyTryFrom,
 };
-use std::{convert::TryInto, rc::Rc};
+use std::rc::Rc;
 use wasmer_runtime::{self as runtime, validate, Export};
 use wasmer_runtime_core::{
     self as runtime_core,
@@ -31,7 +31,7 @@ use wasmer_wasi;
 /// `Module` is a Python class that represents a WebAssembly module.
 pub struct Module {
     /// The underlying Rust WebAssembly module.
-    inner: Rc<runtime::Module>,
+    pub(crate) inner: Rc<runtime::Module>,
 }
 
 #[pymethods]
@@ -392,21 +392,6 @@ impl Module {
     /// Generates a fresh `ImportObject` object.
     fn generate_import_object(&self) -> ImportObject {
         ImportObject::new(self.inner.clone())
-    }
-
-    /// Generates a fresh `ImportObject` prefilled for WASI.
-    fn generate_wasi_import_object(
-        &self,
-        wasi_state_builder: &mut wasi::WasiStateBuilder,
-        version: u8,
-    ) -> PyResult<ImportObject> {
-        ImportObject::new_with_wasi(
-            self.inner.clone(),
-            version
-                .try_into()
-                .map_err(|e: String| ValueError::py_err(e))?,
-            wasi_state_builder,
-        )
     }
 
     /// Checks whether the module contains WASI definitions.
