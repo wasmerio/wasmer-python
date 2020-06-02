@@ -138,6 +138,7 @@ Table of Contents:
   * [Let's see in action](#lets-see-in-action)
   * [Performance](#performance)
 * [WASI](#wasi)
+* [`wat`](#wat)
 
 ## The `Instance` class
 
@@ -406,8 +407,8 @@ print(import_object.import_descriptors())
 ```
 
 Finally, pass the `ImportObject` object into
-`Module.instantiate(import_object)` or `Instance(import_object)` to
-import all your entities.
+`Module.instantiate(import_object)` or `Instance(wasm_bytes,
+import_object)` to import all your entities.
 
 ## The `Value` class
 
@@ -766,6 +767,29 @@ Found 1 preopened directories: DirEntry("/the_host_current_dir")
 It showcases that WebAssembly with WASI can access to `stdout`, can
 have an environment (with program name, arguments, and environment
 variables), and can have a restricted access to the file system.
+
+## `wat`
+
+The `wat2wasm` and `wasm2wat` functions respectively translates
+WebAssembly text source to WebAssembly binary format, and disassembles
+WebAssembly binary to WebAssembly text format. An example with
+`wat2wasm`:
+
+```py
+from wasmer import wat2wasm, Instance
+
+wat = """ (module
+            (type (func (param i32 i32) (result i32)))
+            (func (type 0)
+                local.get 0
+                local.get 1
+                i32.add)
+            (export "sum" (func 0))) """
+wasm_bytes = wat2wasm(wat)
+instance = Instance(wasm_bytes)
+
+assert instance.exports.sum(1, 2) == 3
+```
 
 # Development
 
