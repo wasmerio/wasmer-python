@@ -28,6 +28,7 @@ macro_rules! memory_view {
         #[pyproto]
         impl PyMappingProtocol for $class_name {
             /// Returns the length of the memory view.
+            #[text_signature = "($self)"]
             fn __len__(&self) -> PyResult<usize> {
                 Ok(self.memory.view::<$wasm_type>()[self.offset..].len() / size_of::<$wasm_type>())
             }
@@ -35,6 +36,7 @@ macro_rules! memory_view {
             /// Returns one or more values from the memory view.
             ///
             /// The `index` can be either a slice or an integer.
+            #[text_signature = "($self, index)"]
             fn __getitem__(&self, index: &PyAny) -> PyResult<PyObject> {
                 let view = self.memory.view::<$wasm_type>();
                 let offset = self.offset;
@@ -103,6 +105,7 @@ macro_rules! memory_view {
             ///
             /// The `index` and `value` can only be of type slice and
             /// list, or integer and integer.
+            #[text_signature = "($self, index, value)"]
             fn __setitem__(&mut self, index: &PyAny, value: &PyAny) -> PyResult<()> {
                 let offset = self.offset;
                 let view = self.memory.view::<$wasm_type>();
