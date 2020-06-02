@@ -132,15 +132,15 @@ def test_exports():
 #            'element_type': 'anyfunc',
 #        }
 #    ]
-#
-#def test_custom_section_names():
-#    assert sorted(Module(open(here + '/custom_sections.wasm', 'rb').read()).custom_section_names) == ['easter_egg', 'hello']
-#
-#def test_custom_section():
-#    module = Module(open(here + '/custom_sections.wasm', 'rb').read())
-#    assert module.custom_section('easter_egg') == b'Wasmer'
-#    assert module.custom_section('hello') == b'World!'
-#    assert module.custom_section('foo') == None
+
+def test_custom_section_names():
+    assert sorted(Module(open(here + '/custom_sections.wasm', 'rb').read()).custom_section_names) == ['easter_egg', 'hello']
+
+def test_custom_section():
+    module = Module(open(here + '/custom_sections.wasm', 'rb').read())
+    assert module.custom_section('easter_egg') == b'Wasmer'
+    assert module.custom_section('hello') == b'World!'
+    assert module.custom_section('foo') == None
 
 def test_serialize():
     assert type(Module(TEST_BYTES).serialize()) == bytes
