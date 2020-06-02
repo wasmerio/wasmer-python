@@ -432,7 +432,7 @@ value_f64 = Value.f64(7.42)
 value_v128 = Value.v128(7)
 ```
 
-The `Value.([if](32|64)|v128)` static methods must be considered as
+The `Value.(i32|i64|f32|f64|v128)` static methods must be considered as
 static constructors.
 
 The `__repr__` method allows to get a string representation of a
