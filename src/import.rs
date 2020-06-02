@@ -338,7 +338,7 @@ impl ImportObject {
     /// # Ready to instantiate the module.
     /// instance = module.instantiate(import_object)
     /// ```
-    #[text_signature = "($self, imported_function)"]
+    #[text_signature = "($self, imported_functions)"]
     pub fn extend(&mut self, py: Python, imported_functions: &PyDict) -> PyResult<()> {
         self.extend_with_pydict(py, imported_functions)
     }
