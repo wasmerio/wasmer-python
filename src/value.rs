@@ -13,6 +13,7 @@ unsafe impl PyNativeType for Value {}
 
 #[pymethods]
 impl Value {
+    /// Build a WebAssembly `i32` value.
     #[staticmethod]
     #[text_signature = "(value)"]
     fn i32(value: i32) -> PyResult<Self> {
@@ -21,6 +22,7 @@ impl Value {
         })
     }
 
+    /// Build a WebAssembly `i64` value.
     #[staticmethod]
     #[text_signature = "(value)"]
     fn i64(value: i64) -> PyResult<Self> {
@@ -29,6 +31,7 @@ impl Value {
         })
     }
 
+    /// Build a WebAssembly `f32` value.
     #[staticmethod]
     #[text_signature = "(value)"]
     fn f32(value: f32) -> PyResult<Self> {
@@ -37,6 +40,7 @@ impl Value {
         })
     }
 
+    /// Build a WebAssembly `f64` value.
     #[staticmethod]
     #[text_signature = "(value)"]
     fn f64(value: f64) -> PyResult<Self> {
@@ -45,6 +49,7 @@ impl Value {
         })
     }
 
+    /// Build a WebAssembly `v128` value.
     #[staticmethod]
     #[text_signature = "(value)"]
     fn v128(value: u128) -> PyResult<Self> {
