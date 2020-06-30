@@ -23,7 +23,6 @@ use pyo3::{
     types::{PyBytes, PyTuple},
     wrap_pyfunction,
 };
-use wabt;
 
 /// This extension allows to manipulate and to execute WebAssembly binaries.
 #[pymodule]
@@ -113,7 +112,7 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
 #[pyfunction]
 #[text_signature = "(wat)"]
 pub fn wat2wasm<'py>(py: Python<'py>, wat: String) -> PyResult<&'py PyBytes> {
-    wabt::wat2wasm(wat)
+    wat::parse_str(wat)
         .map(|bytes| PyBytes::new(py, bytes.as_slice()))
         .map_err(|error| RuntimeError::py_err(error.to_string()))
 }
@@ -122,5 +121,6 @@ pub fn wat2wasm<'py>(py: Python<'py>, wat: String) -> PyResult<&'py PyBytes> {
 #[pyfunction]
 #[text_signature = "(bytes)"]
 pub fn wasm2wat(bytes: &PyBytes) -> PyResult<String> {
-    wabt::wasm2wat(bytes.as_bytes()).map_err(|error| RuntimeError::py_err(error.to_string()))
+    wasmprinter::print_bytes(bytes.as_bytes())
+        .map_err(|error| RuntimeError::py_err(error.to_string()))
 }

@@ -13,13 +13,13 @@ use std::{
     ops::Deref,
     os::raw::{c_char, c_int},
     ptr,
-    rc::Rc,
+    sync::Arc,
 };
 use wasmer_runtime::memory::Memory;
 
 #[pyclass]
 pub struct Buffer {
-    pub memory: Rc<Memory>,
+    pub memory: Arc<Memory>,
 }
 
 #[pyproto]

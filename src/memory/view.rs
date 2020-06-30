@@ -6,14 +6,14 @@ use pyo3::{
     prelude::*,
     types::{PyAny, PyInt, PyLong, PySequence, PySlice},
 };
-use std::{cmp::min, mem::size_of, ops::Range, rc::Rc};
+use std::{cmp::min, mem::size_of, ops::Range, sync::Arc};
 use wasmer_runtime::memory::Memory;
 
 macro_rules! memory_view {
     ($class_name:ident over $wasm_type:ty | $bytes_per_element:expr) => {
         #[pyclass]
         pub struct $class_name {
-            pub memory: Rc<Memory>,
+            pub memory: Arc<Memory>,
             pub offset: usize,
         }
 

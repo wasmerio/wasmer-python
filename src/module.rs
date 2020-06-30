@@ -16,7 +16,7 @@ use pyo3::{
     types::{PyAny, PyBytes, PyDict, PyList},
     PyTryFrom,
 };
-use std::rc::Rc;
+use std::sync::Arc;
 use wasmer_runtime::{self as runtime, validate, Export};
 use wasmer_runtime_core::{
     self as runtime_core,
@@ -31,7 +31,7 @@ use wasmer_wasi;
 /// `Module` is a Python class that represents a WebAssembly module.
 pub struct Module {
     /// The underlying Rust WebAssembly module.
-    pub(crate) inner: Rc<runtime::Module>,
+    pub(crate) inner: Arc<runtime::Module>,
 }
 
 #[pymethods]
@@ -72,7 +72,7 @@ impl Module {
         })?;
 
         Ok(Self {
-            inner: Rc::new(module),
+            inner: Arc::new(module),
         })
     }
 
@@ -125,7 +125,7 @@ impl Module {
             };
 
         // Instantiate the module.
-        let instance = instance.map(Rc::new).map_err(|e| {
+        let instance = instance.map(Arc::new).map_err(|e| {
             RuntimeError::py_err(format!("Failed to instantiate the module:\n    {}", e))
         })?;
 
@@ -140,9 +140,9 @@ impl Module {
         for (export_name, export) in exports {
             match export {
                 Export::Function { .. } => exported_functions.push(export_name),
-                Export::Global(global) => exported_globals.push((export_name, Rc::new(global))),
+                Export::Global(global) => exported_globals.push((export_name, Arc::new(global))),
                 Export::Memory(memory) if exported_memory.is_none() => {
-                    exported_memory = Some(Rc::new(memory))
+                    exported_memory = Some(Arc::new(memory))
                 }
                 _ => (),
             }
@@ -429,7 +429,7 @@ impl Module {
                     Ok(module) => Ok(Py::new(
                         py,
                         Self {
-                            inner: Rc::new(module),
+                            inner: Arc::new(module),
                         },
                     )?),
                     Err(_) => Err(RuntimeError::py_err(
