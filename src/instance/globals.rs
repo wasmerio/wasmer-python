@@ -6,7 +6,7 @@ use pyo3::{
     prelude::*,
     types::{PyAny, PyFloat, PyLong},
 };
-use std::rc::Rc;
+use std::sync::Arc;
 use wasmer_runtime::{types::Type, Value as WasmValue};
 use wasmer_runtime_core::global::Global;
 
@@ -19,7 +19,7 @@ pub struct ExportedGlobal {
     global_name: String,
 
     /// The exported global from the WebAssembly instance.
-    global: Rc<Global>,
+    global: Arc<Global>,
 }
 
 #[pymethods]
@@ -80,7 +80,7 @@ impl ExportedGlobal {
 /// ```
 pub struct ExportedGlobals {
     /// Available exported globals names from the WebAssembly module.
-    pub(crate) globals: Vec<(String, Rc<Global>)>,
+    pub(crate) globals: Vec<(String, Arc<Global>)>,
 }
 
 #[pyproto]

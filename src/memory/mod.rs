@@ -1,7 +1,7 @@
 //! Memory API of an WebAssembly instance.
 
 use pyo3::{exceptions::RuntimeError, prelude::*};
-use std::rc::Rc;
+use std::sync::Arc;
 use wasmer_runtime::Memory as WasmMemory;
 use wasmer_runtime_core::units::Pages;
 
@@ -10,7 +10,7 @@ pub mod view;
 
 #[pyclass]
 pub struct Memory {
-    pub memory: Rc<WasmMemory>,
+    pub memory: Arc<WasmMemory>,
 }
 
 #[pymethods]

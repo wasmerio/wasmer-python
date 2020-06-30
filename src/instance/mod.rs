@@ -26,10 +26,10 @@ use pyo3::{
     types::{PyAny, PyBytes, PyDict},
     PyObject, Python,
 };
-use std::{collections::HashMap, rc::Rc};
+use std::{collections::HashMap, sync::Arc};
 use wasmer_runtime::{self as runtime, Export};
 
-#[pyclass]
+#[pyclass(unsendable)]
 #[text_signature = "(bytes, imported_functions={})"]
 /// `Instance` is a Python class that represents a WebAssembly instance.
 ///
@@ -41,7 +41,7 @@ use wasmer_runtime::{self as runtime, Export};
 /// instance = Instance(wasm_bytes)
 /// ```
 pub struct Instance {
-    pub(crate) instance: Rc<runtime::Instance>,
+    pub(crate) instance: Arc<runtime::Instance>,
 
     /// All WebAssembly exported functions represented by an
     /// `ExportedFunctions` object.
@@ -60,7 +60,7 @@ pub struct Instance {
 
 impl Instance {
     pub(crate) fn inner_new(
-        instance: Rc<runtime::Instance>,
+        instance: Arc<runtime::Instance>,
         exports: Py<ExportedFunctions>,
         memory: Option<Py<Memory>>,
         globals: Py<ExportedGlobals>,
@@ -97,7 +97,7 @@ impl Instance {
 
             module.instantiate(&(*import_object).inner)
         } else if let Ok(imported_functions) = import_object.downcast::<PyDict>() {
-            let module = Rc::new(module);
+            let module = Arc::new(module);
             let mut import_object = ImportObject::new(module.clone());
             import_object.extend_with_pydict(py, imported_functions)?;
 
@@ -108,7 +108,7 @@ impl Instance {
             ));
         };
 
-        let instance = instance.map(Rc::new).map_err(|e| {
+        let instance = instance.map(Arc::new).map_err(|e| {
             RuntimeError::py_err(format!("Failed to instantiate the module:\n    {}", e))
         })?;
 
@@ -123,9 +123,9 @@ impl Instance {
         for (export_name, export) in exports {
             match export {
                 Export::Function { .. } => exported_functions.push(export_name),
-                Export::Global(global) => exported_globals.push((export_name, Rc::new(global))),
+                Export::Global(global) => exported_globals.push((export_name, Arc::new(global))),
                 Export::Memory(memory) if exported_memory.is_none() => {
-                    exported_memory = Some(Rc::new(memory))
+                    exported_memory = Some(Arc::new(memory))
                 }
                 _ => (),
             }

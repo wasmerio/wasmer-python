@@ -802,7 +802,7 @@ check [`pyenv`](https://github.com/pyenv/pyenv/)). For Rust though, we
 advise to use [`rustup`](https://rustup.rs/), then:
 
 ```sh
-$ rustup install nightly
+$ rustup install stable
 ```
 
 To set up your environment, you'll need [`just`], and then, install

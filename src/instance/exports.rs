@@ -9,7 +9,7 @@ use pyo3::{
     types::{PyDict, PyFloat, PyLong, PyTuple},
     ToPyObject,
 };
-use std::{cmp::Ordering, convert::From, rc::Rc, slice};
+use std::{cmp::Ordering, convert::From, slice, sync::Arc};
 use wasmer_runtime::{self as runtime, Value as WasmValue};
 use wasmer_runtime_core::{instance::DynFunc, types::Type as WasmType};
 
@@ -63,13 +63,13 @@ impl ToPyObject for ExportImportKind {
     }
 }
 
-#[pyclass]
+#[pyclass(unsendable)]
 /// `ExportedFunction` is a Python class that represents a WebAssembly
 /// exported function. Such a function can be invoked from Python by using the
 /// `__call__` Python class method.
 pub struct ExportedFunction {
     /// The underlying Rust WebAssembly instance.
-    instance: Rc<runtime::Instance>,
+    instance: Arc<runtime::Instance>,
 
     /// The exported function name from the WebAssembly module.
     function_name: String,
@@ -221,7 +221,7 @@ impl ExportedFunction {
     }
 }
 
-#[pyclass]
+#[pyclass(unsendable)]
 /// `ExportedFunctions` is a Python class that represents the set
 /// of WebAssembly exported functions. It's basically a set of
 /// `ExportedFunction` classes.
@@ -236,7 +236,7 @@ impl ExportedFunction {
 /// ```
 pub struct ExportedFunctions {
     /// The underlying Rust WebAssembly instance.
-    pub(crate) instance: Rc<runtime::Instance>,
+    pub(crate) instance: Arc<runtime::Instance>,
 
     /// Available exported function names from the WebAssembly module.
     pub(crate) functions: Vec<String>,

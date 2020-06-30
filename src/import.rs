@@ -8,7 +8,7 @@ use pyo3::{
     types::{PyDict, PyList},
     PyObject,
 };
-use std::rc::Rc;
+use std::sync::Arc;
 use wasmer_runtime as runtime;
 use wasmer_wasi;
 
@@ -19,7 +19,7 @@ pub struct ImportObject {
     pub(crate) inner: runtime::ImportObject,
 
     #[allow(unused)]
-    pub(crate) module: Rc<runtime::Module>,
+    pub(crate) module: Arc<runtime::Module>,
 
     /// This field is unused as is, but is required to keep a
     /// reference to host function `PyObject`.
@@ -28,7 +28,7 @@ pub struct ImportObject {
 }
 
 impl ImportObject {
-    pub fn new(module: Rc<runtime::Module>) -> Self {
+    pub fn new(module: Arc<runtime::Module>) -> Self {
         Self {
             inner: runtime::ImportObject::new(),
             module,
@@ -37,7 +37,7 @@ impl ImportObject {
     }
 
     pub fn new_with_wasi(
-        module: Rc<runtime::Module>,
+        module: Arc<runtime::Module>,
         version: wasi::Version,
         wasi: &mut wasi::Wasi,
     ) -> PyResult<Self> {
@@ -74,7 +74,7 @@ impl ImportObject {
             types::{PyFloat, PyLong, PyString, PyTuple},
             AsPyPointer,
         };
-        use std::{collections::HashMap, sync::Arc};
+        use std::collections::HashMap;
         use wasmer_runtime::{
             types::{FuncIndex, FuncSig, Type},
             Value,
