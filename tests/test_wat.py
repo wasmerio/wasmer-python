@@ -4,7 +4,7 @@ def test_wat2wasm():
     assert wat2wasm('(module)') == b'\x00asm\x01\x00\x00\x00'
 
 def test_wasm2wat():
-    assert wasm2wat(b'\x00asm\x01\x00\x00\x00') == '(module)\n'
+    assert wasm2wat(b'\x00asm\x01\x00\x00\x00') == '(module)'
 
 def test_wat2wasm2instance():
     wat = """ (module
