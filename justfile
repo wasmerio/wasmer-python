@@ -101,8 +101,8 @@ python-run file='':
 	@python {{file}}
 
 # Run the tests.
-test:
-	@py.test -v -s tests
+test files='tests':
+	@py.test -v -s {{files}}
 
 # Run one or more benchmarks.
 benchmark benchmark-filename='':
