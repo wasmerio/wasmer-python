@@ -9,7 +9,7 @@ mod store;
 
 /// This extension allows to manipulate and to execute WebAssembly binaries.
 #[pymodule]
-fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
+fn wasmer(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add("__version__", env!("CARGO_PKG_VERSION"))?;
     module.add("__core_version__", env!("WASMER_VERSION"))?;
     module.add_wrapped(wrap_pyfunction!(wat2wasm))?;
