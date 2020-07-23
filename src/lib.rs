@@ -1,12 +1,21 @@
 use pyo3::{exceptions::RuntimeError, prelude::*, types::PyBytes, wrap_pyfunction};
 
+pub(crate) mod wasmer_inner {
+    pub use wasmer;
+}
+
+mod module;
+mod store;
+
 /// This extension allows to manipulate and to execute WebAssembly binaries.
 #[pymodule]
 fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     module.add("__version__", env!("CARGO_PKG_VERSION"))?;
-    module.add("__core_version__", env!("WASMER_RUNTIME_CORE_VERSION"))?;
+    module.add("__core_version__", env!("WASMER_VERSION"))?;
     module.add_wrapped(wrap_pyfunction!(wat2wasm))?;
     module.add_wrapped(wrap_pyfunction!(wasm2wat))?;
+    module.add_class::<module::Module>()?;
+    module.add_class::<store::Store>()?;
 
     Ok(())
 }
