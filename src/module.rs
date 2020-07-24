@@ -45,4 +45,16 @@ impl Module {
                 })
             })
     }
+
+    #[getter]
+    fn name(&self) -> Option<&str> {
+        self.inner.name()
+    }
+
+    #[setter(name)]
+    fn set_name(&mut self, name: &str) -> PyResult<()> {
+        self.inner.set_name(name);
+
+        Ok(())
+    }
 }
