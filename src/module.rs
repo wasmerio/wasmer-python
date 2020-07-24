@@ -1,10 +1,12 @@
+use crate::r#extern::ExternType;
 use crate::store::Store;
 use crate::wasmer_inner::wasmer;
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
-    types::{PyAny, PyBytes, PyList, PyString},
+    types::{PyAny, PyBytes, PyList, PyString, PyTuple},
 };
+use std::{cell::RefCell, thread_local};
 
 #[pyclass(unsendable)]
 #[text_signature = "(store, bytes)"]
@@ -64,14 +66,53 @@ impl Module {
         Ok(())
     }
 
+    #[getter]
+    fn exports<'p>(&self, py: Python<'p>) -> PyResult<&'p PyList> {
+        Ok(PyList::new(
+            py,
+            self.inner
+                .exports()
+                .map(|export_type| {
+                    new_export_type(py, export_type.name(), ExternType::from(export_type.ty()))
+                })
+                .collect::<PyResult<Vec<_>>>()?,
+        ))
+    }
+
     fn custom_sections<'p>(&self, py: Python<'p>, name: &str) -> &'p PyList {
         PyList::new(
             py,
             self.inner
                 .custom_sections(name)
                 .map(|custom_section| PyBytes::new(py, &*custom_section))
-                .collect::<Vec<_>>()
-                .into_iter(),
+                .collect::<Vec<_>>(),
         )
     }
+}
+
+thread_local! {
+    static EXPORT_TYPE_CLASS: RefCell<Option<PyObject>> = RefCell::new(None);
+}
+
+pub(crate) fn create_export_type_class<'p>(
+    py: Python<'p>,
+    collections_module: &'p PyModule,
+) -> PyResult<&'p PyAny> {
+    let class =
+        collections_module.call1("namedtuple", PyTuple::new(py, &["ExportType", "name type"]))?;
+
+    EXPORT_TYPE_CLASS.with(|export_type_class| {
+        *export_type_class.borrow_mut() = Some(class.to_object(py));
+    });
+
+    Ok(class)
+}
+
+fn new_export_type<'p, 'a>(py: Python<'p>, name: &'a str, ty: ExternType) -> PyResult<PyObject> {
+    EXPORT_TYPE_CLASS.with(|export_type_class| {
+        export_type_class.borrow().as_ref().unwrap().call1(
+            py,
+            PyTuple::new(py, &[name.to_object(py), ty.to_object(py)]),
+        )
+    })
 }
