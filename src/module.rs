@@ -3,13 +3,19 @@ use crate::wasmer_inner::wasmer;
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
-    types::{PyAny, PyBytes, PyString},
+    types::{PyAny, PyBytes, PyList, PyString},
 };
 
 #[pyclass(unsendable)]
 #[text_signature = "(store, bytes)"]
 pub struct Module {
     inner: wasmer::Module,
+}
+
+impl Module {
+    fn store(&self) -> &wasmer::Store {
+        self.inner.store()
+    }
 }
 
 #[pymethods]
@@ -56,5 +62,16 @@ impl Module {
         self.inner.set_name(name);
 
         Ok(())
+    }
+
+    fn custom_sections<'p>(&self, py: Python<'p>, name: &str) -> &'p PyList {
+        PyList::new(
+            py,
+            self.inner
+                .custom_sections(name)
+                .map(|custom_section| PyBytes::new(py, &*custom_section))
+                .collect::<Vec<_>>()
+                .into_iter(),
+        )
     }
 }
