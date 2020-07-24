@@ -9,15 +9,14 @@ pub(crate) mod wasmer_inner {
     pub use wasmer;
 }
 
-mod r#extern;
 mod module;
 mod store;
+mod types;
 
 /// This extension allows to compile and to execute WebAssembly.
 #[pymodule]
 fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     let enum_module = py.import("enum")?;
-    let collections_module = py.import("collections")?;
 
     // Constants.
     module.add("__version__", env!("CARGO_PKG_VERSION"))?;
@@ -30,17 +29,22 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     // Classes.
     module.add_class::<module::Module>()?;
     module.add_class::<store::Store>()?;
+    module.add_class::<types::FunctionType>()?;
+    module.add_class::<types::MemoryType>()?;
+    module.add_class::<types::GlobalType>()?;
+    module.add_class::<types::TableType>()?;
+    module.add_class::<types::ExportType>()?;
 
     // Enums.
     module.add(
-        "ExternType",
+        "Type",
         enum_module.call1(
             "IntEnum",
             PyTuple::new(
                 py,
                 &[
-                    "ExternType",
-                    r#extern::ExternType::iter()
+                    "Type",
+                    types::Type::iter()
                         .map(Into::into)
                         .collect::<Vec<&'static str>>()
                         .join(" ")
@@ -48,12 +52,6 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
                 ],
             ),
         )?,
-    )?;
-
-    // NamedTuples.
-    module.add(
-        "ExportType",
-        module::create_export_type_class(py, collections_module)?,
     )?;
 
     Ok(())
