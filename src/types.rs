@@ -251,20 +251,59 @@ impl TryFrom<wasmer::ExportType> for ExportType {
 
         Ok(Self {
             name: value.name().to_string(),
-            ty: match value.ty() {
-                wasmer::ExternType::Function(t) => Py::new(py, FunctionType::from(t))
-                    .map_err(|_| RuntimeError::py_err("Failed to instantiate `FunctionType`"))?
-                    .to_object(py),
-                wasmer::ExternType::Global(t) => Py::new(py, GlobalType::from(t))
-                    .map_err(|_| RuntimeError::py_err("Failed to instantiate `GlobalType`"))?
-                    .to_object(py),
-                wasmer::ExternType::Table(t) => Py::new(py, TableType::from(t))
-                    .map_err(|_| RuntimeError::py_err("Failed to instantiate `TableType`"))?
-                    .to_object(py),
-                wasmer::ExternType::Memory(t) => Py::new(py, MemoryType::from(t))
-                    .map_err(|_| RuntimeError::py_err("Failed to instantiate `MemoryType`"))?
-                    .to_object(py),
-            },
+            ty: extern_type_to_py_object(py, value.ty())?,
         })
     }
+}
+
+#[pyclass]
+pub struct ImportType {
+    #[pyo3(get)]
+    pub module: String,
+
+    #[pyo3(get)]
+    pub name: String,
+
+    #[pyo3(get)]
+    pub ty: PyObject,
+}
+
+#[pymethods]
+impl ImportType {
+    #[new]
+    fn new(module: String, name: String, ty: PyObject) -> Self {
+        Self { module, name, ty }
+    }
+}
+
+impl TryFrom<wasmer::ImportType> for ImportType {
+    type Error = PyErr;
+
+    fn try_from(value: wasmer::ImportType) -> Result<Self, Self::Error> {
+        let gil_guard = Python::acquire_gil();
+        let py = gil_guard.python();
+
+        Ok(Self {
+            module: value.module().to_string(),
+            name: value.name().to_string(),
+            ty: extern_type_to_py_object(py, value.ty())?,
+        })
+    }
+}
+
+fn extern_type_to_py_object(py: Python, value: &wasmer::ExternType) -> PyResult<PyObject> {
+    Ok(match value {
+        wasmer::ExternType::Function(t) => Py::new(py, FunctionType::from(t))
+            .map_err(|_| RuntimeError::py_err("Failed to instantiate `FunctionType`"))?
+            .to_object(py),
+        wasmer::ExternType::Global(t) => Py::new(py, GlobalType::from(t))
+            .map_err(|_| RuntimeError::py_err("Failed to instantiate `GlobalType`"))?
+            .to_object(py),
+        wasmer::ExternType::Table(t) => Py::new(py, TableType::from(t))
+            .map_err(|_| RuntimeError::py_err("Failed to instantiate `TableType`"))?
+            .to_object(py),
+        wasmer::ExternType::Memory(t) => Py::new(py, MemoryType::from(t))
+            .map_err(|_| RuntimeError::py_err("Failed to instantiate `MemoryType`"))?
+            .to_object(py),
+    })
 }
