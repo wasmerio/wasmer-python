@@ -84,4 +84,24 @@ impl Module {
                 .collect::<Vec<_>>(),
         )
     }
+
+    #[text_signature = "($self)"]
+    fn serialize<'p>(&self, py: Python<'p>) -> PyResult<&'p PyBytes> {
+        Ok(PyBytes::new(
+            py,
+            self.inner
+                .serialize()
+                .map_err(|e| RuntimeError::py_err(format!("Failed to serialize: {}", e)))?
+                .as_slice(),
+        ))
+    }
+
+    #[text_signature = "($self, bytes)"]
+    #[staticmethod]
+    fn deserialize(store: &Store, bytes: &PyBytes) -> PyResult<Self> {
+        Ok(Module {
+            inner: unsafe { wasmer::Module::deserialize(store.inner(), bytes.as_bytes()) }
+                .map_err(|e| RuntimeError::py_err(format!("Failed to deserialize: {}", e)))?,
+        })
+    }
 }
