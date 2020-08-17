@@ -1,5 +1,5 @@
 import wasmer
-from wasmer import Module, ExportKind, ImportKind, ImportObject
+from wasmer import Store, Module, ExportType, ImportType, FunctionType, MemoryType, GlobalType, TableType, Type
 from enum import IntEnum
 import inspect
 import os
@@ -11,154 +11,137 @@ TEST_BYTES = open(here + '/tests.wasm', 'rb').read()
 INVALID_TEST_BYTES = open(here + '/invalid.wasm', 'rb').read()
 
 def test_validate():
-    assert Module.validate(TEST_BYTES)
+    assert Module.validate(Store(), TEST_BYTES)
 
 def test_validate_invalid():
-    assert not Module.validate(INVALID_TEST_BYTES)
+    assert not Module.validate(Store(), INVALID_TEST_BYTES)
 
-def test_compile():
-    assert isinstance(Module(TEST_BYTES), Module)
+def test_compile_bytes():
+    assert isinstance(Module(Store(), TEST_BYTES), Module)
+
+def test_compile_wat():
+    assert isinstance(Module(Store(), '(module)'), Module)
 
 def test_failed_to_compile():
     with pytest.raises(RuntimeError) as context_manager:
-        Module(INVALID_TEST_BYTES)
+        Module(Store(), INVALID_TEST_BYTES)
 
-def test_instantiate():
-    assert Module(TEST_BYTES).instantiate().exports.sum(1, 2) == 3
+def test_name_some():
+    assert Module(Store(), '(module $moduleName)').name == 'moduleName'
 
-def test_export_kind():
-    assert issubclass(ExportKind, IntEnum)
-    assert len(ExportKind) == 4
-    assert ExportKind.FUNCTION == 1
-    assert ExportKind.MEMORY == 2
-    assert ExportKind.GLOBAL == 3
-    assert ExportKind.TABLE == 4
+def test_name_none():
+    assert Module(Store(), '(module)').name == None
 
-def test_import_kind():
-    assert issubclass(ImportKind, IntEnum)
-    assert len(ImportKind) == 4
-    assert ImportKind.FUNCTION == 1
-    assert ImportKind.MEMORY == 2
-    assert ImportKind.GLOBAL == 3
-    assert ImportKind.TABLE == 4
+def test_name_set():
+    module = Module(Store(), '(module)')
+    module.name = 'hello'
+    assert module.name == 'hello'
+
+#def test_instantiate():
+#    assert Module(TEST_BYTES).instantiate().exports.sum(1, 2) == 3
 
 def test_exports():
-    assert Module(TEST_BYTES).exports == [
-        {
-            'name': 'memory',
-            'kind': ExportKind.MEMORY,
-        },
-        {
-            'name': '__heap_base',
-            'kind': ExportKind.GLOBAL,
-        },
-        {
-            'name': '__data_end',
-            'kind': ExportKind.GLOBAL,
-        },
-        {
-            'name': 'sum',
-            'kind': ExportKind.FUNCTION,
-        },
-        {
-            'name': 'arity_0',
-            'kind': ExportKind.FUNCTION,
-        },
-        {
-            'name': 'i32_i32',
-            'kind': ExportKind.FUNCTION,
-        },
-        {
-            'name': 'i64_i64',
-            'kind': ExportKind.FUNCTION,
-        },
-        {
-            'name': 'f32_f32',
-            'kind': ExportKind.FUNCTION,
-        },
-        {
-            'name': 'f64_f64',
-            'kind': ExportKind.FUNCTION,
-        },
-        {
-            'name': 'i32_i64_f32_f64_f64',
-            'kind': ExportKind.FUNCTION,
-        },
-        {
-            'name': 'bool_casted_to_i32',
-            'kind': ExportKind.FUNCTION,
-        },
-        {
-            'name': 'string',
-            'kind': ExportKind.FUNCTION,
-        },
-        {
-            'name': 'void',
-            'kind': ExportKind.FUNCTION,
-        },
-    ]
+    exports = Module(
+        Store(),
+        """
+        (module
+          (func (export "function") (param i32 i64))
+          (global (export "global") i32 (i32.const 7))
+          (table (export "table") 0 funcref)
+          (memory (export "memory") 1))
+        """
+    ).exports
 
-@pytest.mark.skipif(sys.platform.startswith('win'), reason='https://github.com/wasmerio/wasmer/pull/1280/')
+    assert isinstance(exports[0], ExportType)
+
+    assert exports[0].name == "function"
+    assert isinstance(exports[0].ty, FunctionType)
+    assert exports[0].ty.params == [Type.I32, Type.I64]
+    assert exports[0].ty.results == []
+
+    assert exports[1].name == "global"
+    assert isinstance(exports[1].ty, GlobalType)
+    assert exports[1].ty.ty == Type.I32
+    assert exports[1].ty.mutable == False
+
+    assert exports[2].name == "table"
+    assert isinstance(exports[2].ty, TableType)
+    assert exports[2].ty.ty == Type.FUNC_REF
+    assert exports[2].ty.minimum == 0
+    assert exports[2].ty.maximum == None
+
+    assert exports[3].name == "memory"
+    assert isinstance(exports[3].ty, MemoryType)
+    assert exports[3].ty.minimum == 1
+    assert exports[3].ty.maximum == None
+    assert exports[3].ty.shared == False
+
 def test_imports():
-    assert Module(open(here + '/imports.wasm', 'rb').read()).imports == [
-        {
-            'kind': ImportKind.FUNCTION,
-            'namespace': 'ns',
-            'name': 'f1',
-        },
-        {
-            'kind': ImportKind.FUNCTION,
-            'namespace': 'ns',
-            'name': 'f2',
-        },
-        {
-            'kind': ImportKind.MEMORY,
-            'namespace': 'ns',
-            'name': 'm1',
-            'minimum_pages': 3,
-            'maximum_pages': 4,
-        },
-        {
-            'kind': ImportKind.GLOBAL,
-            'namespace': 'ns',
-            'name': 'g1',
-            'mutable': False,
-            'type': 'f32'
-        },
-        {
-            'kind': ImportKind.TABLE,
-            'namespace': 'ns',
-            'name': 't1',
-            'minimum_elements': 1,
-            'maximum_elements': 2,
-            'element_type': 'anyfunc',
-        }
-    ]
+    imports = Module(
+        Store(),
+        """
+        (module
+          (import "ns" "function" (func $f))
+          (import "ns" "global" (global $g f32))
+          (import "ns" "table" (table $t 1 2 anyfunc))
+          (import "ns" "memory" (memory $m 3 4)))
+        """
+    ).imports
 
-@pytest.mark.skipif(sys.platform.startswith('win'), reason='https://github.com/wasmerio/wasmer/pull/1280/')
-def test_custom_section_names():
-    assert sorted(Module(open(here + '/custom_sections.wasm', 'rb').read()).custom_section_names) == ['easter_egg', 'hello']
+    assert isinstance(imports[0], ImportType)
 
-@pytest.mark.skipif(sys.platform.startswith('win'), reason='https://github.com/wasmerio/wasmer/pull/1280/')
+    assert imports[0].module == "ns"
+    assert imports[0].name == "function"
+    assert isinstance(imports[0].ty, FunctionType)
+    assert imports[0].ty.params == []
+    assert imports[0].ty.results == []
+
+    assert imports[1].module == "ns"
+    assert imports[1].name == "global"
+    assert isinstance(imports[1].ty, GlobalType)
+    assert imports[1].ty.ty == Type.F32
+    assert imports[1].ty.mutable == False
+
+    assert imports[2].module == "ns"
+    assert imports[2].name == "table"
+    assert isinstance(imports[2].ty, TableType)
+    assert imports[2].ty.ty == Type.FUNC_REF
+    assert imports[2].ty.minimum == 1
+    assert imports[2].ty.maximum == 2
+
+    assert imports[3].module == "ns"
+    assert imports[3].name == "memory"
+    assert isinstance(imports[3].ty, MemoryType)
+    assert imports[3].ty.minimum == 3
+    assert imports[3].ty.maximum == 4
+    assert imports[3].ty.shared == False
+
 def test_custom_section():
-    module = Module(open(here + '/custom_sections.wasm', 'rb').read())
-    assert module.custom_section('easter_egg') == b'Wasmer'
-    assert module.custom_section('hello') == b'World!'
-    assert module.custom_section('foo') == None
+    module = Module(Store(), open(here + '/custom_sections.wasm', 'rb').read())
+    assert module.custom_sections('easter_egg') == [b'Wasmer']
+    assert module.custom_sections('hello') == [b'World!']
+    assert module.custom_sections('foo') == []
 
 def test_serialize():
-    assert type(Module(TEST_BYTES).serialize()) == bytes
+    assert type(Module(Store(), "(module)").serialize()) == bytes
 
 def test_deserialize():
-    serialized_module = Module(TEST_BYTES).serialize()
-    module = Module.deserialize(serialized_module)
+    store = Store()
+
+    serialized_module = Module(
+        store,
+        """
+        (module
+          (func (export "function") (param i32 i64)))
+        """
+    ).serialize()
+    module = Module.deserialize(store, serialized_module)
     del serialized_module
 
-    assert module.instantiate().exports.sum(1, 2) == 3
+    exports = module.exports
 
-def test_generate_import_object():
-    module = Module(TEST_BYTES)
-    import_object = module.generate_import_object()
-
-    assert isinstance(import_object, ImportObject)
-    assert len(import_object.import_descriptors()) == 0
+    assert len(module.exports) == 1
+    assert exports[0].name == "function"
+    assert isinstance(exports[0].ty, FunctionType)
+    assert exports[0].ty.params == [Type.I32, Type.I64]
+    assert exports[0].ty.results == []
