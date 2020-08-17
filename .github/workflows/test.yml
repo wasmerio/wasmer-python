@@ -23,7 +23,7 @@ jobs:
           { id: 'linux-aarch64', os: ['self-hosted', 'aarch64'], rust-target: 'aarch64-unknown-linux-gnu', rust-toolchain: 'nightly' },
         ]
         # The job runs on different Python versions.
-        python: [3.5, 3.6, 3.7, 3.8, '3.9.0-rc.1']
+        python: [3.5, 3.6, 3.7, 3.8]
       # As soon as one job fails in the matrix, all the other
       # in-progress jobs are canceled.
       fail-fast: true
