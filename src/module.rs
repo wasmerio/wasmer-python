@@ -4,6 +4,7 @@ use pyo3::{
     prelude::*,
     types::{PyAny, PyBytes, PyList, PyString},
 };
+use std::convert::TryInto;
 
 #[pyclass(unsendable)]
 #[text_signature = "(store, bytes)"]
@@ -64,8 +65,8 @@ impl Module {
     }
 
     #[getter]
-    fn exports<'p>(&self) -> Vec<types::ExportType> {
-        self.inner.exports().map(Into::into).collect()
+    fn exports<'p>(&self) -> PyResult<Vec<types::ExportType>> {
+        self.inner.exports().map(TryInto::try_into).collect()
     }
 
     fn custom_sections<'p>(&self, py: Python<'p>, name: &str) -> &'p PyList {

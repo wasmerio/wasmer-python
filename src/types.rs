@@ -4,7 +4,7 @@ use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
 };
-use std::slice;
+use std::{convert::TryFrom, slice};
 
 #[derive(Copy, Clone)]
 #[repr(u8)]
@@ -242,27 +242,29 @@ impl ExportType {
     }
 }
 
-impl From<wasmer::ExportType> for ExportType {
-    fn from(value: wasmer::ExportType) -> Self {
+impl TryFrom<wasmer::ExportType> for ExportType {
+    type Error = PyErr;
+
+    fn try_from(value: wasmer::ExportType) -> Result<Self, Self::Error> {
         let gil_guard = Python::acquire_gil();
         let py = gil_guard.python();
 
-        Self {
+        Ok(Self {
             name: value.name().to_string(),
             ty: match value.ty() {
                 wasmer::ExternType::Function(t) => Py::new(py, FunctionType::from(t))
-                    .expect("Failed to instantiate `FunctionType`")
+                    .map_err(|_| RuntimeError::py_err("Failed to instantiate `FunctionType`"))?
                     .to_object(py),
                 wasmer::ExternType::Global(t) => Py::new(py, GlobalType::from(t))
-                    .expect("Failed to instantiate `GlobalType`")
+                    .map_err(|_| RuntimeError::py_err("Failed to instantiate `GlobalType`"))?
                     .to_object(py),
                 wasmer::ExternType::Table(t) => Py::new(py, TableType::from(t))
-                    .expect("Failed to instantiate `TableType`")
+                    .map_err(|_| RuntimeError::py_err("Failed to instantiate `TableType`"))?
                     .to_object(py),
                 wasmer::ExternType::Memory(t) => Py::new(py, MemoryType::from(t))
-                    .expect("Failed to instantiate `MemoryType`")
+                    .map_err(|_| RuntimeError::py_err("Failed to instantiate `MemoryType`"))?
                     .to_object(py),
             },
-        }
+        })
     }
 }
