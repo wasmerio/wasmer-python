@@ -473,7 +473,7 @@ functions:
 # With `memoryview`
 memory_view = memoryview(instance.memory.buffer)
 memory_size = memory_view.nbytes
-assert bytes(memory_view[0:3]).decode() == 'Wasmer'
+assert bytes(memory_view[0:6]).decode() == 'Wasmer'
 
 # With `bytearray`
 byte_array = bytearray(instance.memory.buffer)
