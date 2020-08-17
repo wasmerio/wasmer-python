@@ -65,8 +65,13 @@ impl Module {
     }
 
     #[getter]
-    fn exports<'p>(&self) -> PyResult<Vec<types::ExportType>> {
+    fn exports(&self) -> PyResult<Vec<types::ExportType>> {
         self.inner.exports().map(TryInto::try_into).collect()
+    }
+
+    #[getter]
+    fn imports(&self) -> PyResult<Vec<types::ImportType>> {
+        self.inner.imports().map(TryInto::try_into).collect()
     }
 
     fn custom_sections<'p>(&self, py: Python<'p>, name: &str) -> &'p PyList {
