@@ -74,6 +74,7 @@ impl Module {
         self.inner.imports().map(TryInto::try_into).collect()
     }
 
+    #[text_signature = "($self, name)"]
     fn custom_sections<'p>(&self, py: Python<'p>, name: &str) -> &'p PyList {
         PyList::new(
             py,
