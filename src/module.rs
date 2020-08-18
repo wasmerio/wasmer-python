@@ -1,4 +1,4 @@
-use crate::{instance::Instance, store::Store, types, wasmer_inner::wasmer};
+use crate::{store::Store, types, wasmer_inner::wasmer};
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
@@ -53,11 +53,6 @@ impl Module {
                         .map_err(|error| RuntimeError::py_err(error.to_string()))?,
                 })
             })
-    }
-
-    #[text_signature = "($self)"]
-    fn instantiate(&self) -> PyResult<Instance> {
-        Instance::new(&self).map_err(|error| RuntimeError::py_err(error.to_string()))
     }
 
     #[getter]

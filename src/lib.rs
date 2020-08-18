@@ -9,6 +9,8 @@ pub(crate) mod wasmer_inner {
     pub use wasmer;
 }
 
+mod exports;
+mod externals;
 mod instance;
 mod module;
 mod store;
@@ -28,6 +30,8 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     module.add_wrapped(wrap_pyfunction!(wasm2wat))?;
 
     // Classes.
+    module.add_class::<exports::Exports>()?;
+    module.add_class::<externals::Function>()?;
     module.add_class::<instance::Instance>()?;
     module.add_class::<module::Module>()?;
     module.add_class::<store::Store>()?;
