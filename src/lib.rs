@@ -9,6 +9,7 @@ pub(crate) mod wasmer_inner {
     pub use wasmer;
 }
 
+mod instance;
 mod module;
 mod store;
 mod types;
@@ -27,14 +28,15 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     module.add_wrapped(wrap_pyfunction!(wasm2wat))?;
 
     // Classes.
+    module.add_class::<instance::Instance>()?;
     module.add_class::<module::Module>()?;
     module.add_class::<store::Store>()?;
-    module.add_class::<types::FunctionType>()?;
-    module.add_class::<types::MemoryType>()?;
-    module.add_class::<types::GlobalType>()?;
-    module.add_class::<types::TableType>()?;
     module.add_class::<types::ExportType>()?;
+    module.add_class::<types::FunctionType>()?;
+    module.add_class::<types::GlobalType>()?;
     module.add_class::<types::ImportType>()?;
+    module.add_class::<types::MemoryType>()?;
+    module.add_class::<types::TableType>()?;
 
     // Enums.
     module.add(

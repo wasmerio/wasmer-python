@@ -1,4 +1,4 @@
-use crate::{store::Store, types, wasmer_inner::wasmer};
+use crate::{instance::Instance, store::Store, types, wasmer_inner::wasmer};
 use pyo3::{
     exceptions::RuntimeError,
     prelude::*,
@@ -13,8 +13,12 @@ pub struct Module {
 }
 
 impl Module {
-    fn store(&self) -> &wasmer::Store {
+    pub fn store(&self) -> &wasmer::Store {
         self.inner.store()
+    }
+
+    pub fn inner(&self) -> &wasmer::Module {
+        &self.inner
     }
 }
 
@@ -45,11 +49,15 @@ impl Module {
             })
             .and_then(|bytes| {
                 Ok(Module {
-                    inner: wasmer::Module::new(store.inner(), bytes).map_err(|error| {
-                        RuntimeError::py_err(format!("Failed to compile the module: {}", error))
-                    })?,
+                    inner: wasmer::Module::new(store.inner(), bytes)
+                        .map_err(|error| RuntimeError::py_err(error.to_string()))?,
                 })
             })
+    }
+
+    #[text_signature = "($self)"]
+    fn instantiate(&self) -> PyResult<Instance> {
+        Instance::new(&self).map_err(|error| RuntimeError::py_err(error.to_string()))
     }
 
     #[getter]
@@ -91,7 +99,7 @@ impl Module {
             py,
             self.inner
                 .serialize()
-                .map_err(|e| RuntimeError::py_err(format!("Failed to serialize: {}", e)))?
+                .map_err(|error| RuntimeError::py_err(error.to_string()))?
                 .as_slice(),
         ))
     }
@@ -101,7 +109,7 @@ impl Module {
     fn deserialize(store: &Store, bytes: &PyBytes) -> PyResult<Self> {
         Ok(Module {
             inner: unsafe { wasmer::Module::deserialize(store.inner(), bytes.as_bytes()) }
-                .map_err(|e| RuntimeError::py_err(format!("Failed to deserialize: {}", e)))?,
+                .map_err(|error| RuntimeError::py_err(error.to_string()))?,
         })
     }
 }

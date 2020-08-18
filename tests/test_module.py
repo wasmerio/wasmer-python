@@ -1,10 +1,8 @@
 import wasmer
-from wasmer import Store, Module, ExportType, ImportType, FunctionType, MemoryType, GlobalType, TableType, Type
+from wasmer import Store, Module, ExportType, ImportType, FunctionType, MemoryType, GlobalType, TableType, Type, Instance
 from enum import IntEnum
-import inspect
 import os
 import pytest
-import sys
 
 here = os.path.dirname(os.path.realpath(__file__))
 TEST_BYTES = open(here + '/tests.wasm', 'rb').read()
@@ -26,6 +24,9 @@ def test_failed_to_compile():
     with pytest.raises(RuntimeError) as context_manager:
         Module(Store(), INVALID_TEST_BYTES)
 
+def test_instantiate():
+    assert isinstance(Module(Store(), '(module)').instantiate(), Instance)
+
 def test_name_some():
     assert Module(Store(), '(module $moduleName)').name == 'moduleName'
 
@@ -36,9 +37,6 @@ def test_name_set():
     module = Module(Store(), '(module)')
     module.name = 'hello'
     assert module.name == 'hello'
-
-#def test_instantiate():
-#    assert Module(TEST_BYTES).instantiate().exports.sum(1, 2) == 3
 
 def test_exports():
     exports = Module(
