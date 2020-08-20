@@ -37,6 +37,7 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     // Classes.
     module.add_class::<exports::Exports>()?;
     module.add_class::<externals::Function>()?;
+    module.add_class::<externals::Global>()?;
     module.add_class::<instance::Instance>()?;
     module.add_class::<module::Module>()?;
     module.add_class::<store::Store>()?;

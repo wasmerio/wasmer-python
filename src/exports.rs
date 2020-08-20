@@ -1,4 +1,8 @@
-use crate::{errors::to_py_err, externals::Function, wasmer_inner::wasmer};
+use crate::{
+    errors::to_py_err,
+    externals::{Function, Global},
+    wasmer_inner::wasmer,
+};
 use pyo3::{
     class::{basic::PyObjectProtocol, sequence::PySequenceProtocol},
     exceptions::LookupError,
@@ -23,19 +27,20 @@ impl PyObjectProtocol for Exports {
         let gil_guard = Python::acquire_gil();
         let py = gil_guard.python();
 
-        Ok(Py::new(
-            py,
-            match self.inner.get_extern(key.as_str()) {
-                Some(wasmer::Extern::Function(function)) => Function::new(function.clone()),
-                _ => {
-                    return Err(to_py_err::<LookupError, _>(format!(
-                        "Export `{}` does not exist.",
-                        key
-                    )))
-                }
-            },
-        )?
-        .to_object(py))
+        Ok(match self.inner.get_extern(key.as_str()) {
+            Some(wasmer::Extern::Function(function)) => {
+                Py::new(py, Function::new(function.clone()))?.to_object(py)
+            }
+            Some(wasmer::Extern::Global(global)) => {
+                Py::new(py, Global::new(global.clone()))?.to_object(py)
+            }
+            _ => {
+                return Err(to_py_err::<LookupError, _>(format!(
+                    "Export `{}` does not exist.",
+                    key
+                )))
+            }
+        })
     }
 }
 
