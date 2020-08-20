@@ -1,7 +1,7 @@
-use crate::wasmer_inner::wasmer;
+use crate::{errors::to_py_err, wasmer_inner::wasmer};
 use pyo3::{
     conversion::{FromPyObject, IntoPy},
-    exceptions::RuntimeError,
+    exceptions::ValueError,
     prelude::*,
 };
 use std::{convert::TryFrom, slice};
@@ -73,7 +73,7 @@ impl<'source> FromPyObject<'source> for Type {
             6 => Self::ExternRef,
             7 => Self::FuncRef,
             _ => {
-                return Err(RuntimeError::py_err(
+                return Err(to_py_err::<ValueError, _>(
                     "Failed to extract `Type` from `PyAny`",
                 ))
             }
@@ -293,17 +293,9 @@ impl TryFrom<wasmer::ImportType> for ImportType {
 
 fn extern_type_to_py_object(py: Python, value: &wasmer::ExternType) -> PyResult<PyObject> {
     Ok(match value {
-        wasmer::ExternType::Function(t) => Py::new(py, FunctionType::from(t))
-            .map_err(|_| RuntimeError::py_err("Failed to instantiate `FunctionType`"))?
-            .to_object(py),
-        wasmer::ExternType::Global(t) => Py::new(py, GlobalType::from(t))
-            .map_err(|_| RuntimeError::py_err("Failed to instantiate `GlobalType`"))?
-            .to_object(py),
-        wasmer::ExternType::Table(t) => Py::new(py, TableType::from(t))
-            .map_err(|_| RuntimeError::py_err("Failed to instantiate `TableType`"))?
-            .to_object(py),
-        wasmer::ExternType::Memory(t) => Py::new(py, MemoryType::from(t))
-            .map_err(|_| RuntimeError::py_err("Failed to instantiate `MemoryType`"))?
-            .to_object(py),
+        wasmer::ExternType::Function(t) => Py::new(py, FunctionType::from(t))?.to_object(py),
+        wasmer::ExternType::Global(t) => Py::new(py, GlobalType::from(t))?.to_object(py),
+        wasmer::ExternType::Table(t) => Py::new(py, TableType::from(t))?.to_object(py),
+        wasmer::ExternType::Memory(t) => Py::new(py, MemoryType::from(t))?.to_object(py),
     })
 }

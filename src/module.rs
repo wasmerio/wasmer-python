@@ -1,6 +1,6 @@
-use crate::{store::Store, types, wasmer_inner::wasmer};
+use crate::{errors::to_py_err, store::Store, types, wasmer_inner::wasmer};
 use pyo3::{
-    exceptions::RuntimeError,
+    exceptions::{RuntimeError, TypeError},
     prelude::*,
     types::{PyAny, PyBytes, PyList, PyString},
 };
@@ -41,16 +41,14 @@ impl Module {
             .or_else(|_| {
                 <PyString as PyTryFrom>::try_from(bytes)
                     .map_err(|_| {
-                        RuntimeError::py_err(
-                            "`Module` accepts Wasm bytes or a WAT string".to_string(),
-                        )
+                        to_py_err::<TypeError, _>("`Module` accepts Wasm bytes or a WAT string")
                     })
                     .and_then(|string| string.as_bytes())
             })
             .and_then(|bytes| {
                 Ok(Module {
                     inner: wasmer::Module::new(store.inner(), bytes)
-                        .map_err(|error| RuntimeError::py_err(error.to_string()))?,
+                        .map_err(to_py_err::<RuntimeError, _>)?,
                 })
             })
     }
@@ -94,7 +92,7 @@ impl Module {
             py,
             self.inner
                 .serialize()
-                .map_err(|error| RuntimeError::py_err(error.to_string()))?
+                .map_err(to_py_err::<RuntimeError, _>)?
                 .as_slice(),
         ))
     }
@@ -104,7 +102,7 @@ impl Module {
     fn deserialize(store: &Store, bytes: &PyBytes) -> PyResult<Self> {
         Ok(Module {
             inner: unsafe { wasmer::Module::deserialize(store.inner(), bytes.as_bytes()) }
-                .map_err(|error| RuntimeError::py_err(error.to_string()))?,
+                .map_err(to_py_err::<RuntimeError, _>)?,
         })
     }
 }

@@ -1,7 +1,7 @@
-use crate::{externals::Function, wasmer_inner::wasmer};
+use crate::{errors::to_py_err, externals::Function, wasmer_inner::wasmer};
 use pyo3::{
     class::{basic::PyObjectProtocol, sequence::PySequenceProtocol},
-    exceptions::{LookupError, RuntimeError},
+    exceptions::LookupError,
     prelude::*,
 };
 
@@ -28,14 +28,13 @@ impl PyObjectProtocol for Exports {
             match self.inner.get_extern(key.as_str()) {
                 Some(wasmer::Extern::Function(function)) => Function::new(function.clone()),
                 _ => {
-                    return Err(LookupError::py_err(format!(
+                    return Err(to_py_err::<LookupError, _>(format!(
                         "Export `{}` does not exist.",
                         key
                     )))
                 }
             },
-        )
-        .map_err(|_| RuntimeError::py_err(format!("Failed to instantiate the export `{}`", key)))?
+        )?
         .to_object(py))
     }
 }

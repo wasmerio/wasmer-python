@@ -1,9 +1,9 @@
 use crate::{
+    errors::to_py_err,
     values::{to_py_object, to_wasm_value},
     wasmer_inner::wasmer,
 };
 use pyo3::{exceptions::RuntimeError, prelude::*, types::PyTuple};
-use std::slice;
 
 #[pyclass(unsendable)]
 pub struct Function {
@@ -31,7 +31,7 @@ impl Function {
             .inner
             .call(&arguments)
             .map(<[_]>::into_vec)
-            .map_err(|error| RuntimeError::py_err(error.to_string()))?;
+            .map_err(to_py_err::<RuntimeError, _>)?;
 
         Ok(PyTuple::new(
             py,

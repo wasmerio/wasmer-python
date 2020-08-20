@@ -10,6 +10,7 @@ pub(crate) mod wasmer_inner {
     pub use wasmer_types;
 }
 
+mod errors;
 mod exports;
 mod externals;
 mod instance;
@@ -17,6 +18,8 @@ mod module;
 mod store;
 mod types;
 mod values;
+
+use errors::to_py_err;
 
 /// This extension allows to compile and to execute WebAssembly.
 #[pymodule]
@@ -72,13 +75,12 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
 pub fn wat2wasm<'py>(py: Python<'py>, wat: String) -> PyResult<&'py PyBytes> {
     wat::parse_str(wat)
         .map(|bytes| PyBytes::new(py, bytes.as_slice()))
-        .map_err(|error| RuntimeError::py_err(error.to_string()))
+        .map_err(to_py_err::<RuntimeError, _>)
 }
 
 /// Disassemble WebAssembly binary to WebAssembly text format.
 #[pyfunction]
 #[text_signature = "(bytes)"]
 pub fn wasm2wat(bytes: &PyBytes) -> PyResult<String> {
-    wasmprinter::print_bytes(bytes.as_bytes())
-        .map_err(|error| RuntimeError::py_err(error.to_string()))
+    wasmprinter::print_bytes(bytes.as_bytes()).map_err(to_py_err::<RuntimeError, _>)
 }
