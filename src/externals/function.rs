@@ -1,5 +1,9 @@
-use crate::wasmer_inner::wasmer;
-use pyo3::{prelude::*, types::PyTuple};
+use crate::{
+    values::{to_py_object, to_wasm_value},
+    wasmer_inner::wasmer,
+};
+use pyo3::{exceptions::RuntimeError, prelude::*, types::PyTuple};
+use std::slice;
 
 #[pyclass(unsendable)]
 pub struct Function {
@@ -16,7 +20,25 @@ impl Function {
 impl Function {
     #[call]
     #[args(arguments = "*")]
-    fn __call__(&self, py: Python, arguments: &PyTuple) -> PyResult<PyObject> {
-        unimplemented!()
+    fn __call__<'p>(&self, py: Python<'p>, arguments: &PyTuple) -> PyResult<&'p PyTuple> {
+        let arguments: Vec<wasmer::Value> = arguments
+            .iter()
+            .zip(self.inner.ty().params().iter())
+            .map(to_wasm_value)
+            .collect::<PyResult<_>>()?;
+
+        let results = self
+            .inner
+            .call(&arguments)
+            .map(<[_]>::into_vec)
+            .map_err(|error| RuntimeError::py_err(error.to_string()))?;
+
+        Ok(PyTuple::new(
+            py,
+            results
+                .iter()
+                .map(to_py_object(py))
+                .collect::<Vec<PyObject>>(),
+        ))
     }
 }

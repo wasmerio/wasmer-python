@@ -15,7 +15,8 @@ name = "wasmer"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer = { path = "../wasmer-reborn/lib/api" }
+wasmer = { git = "https://github.com/Hywan/wasmer", branch = "fix-wasmer-types-native-wasm-type-u128" }
+wasmer-types = { git = "https://github.com/Hywan/wasmer", branch = "fix-wasmer-types-native-wasm-type-u128" }
 pyo3 = { version = "0.11", features = ["extension-module"] }
 wat = "1.0"
 wasmprinter = "0.2"
