@@ -20,7 +20,7 @@ impl Function {
 impl Function {
     #[call]
     #[args(arguments = "*")]
-    fn __call__<'p>(&self, py: Python<'p>, arguments: &PyTuple) -> PyResult<&'p PyTuple> {
+    fn __call__<'p>(&self, py: Python<'p>, arguments: &PyTuple) -> PyResult<PyObject> {
         let arguments: Vec<wasmer::Value> = arguments
             .iter()
             .zip(self.inner.ty().params().iter())
@@ -33,12 +33,16 @@ impl Function {
             .map(<[_]>::into_vec)
             .map_err(to_py_err::<RuntimeError, _>)?;
 
-        Ok(PyTuple::new(
-            py,
-            results
-                .iter()
-                .map(to_py_object(py))
-                .collect::<Vec<PyObject>>(),
-        ))
+        let to_py_object = to_py_object(py);
+
+        Ok(match results.len() {
+            0 => py.None(),
+            1 => to_py_object(&results[0]),
+            _ => PyTuple::new(
+                py,
+                results.iter().map(to_py_object).collect::<Vec<PyObject>>(),
+            )
+            .to_object(py),
+        })
     }
 }
