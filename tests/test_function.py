@@ -7,7 +7,7 @@ here = os.path.dirname(os.path.realpath(__file__))
 TEST_BYTES = open(here + '/tests.wasm', 'rb').read()
 
 def instance():
-    Instance(Module(Store(), TEST_BYTES))
+    return Instance(Module(Store(), TEST_BYTES))
 
 def value_with_type(value):
     return (value, type(value))
