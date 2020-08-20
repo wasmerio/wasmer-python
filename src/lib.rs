@@ -7,6 +7,7 @@ use pyo3::{
 
 pub(crate) mod wasmer_inner {
     pub use wasmer;
+    pub use wasmer_types;
 }
 
 mod exports;
@@ -15,6 +16,7 @@ mod instance;
 mod module;
 mod store;
 mod types;
+mod values;
 
 /// This extension allows to compile and to execute WebAssembly.
 #[pymodule]
