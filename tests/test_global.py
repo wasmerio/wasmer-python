@@ -34,33 +34,32 @@ def test_global_read_write():
 
     assert y.value == 8
 
-#def test_global_read_write_and_exported_functions():
-#    instance = Instance(TEST_BYTES)
-#    exports = instance.exports
-#    x = instance.globals.x
-#
-#    assert x.value == 0
-#    assert exports.get_x() == 0
-#
-#    x.value = 1
-#
-#    assert x.value == 1
-#    assert exports.get_x() == 1
-#
-#    exports.increment_x()
-#
-#    assert x.value == 2
-#    assert exports.get_x() == 2
-#
-#def test_global_read_write_constant():
-#    z = Instance(TEST_BYTES).globals.z
-#
-#    assert z.value == 42
-#
-#    with pytest.raises(RuntimeError) as context_manager:
-#        z.value = 153
-#
-#    exception = context_manager.value
-#    assert str(exception) == (
-#        'The global variable `z` is not mutable, cannot set a new value.'
-#    )
+def test_global_read_write_and_exported_functions():
+    exports = instance().exports
+    x = exports.x
+
+    assert x.value == 0
+    assert exports.get_x() == 0
+
+    x.value = 1
+
+    assert x.value == 1
+    assert exports.get_x() == 1
+
+    exports.increment_x()
+
+    assert x.value == 2
+    assert exports.get_x() == 2
+
+def test_global_read_write_constant():
+    z = instance().exports.z
+
+    assert z.value == 42
+
+    with pytest.raises(RuntimeError) as context_manager:
+        z.value = 153
+
+    exception = context_manager.value
+    assert str(exception) == (
+        'The global variable is not mutable, cannot set a new value'
+    )
