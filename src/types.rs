@@ -168,7 +168,7 @@ impl From<&wasmer::MemoryType> for MemoryType {
 #[pyclass]
 pub struct GlobalType {
     #[pyo3(get)]
-    pub ty: Type,
+    pub r#type: Type,
 
     #[pyo3(get)]
     pub mutable: bool,
@@ -177,15 +177,15 @@ pub struct GlobalType {
 #[pymethods]
 impl GlobalType {
     #[new]
-    fn new(ty: Type, mutable: bool) -> Self {
-        Self { ty, mutable }
+    fn new(r#type: Type, mutable: bool) -> Self {
+        Self { r#type, mutable }
     }
 }
 
 impl From<&wasmer::GlobalType> for GlobalType {
     fn from(value: &wasmer::GlobalType) -> Self {
         Self {
-            ty: value.ty.into(),
+            r#type: value.ty.into(),
             mutable: value.mutability.is_mutable(),
         }
     }
@@ -194,7 +194,7 @@ impl From<&wasmer::GlobalType> for GlobalType {
 #[pyclass]
 pub struct TableType {
     #[pyo3(get)]
-    pub ty: Type,
+    pub r#type: Type,
 
     #[pyo3(get)]
     pub minimum: u32,
@@ -206,9 +206,9 @@ pub struct TableType {
 #[pymethods]
 impl TableType {
     #[new]
-    fn new(ty: Type, minimum: u32, maximum: Option<u32>) -> Self {
+    fn new(r#type: Type, minimum: u32, maximum: Option<u32>) -> Self {
         Self {
-            ty,
+            r#type,
             minimum,
             maximum,
         }
@@ -218,7 +218,7 @@ impl TableType {
 impl From<&wasmer::TableType> for TableType {
     fn from(value: &wasmer::TableType) -> Self {
         Self {
-            ty: value.ty.into(),
+            r#type: value.ty.into(),
             minimum: value.minimum,
             maximum: value.maximum,
         }
@@ -231,14 +231,14 @@ pub struct ExportType {
     pub name: String,
 
     #[pyo3(get)]
-    pub ty: PyObject,
+    pub r#type: PyObject,
 }
 
 #[pymethods]
 impl ExportType {
     #[new]
-    fn new(name: String, ty: PyObject) -> Self {
-        Self { name, ty }
+    fn new(name: String, r#type: PyObject) -> Self {
+        Self { name, r#type }
     }
 }
 
@@ -251,7 +251,7 @@ impl TryFrom<wasmer::ExportType> for ExportType {
 
         Ok(Self {
             name: value.name().to_string(),
-            ty: extern_type_to_py_object(py, value.ty())?,
+            r#type: extern_type_to_py_object(py, value.ty())?,
         })
     }
 }
@@ -265,14 +265,18 @@ pub struct ImportType {
     pub name: String,
 
     #[pyo3(get)]
-    pub ty: PyObject,
+    pub r#type: PyObject,
 }
 
 #[pymethods]
 impl ImportType {
     #[new]
-    fn new(module: String, name: String, ty: PyObject) -> Self {
-        Self { module, name, ty }
+    fn new(module: String, name: String, r#type: PyObject) -> Self {
+        Self {
+            module,
+            name,
+            r#type,
+        }
     }
 }
 
@@ -286,7 +290,7 @@ impl TryFrom<wasmer::ImportType> for ImportType {
         Ok(Self {
             module: value.module().to_string(),
             name: value.name().to_string(),
-            ty: extern_type_to_py_object(py, value.ty())?,
+            r#type: extern_type_to_py_object(py, value.ty())?,
         })
     }
 }

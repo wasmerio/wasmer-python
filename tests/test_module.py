@@ -50,26 +50,26 @@ def test_exports():
     assert isinstance(exports[0], ExportType)
 
     assert exports[0].name == "function"
-    assert isinstance(exports[0].ty, FunctionType)
-    assert exports[0].ty.params == [Type.I32, Type.I64]
-    assert exports[0].ty.results == []
+    assert isinstance(exports[0].type, FunctionType)
+    assert exports[0].type.params == [Type.I32, Type.I64]
+    assert exports[0].type.results == []
 
     assert exports[1].name == "global"
-    assert isinstance(exports[1].ty, GlobalType)
-    assert exports[1].ty.ty == Type.I32
-    assert exports[1].ty.mutable == False
+    assert isinstance(exports[1].type, GlobalType)
+    assert exports[1].type.type == Type.I32
+    assert exports[1].type.mutable == False
 
     assert exports[2].name == "table"
-    assert isinstance(exports[2].ty, TableType)
-    assert exports[2].ty.ty == Type.FUNC_REF
-    assert exports[2].ty.minimum == 0
-    assert exports[2].ty.maximum == None
+    assert isinstance(exports[2].type, TableType)
+    assert exports[2].type.type == Type.FUNC_REF
+    assert exports[2].type.minimum == 0
+    assert exports[2].type.maximum == None
 
     assert exports[3].name == "memory"
-    assert isinstance(exports[3].ty, MemoryType)
-    assert exports[3].ty.minimum == 1
-    assert exports[3].ty.maximum == None
-    assert exports[3].ty.shared == False
+    assert isinstance(exports[3].type, MemoryType)
+    assert exports[3].type.minimum == 1
+    assert exports[3].type.maximum == None
+    assert exports[3].type.shared == False
 
 def test_imports():
     imports = Module(
@@ -87,29 +87,29 @@ def test_imports():
 
     assert imports[0].module == "ns"
     assert imports[0].name == "function"
-    assert isinstance(imports[0].ty, FunctionType)
-    assert imports[0].ty.params == []
-    assert imports[0].ty.results == []
+    assert isinstance(imports[0].type, FunctionType)
+    assert imports[0].type.params == []
+    assert imports[0].type.results == []
 
     assert imports[1].module == "ns"
     assert imports[1].name == "global"
-    assert isinstance(imports[1].ty, GlobalType)
-    assert imports[1].ty.ty == Type.F32
-    assert imports[1].ty.mutable == False
+    assert isinstance(imports[1].type, GlobalType)
+    assert imports[1].type.type == Type.F32
+    assert imports[1].type.mutable == False
 
     assert imports[2].module == "ns"
     assert imports[2].name == "table"
-    assert isinstance(imports[2].ty, TableType)
-    assert imports[2].ty.ty == Type.FUNC_REF
-    assert imports[2].ty.minimum == 1
-    assert imports[2].ty.maximum == 2
+    assert isinstance(imports[2].type, TableType)
+    assert imports[2].type.type == Type.FUNC_REF
+    assert imports[2].type.minimum == 1
+    assert imports[2].type.maximum == 2
 
     assert imports[3].module == "ns"
     assert imports[3].name == "memory"
-    assert isinstance(imports[3].ty, MemoryType)
-    assert imports[3].ty.minimum == 3
-    assert imports[3].ty.maximum == 4
-    assert imports[3].ty.shared == False
+    assert isinstance(imports[3].type, MemoryType)
+    assert imports[3].type.minimum == 3
+    assert imports[3].type.maximum == 4
+    assert imports[3].type.shared == False
 
 def test_custom_section():
     module = Module(Store(), open(here + '/custom_sections.wasm', 'rb').read())
@@ -137,6 +137,6 @@ def test_deserialize():
 
     assert len(module.exports) == 1
     assert exports[0].name == "function"
-    assert isinstance(exports[0].ty, FunctionType)
-    assert exports[0].ty.params == [Type.I32, Type.I64]
-    assert exports[0].ty.results == []
+    assert isinstance(exports[0].type, FunctionType)
+    assert exports[0].type.params == [Type.I32, Type.I64]
+    assert exports[0].type.results == []

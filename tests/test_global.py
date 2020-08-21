@@ -1,4 +1,4 @@
-from wasmer import Instance, Module, Store
+from wasmer import Instance, Module, Store, Global, GlobalType, Type
 import pytest
 
 TEST_BYTES = """
@@ -17,6 +17,15 @@ TEST_BYTES = """
 
 def instance():
     return Instance(Module(Store(), TEST_BYTES))
+
+def test_export():
+    assert isinstance(instance().exports.x, Global)
+
+def test_type():
+    type = instance().exports.x.type
+
+    assert type.type == Type.I32
+    assert type.mutable == True
 
 def test_global_mutable():
     exports = instance().exports

@@ -1,5 +1,6 @@
 use crate::{
     errors::to_py_err,
+    types::GlobalType,
     values::{to_py_object, to_wasm_value},
     wasmer_inner::wasmer,
 };
@@ -48,5 +49,10 @@ impl Global {
             .map_err(to_py_err::<ValueError, _>)?;
 
         Ok(())
+    }
+
+    #[getter(type)]
+    fn ty(&self, py: Python) -> PyResult<Py<GlobalType>> {
+        Py::new(py, GlobalType::from(self.inner.ty()))
     }
 }
