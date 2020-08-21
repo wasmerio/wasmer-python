@@ -1,8 +1,22 @@
-use pyo3::prelude::*;
+use crate::externals::Function;
+use pyo3::{
+    prelude::*,
+    types::{PyDict, PyString},
+};
 
 #[pyclass(unsendable)]
 pub struct ImportObject {
     inner: wasmer::ImportObject,
+}
+
+impl ImportObject {
+    pub fn raw_new(inner: wasmer::ImportObject) -> Self {
+        Self { inner }
+    }
+
+    pub fn inner(&self) -> &wasmer::ImportObject {
+        &self.inner
+    }
 }
 
 #[pymethods]
@@ -14,8 +28,30 @@ impl ImportObject {
         }
     }
 
-    #[text_signature = "($self, namespace)"]
-    fn contains_namespace(&self, namespace: &str) -> bool {
-        self.inner.contains_namespace(namespace)
+    #[text_signature = "($self, namespace_name)"]
+    fn contains_namespace(&self, namespace_name: &str) -> bool {
+        self.inner.contains_namespace(namespace_name)
+    }
+
+    #[text_signature = "($self, namespace_name, namespace)"]
+    fn register(&mut self, namespace_name: &str, namespace: &PyDict) -> PyResult<()> {
+        let mut wasmer_namespace = wasmer::Exports::new();
+
+        for (name, item) in namespace.into_iter() {
+            let name = name
+                .downcast::<PyString>()
+                .map_err(PyErr::from)?
+                .to_string()?;
+
+            if let Ok(function) = item.extract::<Function>() {
+                wasmer_namespace.insert(name, function.take())
+            } else {
+                unimplemented!("import object does not support the given type")
+            }
+        }
+
+        self.inner.register(namespace_name, wasmer_namespace);
+
+        Ok(())
     }
 }

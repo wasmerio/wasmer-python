@@ -13,6 +13,7 @@ use pyo3::{
 use std::io;
 
 #[pyclass(unsendable)]
+#[derive(Clone)]
 pub struct Function {
     inner: wasmer::Function,
 }
@@ -20,6 +21,10 @@ pub struct Function {
 impl Function {
     pub fn raw_new(inner: wasmer::Function) -> Self {
         Self { inner }
+    }
+
+    pub(crate) fn take(self) -> wasmer::Function {
+        self.inner
     }
 }
 
@@ -107,10 +112,12 @@ impl Function {
                         })?
                 } else if !results.is_none(py) && result_types.len() > 0 {
                     vec![to_wasm_value((
-                        // SAFETY: OK because all Python objects can be cast to `PyAny`.
                         results
                             .cast_as::<PyAny>(py)
-                            .expect("Failed to cast results to `PyAny`"),
+                            .map_err(PyErr::from)
+                            .map_err(|error| {
+                                wasmer::RuntimeError::new(io::Error::from(error).to_string())
+                            })?,
                         result_types[0],
                     ))
                     .map_err(|error| {
