@@ -15,7 +15,7 @@ pub struct Global {
 }
 
 impl Global {
-    pub fn new(inner: wasmer::Global) -> Self {
+    pub fn raw_new(inner: wasmer::Global) -> Self {
         Self { inner }
     }
 }
@@ -45,7 +45,7 @@ impl Global {
         }
 
         self.inner
-            .set(to_wasm_value((value, &ty.ty))?)
+            .set(to_wasm_value((value, ty.ty))?)
             .map_err(to_py_err::<ValueError, _>)?;
 
         Ok(())

@@ -7,7 +7,7 @@ pub struct Table {
 }
 
 impl Table {
-    pub fn new(inner: wasmer::Table) -> Self {
+    pub fn raw_new(inner: wasmer::Table) -> Self {
         Self { inner }
     }
 }

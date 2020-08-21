@@ -12,7 +12,7 @@ pub struct Memory {
 }
 
 impl Memory {
-    pub fn new(inner: wasmer::Memory) -> Self {
+    pub fn raw_new(inner: wasmer::Memory) -> Self {
         Self { inner }
     }
 }

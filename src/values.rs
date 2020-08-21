@@ -65,7 +65,7 @@ impl TryFromPyAny for PyAny {
     }
 }
 
-pub(crate) fn to_wasm_value((any, ty): (&PyAny, &wasmer::Type)) -> PyResult<wasmer::Value> {
+pub(crate) fn to_wasm_value((any, ty): (&PyAny, wasmer::Type)) -> PyResult<wasmer::Value> {
     Ok(match ty {
         wasmer::Type::I32 => any.try_from::<i32>()?.to_value(),
         wasmer::Type::I64 => any.try_from::<i64>()?.to_value(),
