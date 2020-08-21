@@ -48,7 +48,7 @@ impl Function {
     }
 
     #[getter(type)]
-    fn ty(&self, py: Python) -> PyResult<Py<FunctionType>> {
-        Py::new(py, FunctionType::from(self.inner.ty()))
+    fn ty(&self) -> FunctionType {
+        self.inner.ty().into()
     }
 }

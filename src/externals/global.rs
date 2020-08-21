@@ -52,7 +52,7 @@ impl Global {
     }
 
     #[getter(type)]
-    fn ty(&self, py: Python) -> PyResult<Py<GlobalType>> {
-        Py::new(py, GlobalType::from(self.inner.ty()))
+    fn ty(&self) -> GlobalType {
+        self.inner.ty().into()
     }
 }

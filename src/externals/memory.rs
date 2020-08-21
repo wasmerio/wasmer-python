@@ -33,7 +33,7 @@ impl Memory {
     }
 
     #[getter(type)]
-    fn ty(&self, py: Python) -> PyResult<Py<MemoryType>> {
-        Py::new(py, MemoryType::from(self.inner.ty()))
+    fn ty(&self) -> MemoryType {
+        self.inner.ty().into()
     }
 }
