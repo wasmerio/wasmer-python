@@ -1,4 +1,4 @@
-from wasmer import wat2wasm, wasm2wat, Instance
+from wasmer import wat2wasm, wasm2wat, Instance, Module, Store
 
 def test_wat2wasm():
     assert wat2wasm('(module)') == b'\x00asm\x01\x00\x00\x00'
@@ -15,6 +15,6 @@ def test_wat2wasm2instance():
                   i32.add)
                 (export "sum" (func 0))) """
     wasm_bytes = wat2wasm(wat)
-    instance = Instance(wasm_bytes)
+    instance = Instance(Module(Store(), wasm_bytes))
 
     assert instance.exports.sum(1, 2) == 3
