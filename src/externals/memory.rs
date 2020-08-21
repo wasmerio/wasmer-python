@@ -16,6 +16,10 @@ impl Memory {
     pub fn raw_new(inner: wasmer::Memory) -> Self {
         Self { inner }
     }
+
+    pub(crate) fn inner(&self) -> &wasmer::Memory {
+        &self.inner
+    }
 }
 
 #[pymethods]

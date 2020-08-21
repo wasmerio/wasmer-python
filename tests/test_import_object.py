@@ -1,4 +1,4 @@
-from wasmer import ImportObject, Store, Module, Instance, Function
+from wasmer import ImportObject, Store, Module, Instance, Function, Memory, MemoryType
 import pytest
 
 def test_constructor():
@@ -18,11 +18,11 @@ def test_import_function():
         store,
         """
         (module
-          (import "math" "sum" (func (param i32 i32) (result i32)))
+          (import "math" "sum" (func $sum (param i32 i32) (result i32)))
           (func (export "add_one") (param i32) (result i32)
             local.get 0
             i32.const 1
-            call 0))
+            call $sum))
         """
     )
 
@@ -37,3 +37,40 @@ def test_import_function():
     instance = Instance(module, import_object)
 
     assert instance.exports.add_one(1) == 2
+
+def test_import_memory():
+    store = Store()
+    module = Module(
+        store,
+        """
+        (module
+          (import "env" "memory" (memory $memory 1))
+          (func (export "increment")
+            i32.const 0
+            i32.const 0
+            i32.load    ;; load 0
+            i32.const 1
+            i32.add     ;; add 1
+            i32.store   ;; store at 0
+            ))
+        """
+    )
+
+    memory = Memory(store, MemoryType(1, shared=False))
+    view = memory.uint8_view(offset=0)
+
+    import_object = ImportObject()
+    import_object.register(
+        "env",
+        {
+            "memory": memory
+        }
+    )
+
+    instance = Instance(module, import_object)
+
+    assert view[0] == 0
+    instance.exports.increment()
+    assert view[0] == 1
+    instance.exports.increment()
+    assert view[0] == 2

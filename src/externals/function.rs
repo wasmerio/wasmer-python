@@ -13,7 +13,6 @@ use pyo3::{
 use std::io;
 
 #[pyclass(unsendable)]
-#[derive(Clone)]
 pub struct Function {
     inner: wasmer::Function,
 }
@@ -23,8 +22,8 @@ impl Function {
         Self { inner }
     }
 
-    pub(crate) fn take(self) -> wasmer::Function {
-        self.inner
+    pub(crate) fn inner(&self) -> &wasmer::Function {
+        &self.inner
     }
 }
 
