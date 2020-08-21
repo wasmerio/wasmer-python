@@ -41,6 +41,13 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     module.add_class::<externals::Global>()?;
     module.add_class::<externals::Memory>()?;
     module.add_class::<instance::Instance>()?;
+    module.add_class::<memory::Buffer>()?;
+    module.add_class::<memory::Int16Array>()?;
+    module.add_class::<memory::Int32Array>()?;
+    module.add_class::<memory::Int8Array>()?;
+    module.add_class::<memory::Uint16Array>()?;
+    module.add_class::<memory::Uint32Array>()?;
+    module.add_class::<memory::Uint8Array>()?;
     module.add_class::<module::Module>()?;
     module.add_class::<store::Store>()?;
     module.add_class::<types::ExportType>()?;
