@@ -1,5 +1,6 @@
 use crate::wasmer_inner::{wasmer, wasmer_types::NativeWasmType};
 use pyo3::{
+    class::basic::PyObjectProtocol,
     prelude::*,
     types::{PyFloat, PyLong},
 };
@@ -142,5 +143,12 @@ impl Value {
         Self {
             inner: wasmer::Value::V128(value),
         }
+    }
+}
+
+#[pyproto]
+impl PyObjectProtocol for Value {
+    fn __repr__(&self) -> PyResult<String> {
+        Ok(format!("{:?}", self.inner()))
     }
 }
