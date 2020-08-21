@@ -21,6 +21,12 @@ pyo3 = { version = "0.11", features = ["extension-module"] }
 wat = "1.0"
 wasmprinter = "0.2"
 
+[features]
+default = ["default-cranelift"]
+default-singlepass = ["wasmer/default-singlepass"]
+default-cranelift = ["wasmer/default-cranelift"]
+default-llvm = ["wasmer/default-llvm"]
+
 [package.metadata.maturin]
 project-url = [
     "Source Code, https://github.com/wasmerio/python-ext-wasm/",
