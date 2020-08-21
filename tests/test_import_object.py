@@ -1,4 +1,4 @@
-from wasmer import ImportObject, Store, Module, Instance, Function, Memory, MemoryType
+from wasmer import ImportObject, Store, Module, Instance, Function, Memory, MemoryType, Global, Value
 import pytest
 
 def test_constructor():
@@ -74,3 +74,36 @@ def test_import_memory():
     assert view[0] == 1
     instance.exports.increment()
     assert view[0] == 2
+
+def test_import_global():
+    store = Store()
+    module = Module(
+        store,
+        """
+        (module
+          (import "env" "global" (global $global (mut i32)))
+          (func (export "read_g") (result i32)
+            global.get $global)
+          (func (export "write_g") (param i32)
+            local.get 0
+            global.set $global))
+        """
+    )
+
+    global_ = Global(store, Value.i32(7), mutable=True)
+
+    import_object = ImportObject()
+    import_object.register(
+        "env",
+        {
+            "global": global_
+        }
+    )
+
+    instance = Instance(module, import_object)
+
+    assert instance.exports.read_g() == 7
+    global_.value = 153
+    assert instance.exports.read_g() == 153
+    instance.exports.write_g(11)
+    assert global_.value == 11

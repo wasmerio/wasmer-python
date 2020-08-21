@@ -19,6 +19,10 @@ impl Global {
     pub fn raw_new(inner: wasmer::Global) -> Self {
         Self { inner }
     }
+
+    pub(crate) fn inner(&self) -> &wasmer::Global {
+        &self.inner
+    }
 }
 
 #[pymethods]
