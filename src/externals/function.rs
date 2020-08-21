@@ -1,5 +1,6 @@
 use crate::{
     errors::to_py_err,
+    types::FunctionType,
     values::{to_py_object, to_wasm_value},
     wasmer_inner::wasmer,
 };
@@ -44,5 +45,10 @@ impl Function {
             )
             .to_object(py),
         })
+    }
+
+    #[getter(type)]
+    fn ty(&self, py: Python) -> PyResult<Py<FunctionType>> {
+        Py::new(py, FunctionType::from(self.inner.ty()))
     }
 }

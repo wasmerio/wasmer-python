@@ -1,5 +1,5 @@
 import wasmer
-from wasmer import Instance, Module, Store, Function
+from wasmer import Instance, Module, Store, Function, FunctionType, Type
 import os
 import pytest
 
@@ -12,8 +12,15 @@ def instance():
 def value_with_type(value):
     return (value, type(value))
 
-def test_export_function():
+def test_export():
     assert isinstance(instance().exports.sum, Function)
+
+def test_type():
+    type = instance().exports.sum.type
+
+    assert isinstance(type, FunctionType)
+    assert type.params == [Type.I32, Type.I32]
+    assert type.results == [Type.I32]
 
 def test_basic_sum():
     assert value_with_type(instance().exports.sum(1, 2)) == (3, int)
