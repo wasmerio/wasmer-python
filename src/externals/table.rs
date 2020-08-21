@@ -1,8 +1,5 @@
 use crate::{types::TableType, wasmer_inner::wasmer};
-use pyo3::{
-    exceptions::{RuntimeError, ValueError},
-    prelude::*,
-};
+use pyo3::prelude::*;
 
 #[pyclass(unsendable)]
 pub struct Table {
