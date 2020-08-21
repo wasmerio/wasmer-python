@@ -48,7 +48,7 @@ build rust_target='':
 
         if test -z "${build_features}"; then
                 if test "{{arch()}}" = "aarch64"; then
-                        build_features="backend-singlepass";
+                        build_features="default-singlepass";
                 fi
         fi
 
@@ -76,7 +76,7 @@ build-wheel python_version rust_target:
 
         if test -z "${build_features}"; then
                 if test "{{arch()}}" = "aarch64"; then
-                        build_features="backend-singlepass";
+                        build_features="default-singlepass";
                 fi
         fi
 
