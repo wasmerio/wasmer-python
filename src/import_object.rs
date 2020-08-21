@@ -1,4 +1,4 @@
-use crate::externals::{Function, Global, Memory};
+use crate::externals::{Function, Global, Memory, Table};
 use pyo3::{
     prelude::*,
     types::{PyDict, PyString},
@@ -55,6 +55,10 @@ impl ImportObject {
                 let global = global.borrow();
 
                 wasmer_namespace.insert(name, global.inner().clone());
+            } else if let Ok(table) = item.downcast::<PyCell<Table>>() {
+                let table = table.borrow();
+
+                wasmer_namespace.insert(name, table.inner().clone());
             } else {
                 unimplemented!("import object does not support the given type");
             }

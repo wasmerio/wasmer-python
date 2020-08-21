@@ -95,6 +95,20 @@ impl From<wasmer::Type> for Type {
     }
 }
 
+impl Into<wasmer::Type> for Type {
+    fn into(self) -> wasmer::Type {
+        match self {
+            Self::I32 => wasmer::Type::I32,
+            Self::I64 => wasmer::Type::I64,
+            Self::F32 => wasmer::Type::F32,
+            Self::F64 => wasmer::Type::F64,
+            Self::V128 => wasmer::Type::V128,
+            Self::ExternRef => wasmer::Type::ExternRef,
+            Self::FuncRef => wasmer::Type::FuncRef,
+        }
+    }
+}
+
 #[pyclass]
 pub struct FunctionType {
     #[pyo3(get)]
@@ -228,6 +242,12 @@ impl From<&wasmer::TableType> for TableType {
             minimum: value.minimum,
             maximum: value.maximum,
         }
+    }
+}
+
+impl Into<wasmer::TableType> for &TableType {
+    fn into(self) -> wasmer::TableType {
+        wasmer::TableType::new(self.r#type.into(), self.minimum, self.maximum)
     }
 }
 
