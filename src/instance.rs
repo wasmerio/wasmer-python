@@ -5,13 +5,20 @@ use pyo3::{exceptions::RuntimeError, prelude::*};
 #[text_signature = "(module)"]
 pub struct Instance {
     inner: wasmer::Instance,
-    exports: Exports,
+    exports: Py<Exports>,
+}
+
+pub enum InstanceError {
+    InstantiationError(wasmer::InstantiationError),
+    PyErr(PyErr),
 }
 
 impl Instance {
-    pub fn raw_new(module: &Module) -> Result<Self, wasmer::InstantiationError> {
-        let instance = wasmer::Instance::new(module.inner(), &wasmer::imports! {})?;
-        let exports = Exports::new(instance.exports.clone());
+    pub fn raw_new(py: Python, module: &Module) -> Result<Self, InstanceError> {
+        let instance = wasmer::Instance::new(module.inner(), &wasmer::imports! {})
+            .map_err(InstanceError::InstantiationError)?;
+        let exports =
+            Py::new(py, Exports::new(instance.exports.clone())).map_err(InstanceError::PyErr)?;
 
         Ok(Instance {
             inner: instance,
@@ -27,12 +34,15 @@ impl Instance {
 #[pymethods]
 impl Instance {
     #[new]
-    fn new(module: &Module) -> PyResult<Self> {
-        Instance::raw_new(&module).map_err(to_py_err::<RuntimeError, _>)
+    fn new(py: Python, module: &Module) -> PyResult<Self> {
+        Instance::raw_new(py, &module).map_err(|error| match error {
+            InstanceError::InstantiationError(error) => to_py_err::<RuntimeError, _>(error),
+            InstanceError::PyErr(error) => error,
+        })
     }
 
     #[getter]
-    fn exports(&self) -> Exports {
-        self.exports.clone()
+    fn exports(&self, py: Python) -> Py<Exports> {
+        self.exports.clone_ref(py)
     }
 }
