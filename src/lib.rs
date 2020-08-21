@@ -14,6 +14,7 @@ mod errors;
 mod exports;
 mod externals;
 mod instance;
+mod memory;
 mod module;
 mod store;
 mod types;
@@ -38,6 +39,7 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     module.add_class::<exports::Exports>()?;
     module.add_class::<externals::Function>()?;
     module.add_class::<externals::Global>()?;
+    module.add_class::<externals::Memory>()?;
     module.add_class::<instance::Instance>()?;
     module.add_class::<module::Module>()?;
     module.add_class::<store::Store>()?;

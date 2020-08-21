@@ -1,6 +1,6 @@
 use crate::{
     errors::to_py_err,
-    externals::{Function, Global},
+    externals::{Function, Global, Memory},
     wasmer_inner::wasmer,
 };
 use pyo3::{
@@ -33,6 +33,9 @@ impl PyObjectProtocol for Exports {
             }
             Some(wasmer::Extern::Global(global)) => {
                 Py::new(py, Global::new(global.clone()))?.to_object(py)
+            }
+            Some(wasmer::Extern::Memory(memory)) => {
+                Py::new(py, Memory::new(memory.clone()))?.to_object(py)
             }
             _ => {
                 return Err(to_py_err::<LookupError, _>(format!(
