@@ -32,23 +32,3 @@ def test_export_does_not_exist():
 
     exception = context_manager.value
     assert str(exception) == 'Export `foo` does not exist.'
-
-#
-#def test_memory_view():
-#    assert isinstance(Instance(TEST_BYTES).memory.uint8_view(), Uint8Array)
-#
-#@pytest.mark.skipif(sys.version_info < (3, 6), reason='require Python 3.6+ to run')
-#def test_getfullargspec():
-#    instance = Instance(TEST_BYTES)
-#    assert instance.exports.sum.getfullargspec == inspect.FullArgSpec(
-#        args=['x0', 'x1'],
-#        varargs=None,
-#        varkw=None,
-#        defaults=None,
-#        kwonlyargs=None,
-#        kwonlydefaults=None,
-#        annotations={'x0': Type.I32, 'x1': Type.I32, 'return': Type.I32}
-#    )
-#
-#def test_resolve_exported_function():
-#    assert Instance(TEST_BYTES).resolve_exported_function(0) == "sum"
