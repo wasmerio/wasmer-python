@@ -1,4 +1,4 @@
-from wasmer import Instance, Module, Store, Global, GlobalType, Type
+from wasmer import Instance, Module, Store, Global, GlobalType, Type, Value
 import pytest
 
 TEST_BYTES = """
@@ -17,6 +17,41 @@ TEST_BYTES = """
 
 def instance():
     return Instance(Module(Store(), TEST_BYTES))
+
+def test_constructor():
+    store = Store()
+    global_ = Global(store, Value.i32(42))
+
+    assert global_.value == 42
+
+    type = global_.type
+
+    assert type.type == Type.I32
+    assert type.mutable == False
+
+    global_ = Global(store, Value.i64(153), mutable=False)
+
+    assert global_.value == 153
+
+    type = global_.type
+
+    assert type.type == Type.I64
+    assert type.mutable == False
+
+def test_constructor_mutable():
+    store = Store()
+    global_ = Global(store, Value.i32(42), mutable=True)
+
+    assert global_.value == 42
+
+    type = global_.type
+
+    assert type.type == Type.I32
+    assert type.mutable == True
+
+    global_.value = 153
+
+    assert global_.value == 153
 
 def test_export():
     assert isinstance(instance().exports.x, Global)

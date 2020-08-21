@@ -1,7 +1,8 @@
 use crate::{
     errors::to_py_err,
+    store::Store,
     types::GlobalType,
-    values::{to_py_object, to_wasm_value},
+    values::{to_py_object, to_wasm_value, Value},
     wasmer_inner::wasmer,
 };
 use pyo3::{
@@ -22,6 +23,19 @@ impl Global {
 
 #[pymethods]
 impl Global {
+    #[new]
+    fn new(store: &Store, value: &Value, mutable: Option<bool>) -> Self {
+        let store = store.inner();
+        let value = value.inner().clone();
+
+        Self {
+            inner: match mutable {
+                Some(true) => wasmer::Global::new_mut(store, value),
+                _ => wasmer::Global::new(store, value),
+            },
+        }
+    }
+
     #[getter]
     fn mutable(&self) -> bool {
         self.inner.ty().mutability.is_mutable()
