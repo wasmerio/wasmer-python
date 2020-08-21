@@ -59,6 +59,7 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     module.add_class::<types::ImportType>()?;
     module.add_class::<types::MemoryType>()?;
     module.add_class::<types::TableType>()?;
+    module.add_class::<values::Value>()?;
 
     // Enums.
     module.add(

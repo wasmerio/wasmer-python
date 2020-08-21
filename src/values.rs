@@ -88,3 +88,59 @@ pub(crate) fn to_py_object<'p>(py: Python<'p>) -> impl Fn(&wasmer::Value) -> PyO
         }
     }
 }
+
+#[pyclass(unsendable)]
+pub struct Value {
+    inner: wasmer::Value,
+}
+
+impl Value {
+    pub(crate) fn inner(&self) -> &wasmer::Value {
+        &self.inner
+    }
+}
+
+#[pymethods]
+impl Value {
+    #[staticmethod]
+    #[text_signature = "(value)"]
+    fn i32(value: i32) -> Self {
+        Self {
+            inner: wasmer::Value::I32(value),
+        }
+    }
+
+    #[staticmethod]
+    #[text_signature = "(value)"]
+    fn i64(value: i64) -> Self {
+        Self {
+            inner: wasmer::Value::I64(value),
+        }
+    }
+
+    #[staticmethod]
+    #[text_signature = "(value)"]
+    fn f32(value: f32) -> Self {
+        Self {
+            inner: wasmer::Value::F32(value),
+        }
+    }
+
+    /// Build a WebAssembly `f64` value.
+    #[staticmethod]
+    #[text_signature = "(value)"]
+    fn f64(value: f64) -> Self {
+        Self {
+            inner: wasmer::Value::F64(value),
+        }
+    }
+
+    /// Build a WebAssembly `v128` value.
+    #[staticmethod]
+    #[text_signature = "(value)"]
+    fn v128(value: u128) -> Self {
+        Self {
+            inner: wasmer::Value::V128(value),
+        }
+    }
+}
