@@ -9,6 +9,13 @@ TEST_BYTES = open(here + '/tests.wasm', 'rb').read()
 def instance():
     return Instance(Module(Store(), TEST_BYTES))
 
+def test_constructor():
+    store = Store()
+    memory_type = MemoryType(3, shared=False)
+    memory = Memory(store, memory_type)
+
+    assert memory.size == 3
+
 def test_export():
     assert isinstance(instance().exports.memory, Memory)
 

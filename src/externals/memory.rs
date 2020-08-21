@@ -1,6 +1,7 @@
 use crate::{
     errors::to_py_err,
     memory::{Buffer, Int16Array, Int32Array, Int8Array, Uint16Array, Uint32Array, Uint8Array},
+    store::Store,
     types::MemoryType,
     wasmer_inner::wasmer,
 };
@@ -19,6 +20,14 @@ impl Memory {
 
 #[pymethods]
 impl Memory {
+    #[new]
+    fn new(store: &Store, memory_type: &MemoryType) -> PyResult<Self> {
+        Ok(Self::raw_new(
+            wasmer::Memory::new(store.inner(), memory_type.into())
+                .map_err(to_py_err::<RuntimeError, _>)?,
+        ))
+    }
+
     #[getter]
     fn size(&self) -> u32 {
         self.inner.size().0
