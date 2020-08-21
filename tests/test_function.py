@@ -12,6 +12,13 @@ def instance():
 def value_with_type(value):
     return (value, type(value))
 
+def test_constructor():
+    def sum(x: int, y: int) -> int:
+        return x + y
+
+    store = Store()
+    function = Function(store, sum)
+
 def test_export():
     assert isinstance(instance().exports.sum, Function)
 
