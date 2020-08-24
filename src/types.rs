@@ -145,6 +145,23 @@ impl From<&wasmer::FunctionType> for FunctionType {
     }
 }
 
+impl Into<wasmer::FunctionType> for &FunctionType {
+    fn into(self) -> wasmer::FunctionType {
+        wasmer::FunctionType::new(
+            self.params
+                .iter()
+                .cloned()
+                .map(Into::into)
+                .collect::<Vec<_>>(),
+            self.results
+                .iter()
+                .cloned()
+                .map(Into::into)
+                .collect::<Vec<_>>(),
+        )
+    }
+}
+
 #[pyclass]
 pub struct MemoryType {
     #[pyo3(get)]

@@ -30,44 +30,64 @@ impl Function {
 #[pymethods]
 impl Function {
     #[new]
-    fn new(py: Python, store: &Store, py_function: &PyAny) -> PyResult<Self> {
+    fn new(
+        py: Python,
+        store: &Store,
+        py_function: &PyAny,
+        function_type: Option<&FunctionType>,
+    ) -> PyResult<Self> {
         if !py_function.is_callable() {
             return Err(to_py_err::<ValueError, _>("Function must be a callable"));
         }
 
-        if !py_function.hasattr("__annotations__")? {
-            return Err(to_py_err::<ValueError, _>(
-                "The function must have type annotations",
-            ));
-        }
+        let (argument_types, result_types) = match function_type {
+            Some(function_type) => {
+                let function_type: wasmer::FunctionType = function_type.into();
 
-        let annotations = py_function
-            .getattr("__annotations__")?
-            .downcast::<PyDict>()
-            .map_err(PyErr::from)?;
-
-        let mut argument_types = Vec::new();
-        let mut result_types = Vec::new();
-
-        for (annotation_name, annotation_value) in annotations {
-            let ty = match annotation_value.to_string().as_str() {
-                "i32" | "I32" | "<class 'int'>" => wasmer::Type::I32,
-                "i64" | "I64" => wasmer::Type::I64,
-                "f32" | "F32" | "<class 'float'>" => wasmer::Type::F32,
-                "f64" | "F64" => wasmer::Type::F64,
-                ty @ _ => {
-                    return Err(to_py_err::<RuntimeError, _>(format!(
-                        "Type `{}` is not a supported type",
-                        ty,
-                    )))
-                }
-            };
-
-            match annotation_name.to_string().as_str() {
-                "return" => result_types.push(ty),
-                _ => argument_types.push(ty),
+                (
+                    function_type.params().to_vec(),
+                    function_type.results().to_vec(),
+                )
             }
-        }
+
+            None => {
+                if !py_function.hasattr("__annotations__")? {
+                    return Err(to_py_err::<ValueError, _>(
+                        "The function must have type annotations",
+                    ));
+                }
+
+                let annotations = py_function
+                    .getattr("__annotations__")?
+                    .downcast::<PyDict>()
+                    .map_err(PyErr::from)?;
+
+                let mut argument_types = Vec::new();
+                let mut result_types = Vec::new();
+
+                for (annotation_name, annotation_value) in annotations {
+                    let ty = match annotation_value.to_string().as_str() {
+                        "i32" | "I32" | "<class 'int'>" => wasmer::Type::I32,
+                        "i64" | "I64" => wasmer::Type::I64,
+                        "f32" | "F32" | "<class 'float'>" => wasmer::Type::F32,
+                        "f64" | "F64" => wasmer::Type::F64,
+                        ty @ _ => {
+                            return Err(to_py_err::<RuntimeError, _>(format!(
+                                "Type `{}` is not a supported type",
+                                ty,
+                            )))
+                        }
+                    };
+
+                    match annotation_name.to_string().as_str() {
+                        "return" => result_types.push(ty),
+                        _ => argument_types.push(ty),
+                    }
+                }
+
+                (argument_types, result_types)
+            }
+        };
 
         struct Environment {
             py_function: PyObject,

@@ -12,12 +12,19 @@ def instance():
 def value_with_type(value):
     return (value, type(value))
 
-def test_constructor():
+def test_constructor_with_annotated_function():
     def sum(x: int, y: int) -> int:
         return x + y
 
     store = Store()
     function = Function(store, sum)
+
+def test_constructor_with_blank_function():
+    def sum(x, y):
+        return x + y
+
+    store = Store()
+    function = Function(store, sum, FunctionType([Type.I32, Type.I32], [Type.I32]))
 
 def test_export():
     assert isinstance(instance().exports.sum, Function)
