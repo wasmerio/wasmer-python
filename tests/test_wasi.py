@@ -1,21 +1,41 @@
-#from wasmer import Module, WasiVersion, Wasi, ImportKind, Features
-#from enum import IntEnum
-#import inspect
-#import os
-#import pytest
-#import subprocess
-#import sys
-#
-#here = os.path.dirname(os.path.realpath(__file__))
-#TEST_BYTES = open(here + '/wasi.wasm', 'rb').read()
-#
-#def test_wasi_version():
-#    assert issubclass(WasiVersion, IntEnum)
-#    assert len(WasiVersion) == 3
-#    assert WasiVersion.Snapshot0 == 1
-#    assert WasiVersion.Snapshot1 == 2
-#    assert WasiVersion.Latest == 3
-#
+from wasmer import wasi, Store, ImportObject, Module
+from enum import IntEnum
+import os
+import pytest
+import subprocess
+import sys
+
+here = os.path.dirname(os.path.realpath(__file__))
+TEST_BYTES = open(here + '/wasi.wasm', 'rb').read()
+
+def test_wasi_version():
+    assert issubclass(wasi.Version, IntEnum)
+    assert len(wasi.Version) == 3
+    assert wasi.Version.SNAPSHOT0 == 1
+    assert wasi.Version.SNAPSHOT1 == 2
+    assert wasi.Version.LATEST == 3
+
+def test_wasi_get_version():
+    assert wasi.get_version(Module(Store(), "(module)"), strict=True) == None
+    assert wasi.get_version(Module(Store(), TEST_BYTES), strict=True) == wasi.Version.SNAPSHOT1
+
+def test_wasi_state_builder():
+    state_builder = \
+        wasi.StateBuilder("test-program"). \
+            argument("--foo"). \
+            environments({"ABC": "DEF", "X": "YZ"}). \
+            map_directory("the_host_current_dir", ".")   
+
+    assert isinstance(state_builder, wasi.StateBuilder)
+
+    environment = state_builder.finalize()
+
+    assert isinstance(environment, wasi.Environment)
+
+    import_object = environment.generate_import_object(Store(), wasi.Version.LATEST)
+
+    assert isinstance(import_object, ImportObject)
+
 #def test_wasi_import_object():
 #    module = Module(TEST_BYTES)
 #    import_object = Wasi('test-program').generate_import_object_for_module(module)
@@ -68,30 +88,26 @@
 #        {'kind': ImportKind.FUNCTION, 'name': 'sock_send', 'namespace': 'wasi_snapshot_preview1'},
 #        {'kind': ImportKind.FUNCTION, 'name': 'sock_shutdown', 'namespace': 'wasi_snapshot_preview1'}
 #    ]
-#
-#def test_wasi_version_from_module():
-#    module = Module(TEST_BYTES)
-#
-#    assert module.is_wasi_module == True
-#    assert module.wasi_version() == WasiVersion.Snapshot1
-#    assert module.wasi_version(True) == WasiVersion.Snapshot1
-#
-#@pytest.mark.skipif(Features.wasi() == False, reason='WASI is not supported on aarch64 for the moment')
-#def test_wasi():
-#    python = sys.executable
-#    result = subprocess.check_output(
-#        [
-#            python,
-#            '-c',
-#            'from wasmer import Module, Wasi; \
-#            module = Module(open("tests/wasi.wasm", "rb").read()); \
-#            import_object = Wasi("test-program").argument("--foo").environments({"ABC": "DEF", "X": "YZ"}).map_directory("the_host_current_dir", ".").generate_import_object_for_module(module); \
-#            instance = module.instantiate(import_object); \
-#            instance.exports._start()'
-#        ]
-#    )
-#
-#    assert result == b'Found program name: `test-program`\n\
-#Found 1 arguments: --foo\n\
-#Found 2 environment variables: ABC=DEF, X=YZ\n\
-#Found 1 preopened directories: DirEntry("/the_host_current_dir")\n'
+
+def test_wasi():
+    python = sys.executable
+    result = subprocess.check_output(
+        [
+            python,
+            '-c',
+            'from wasmer import wasi, Store, Module, Instance; \
+            store = Store(); \
+            module = Module(store, open("tests/wasi.wasm", "rb").read()); \
+            wasi_version = wasi.get_version(module, strict=True); \
+            wasi_env = wasi.StateBuilder("test-program").argument("--foo").environments({"ABC": "DEF", "X": "YZ"}).map_directory("the_host_current_dir", ".").finalize(); \
+            import_object = wasi_env.generate_import_object(store, wasi_version); \
+            instance = Instance(module, import_object); \
+            wasi_env.memory = instance.exports.memory; \
+            instance.exports._start()'
+        ]
+    )
+
+    assert result == b'Found program name: `test-program`\n\
+Found 1 arguments: --foo\n\
+Found 2 environment variables: ABC=DEF, X=YZ\n\
+Found 1 preopened directories: DirEntry("/the_host_current_dir")\n'

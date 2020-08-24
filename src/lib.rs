@@ -1,13 +1,13 @@
 use pyo3::{
-    exceptions::RuntimeError,
     prelude::*,
     types::{PyBytes, PyTuple},
-    wrap_pyfunction,
+    wrap_pymodule,
 };
 
 pub(crate) mod wasmer_inner {
     pub use wasmer;
     pub use wasmer_types;
+    pub use wasmer_wasi;
 }
 
 mod errors;
@@ -20,10 +20,11 @@ mod module;
 mod store;
 mod types;
 mod values;
+mod wasi;
+mod wat;
 
-use errors::to_py_err;
-
-/// This extension allows to compile and to execute WebAssembly.
+/// The `wasmer` module provides everything necessary to compile and
+/// to execute WebAssembly.
 #[pymodule]
 fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     let enum_module = py.import("enum")?;
@@ -33,8 +34,20 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     module.add("__core_version__", env!("WASMER_VERSION"))?;
 
     // Functions.
-    module.add_wrapped(wrap_pyfunction!(wat2wasm))?;
-    module.add_wrapped(wrap_pyfunction!(wasm2wat))?;
+
+    /// Translate WebAssembly text source to WebAssembly binary format.
+    #[pyfn(module, "wat2wasm")]
+    #[text_signature = "(wat)"]
+    fn wat2wasm<'py>(py: Python<'py>, wat: String) -> PyResult<&'py PyBytes> {
+        wat::wat2wasm(py, wat)
+    }
+
+    /// Disassemble WebAssembly binary to WebAssembly text format.
+    #[pyfn(module, "wasm2wat")]
+    #[text_signature = "(bytes)"]
+    fn wasm2wat(bytes: &PyBytes) -> PyResult<String> {
+        wat::wasm2wat(bytes)
+    }
 
     // Classes.
     module.add_class::<exports::Exports>()?;
@@ -80,21 +93,48 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
         )?,
     )?;
 
+    // Modules.
+    module.add_wrapped(wrap_pymodule!(wasi))?;
+
     Ok(())
 }
 
-/// Translate WebAssembly text source to WebAssembly binary format.
-#[pyfunction]
-#[text_signature = "(wat)"]
-pub fn wat2wasm<'py>(py: Python<'py>, wat: String) -> PyResult<&'py PyBytes> {
-    wat::parse_str(wat)
-        .map(|bytes| PyBytes::new(py, bytes.as_slice()))
-        .map_err(to_py_err::<RuntimeError, _>)
-}
+/// This `wasi` module provides WASI supports to `wasmer`.
+#[pymodule]
+fn wasi(py: Python, module: &PyModule) -> PyResult<()> {
+    let enum_module = py.import("enum")?;
 
-/// Disassemble WebAssembly binary to WebAssembly text format.
-#[pyfunction]
-#[text_signature = "(bytes)"]
-pub fn wasm2wat(bytes: &PyBytes) -> PyResult<String> {
-    wasmprinter::print_bytes(bytes.as_bytes()).map_err(to_py_err::<RuntimeError, _>)
+    // Functions.
+
+    /// Try to find the WASI version of the given module.
+    #[pyfn(module, "get_version")]
+    #[text_signature = "(module, strict)"]
+    fn get_version(module: &module::Module, strict: bool) -> Option<wasi::Version> {
+        wasi::get_version(module, strict)
+    }
+
+    // Classes.
+    module.add_class::<wasi::Environment>()?;
+    module.add_class::<wasi::StateBuilder>()?;
+
+    // Enums.
+    module.add(
+        "Version",
+        enum_module.call1(
+            "IntEnum",
+            PyTuple::new(
+                py,
+                &[
+                    "Version",
+                    wasi::Version::iter()
+                        .map(Into::into)
+                        .collect::<Vec<&'static str>>()
+                        .join(" ")
+                        .as_str(),
+                ],
+            ),
+        )?,
+    )?;
+
+    Ok(())
 }
