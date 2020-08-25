@@ -26,10 +26,10 @@ impl Module {
 impl Module {
     #[text_signature = "(bytes)"]
     #[staticmethod]
-    fn validate(store: &Store, bytes: &PyAny) -> PyResult<bool> {
-        match <PyBytes as PyTryFrom>::try_from(bytes) {
-            Ok(bytes) => Ok(wasmer::Module::validate(store.inner(), bytes.as_bytes()).is_ok()),
-            _ => Ok(false),
+    fn validate(store: &Store, bytes: &PyAny) -> bool {
+        match bytes.downcast::<PyBytes>() {
+            Ok(bytes) => wasmer::Module::validate(store.inner(), bytes.as_bytes()).is_ok(),
+            _ => false,
         }
     }
 
