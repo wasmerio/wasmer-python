@@ -16,7 +16,6 @@ def test_wasi_version():
     assert wasi.Version.SNAPSHOT1 == 3
 
 def test_wasi_get_version():
-    assert wasi.get_version(Module(Store(), "(module)"), strict=True) == None
     assert wasi.get_version(Module(Store(), TEST_BYTES), strict=True) == wasi.Version.SNAPSHOT1
 
 def test_wasi_state_builder():

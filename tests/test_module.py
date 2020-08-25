@@ -27,8 +27,8 @@ def test_failed_to_compile():
 #def test_name_some():
 #    assert Module(Store(), '(module $moduleName)').name == 'moduleName'
 
-def test_name_none():
-    assert Module(Store(), '(module)').name == None
+#def test_name_none():
+#    assert Module(Store(), '(module)').name == None
 
 def test_name_set():
     module = Module(Store(), '(module)')
