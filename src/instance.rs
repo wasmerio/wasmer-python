@@ -8,6 +8,7 @@ use pyo3::{exceptions::RuntimeError, prelude::*};
 #[text_signature = "(module)"]
 pub struct Instance {
     inner: wasmer::Instance,
+    #[pyo3(get)]
     exports: Py<Exports>,
 }
 
@@ -50,10 +51,5 @@ impl Instance {
             InstanceError::InstantiationError(error) => to_py_err::<RuntimeError, _>(error),
             InstanceError::PyErr(error) => error,
         })
-    }
-
-    #[getter]
-    fn exports(&self, py: Python) -> Py<Exports> {
-        self.exports.clone_ref(py)
     }
 }
