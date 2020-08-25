@@ -1,5 +1,9 @@
-use crate::externals::{Function, Global, Memory, Table};
+use crate::{
+    errors::to_py_err,
+    externals::{Function, Global, Memory, Table},
+};
 use pyo3::{
+    exceptions::TypeError,
     prelude::*,
     types::{PyDict, PyString},
 };
@@ -60,7 +64,10 @@ impl ImportObject {
 
                 wasmer_namespace.insert(name, table.inner().clone());
             } else {
-                unimplemented!("import object does not support the given type");
+                return Err(to_py_err::<TypeError, _>(format!(
+                    "`ImportObject` cannot register the given type `{}`",
+                    item.get_type().name()
+                )));
             }
         }
 
