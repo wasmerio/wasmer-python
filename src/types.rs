@@ -81,8 +81,8 @@ impl<'source> FromPyObject<'source> for Type {
     }
 }
 
-impl From<wasmer::Type> for Type {
-    fn from(value: wasmer::Type) -> Self {
+impl From<&wasmer::Type> for Type {
+    fn from(value: &wasmer::Type) -> Self {
         match value {
             wasmer::Type::I32 => Self::I32,
             wasmer::Type::I64 => Self::I64,
@@ -129,18 +129,8 @@ impl FunctionType {
 impl From<&wasmer::FunctionType> for FunctionType {
     fn from(value: &wasmer::FunctionType) -> Self {
         Self {
-            params: value
-                .params()
-                .to_vec()
-                .into_iter()
-                .map(Into::into)
-                .collect(),
-            results: value
-                .results()
-                .to_vec()
-                .into_iter()
-                .map(Into::into)
-                .collect(),
+            params: value.params().into_iter().map(Into::into).collect(),
+            results: value.results().into_iter().map(Into::into).collect(),
         }
     }
 }
@@ -222,7 +212,7 @@ impl GlobalType {
 impl From<&wasmer::GlobalType> for GlobalType {
     fn from(value: &wasmer::GlobalType) -> Self {
         Self {
-            r#type: value.ty.into(),
+            r#type: (&value.ty).into(),
             mutable: value.mutability.is_mutable(),
         }
     }
@@ -255,7 +245,7 @@ impl TableType {
 impl From<&wasmer::TableType> for TableType {
     fn from(value: &wasmer::TableType) -> Self {
         Self {
-            r#type: value.ty.into(),
+            r#type: (&value.ty).into(),
             minimum: value.minimum,
             maximum: value.maximum,
         }
