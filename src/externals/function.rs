@@ -71,7 +71,7 @@ impl Function {
                         "i64" | "I64" => wasmer::Type::I64,
                         "f32" | "F32" | "<class 'float'>" => wasmer::Type::F32,
                         "f64" | "F64" => wasmer::Type::F64,
-                        ty @ _ => {
+                        ty => {
                             return Err(to_py_err::<RuntimeError, _>(format!(
                                 "Type `{}` is not a supported type",
                                 ty,
@@ -104,11 +104,10 @@ impl Function {
             move |environment,
                   arguments: &[wasmer::Value]|
                   -> Result<Vec<wasmer::Value>, wasmer::RuntimeError> {
-                let gil = GILGuard::acquire();
+                let gil = Python::acquire_gil();
                 let py = gil.python();
 
                 let to_py_object = to_py_object(py);
-
                 let arguments: Vec<PyObject> = arguments.iter().map(to_py_object).collect();
 
                 let results = environment

@@ -52,7 +52,7 @@ impl Global {
         to_py_object(&self.inner.get())
     }
 
-    #[setter]
+    #[setter(value)]
     fn set_value(&self, value: &PyAny) -> PyResult<()> {
         let ty = self.inner.ty();
 

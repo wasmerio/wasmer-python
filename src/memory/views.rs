@@ -83,7 +83,7 @@ macro_rules! memory_view {
                     )));
                 }
 
-                let gil = GILGuard::acquire();
+                let gil = Python::acquire_gil();
                 let py = gil.python();
 
                 if range.end - range.start == 1 {
