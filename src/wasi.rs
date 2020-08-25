@@ -12,14 +12,14 @@ use std::{path::PathBuf, slice};
 #[derive(Copy, Clone)]
 #[repr(u8)]
 pub enum Version {
-    Snapshot0 = 1,
-    Snapshot1 = 2,
-    Latest = 3,
+    Latest = 1,
+    Snapshot0 = 2,
+    Snapshot1 = 3,
 }
 
 impl Version {
     pub fn iter() -> slice::Iter<'static, Version> {
-        static VARIANTS: [Version; 3] = [Version::Snapshot0, Version::Snapshot1, Version::Latest];
+        static VARIANTS: [Version; 3] = [Version::Latest, Version::Snapshot0, Version::Snapshot1];
 
         VARIANTS.iter()
     }
@@ -28,9 +28,9 @@ impl Version {
 impl From<&Version> for &'static str {
     fn from(value: &Version) -> Self {
         match value {
+            Version::Latest => "LATEST",
             Version::Snapshot0 => "SNAPSHOT0",
             Version::Snapshot1 => "SNAPSHOT1",
-            Version::Latest => "LATEST",
         }
     }
 }
@@ -52,9 +52,9 @@ impl<'source> FromPyObject<'source> for Version {
         let variant = u8::extract(obj)?;
 
         Ok(match variant {
-            1 => Self::Snapshot0,
-            2 => Self::Snapshot1,
-            3 => Self::Latest,
+            1 => Self::Latest,
+            2 => Self::Snapshot0,
+            3 => Self::Snapshot1,
             _ => {
                 return Err(to_py_err::<ValueError, _>(
                     "Failed to extract `Version` from `PyAny`",
@@ -67,9 +67,9 @@ impl<'source> FromPyObject<'source> for Version {
 impl From<wasmer_wasi::WasiVersion> for Version {
     fn from(value: wasmer_wasi::WasiVersion) -> Self {
         match value {
+            wasmer_wasi::WasiVersion::Latest => Self::Latest,
             wasmer_wasi::WasiVersion::Snapshot0 => Self::Snapshot0,
             wasmer_wasi::WasiVersion::Snapshot1 => Self::Snapshot1,
-            wasmer_wasi::WasiVersion::Latest => Self::Latest,
         }
     }
 }
@@ -77,9 +77,9 @@ impl From<wasmer_wasi::WasiVersion> for Version {
 impl Into<wasmer_wasi::WasiVersion> for Version {
     fn into(self) -> wasmer_wasi::WasiVersion {
         match self {
+            Self::Latest => wasmer_wasi::WasiVersion::Latest,
             Self::Snapshot0 => wasmer_wasi::WasiVersion::Snapshot0,
             Self::Snapshot1 => wasmer_wasi::WasiVersion::Snapshot1,
-            Self::Latest => wasmer_wasi::WasiVersion::Latest,
         }
     }
 }

@@ -11,9 +11,9 @@ TEST_BYTES = open(here + '/wasi.wasm', 'rb').read()
 def test_wasi_version():
     assert issubclass(wasi.Version, IntEnum)
     assert len(wasi.Version) == 3
-    assert wasi.Version.SNAPSHOT0 == 1
-    assert wasi.Version.SNAPSHOT1 == 2
-    assert wasi.Version.LATEST == 3
+    assert wasi.Version.LATEST == 1
+    assert wasi.Version.SNAPSHOT0 == 2
+    assert wasi.Version.SNAPSHOT1 == 3
 
 def test_wasi_get_version():
     assert wasi.get_version(Module(Store(), "(module)"), strict=True) == None
