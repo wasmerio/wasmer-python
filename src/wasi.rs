@@ -143,7 +143,7 @@ impl StateBuilder {
 
     pub fn self_map_directory(&mut self, alias: String, directory: String) -> PyResult<()> {
         self.inner
-            .map_dir(alias.as_str(), PathBuf::from(directory.to_string()))
+            .map_dir(alias.as_str(), PathBuf::from(directory))
             .map_err(to_py_err::<RuntimeError, _>)?;
 
         Ok(())

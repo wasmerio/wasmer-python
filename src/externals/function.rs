@@ -128,7 +128,7 @@ impl Function {
                         .map_err(|error| {
                             wasmer::RuntimeError::new(io::Error::from(error).to_string())
                         })?
-                } else if !results.is_none(py) && result_types.len() > 0 {
+                } else if !results.is_none(py) && !result_types.is_empty() {
                     vec![to_wasm_value((
                         results
                             .cast_as::<PyAny>(py)

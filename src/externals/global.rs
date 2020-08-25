@@ -57,9 +57,9 @@ impl Global {
         let ty = self.inner.ty();
 
         if !ty.mutability.is_mutable() {
-            return Err(to_py_err::<RuntimeError, _>(format!(
+            return Err(to_py_err::<RuntimeError, _>(
                 "The global variable is not mutable, cannot set a new value",
-            )));
+            ));
         }
 
         self.inner

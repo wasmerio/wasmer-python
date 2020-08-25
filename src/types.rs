@@ -129,8 +129,8 @@ impl FunctionType {
 impl From<&wasmer::FunctionType> for FunctionType {
     fn from(value: &wasmer::FunctionType) -> Self {
         Self {
-            params: value.params().into_iter().map(Into::into).collect(),
-            results: value.results().into_iter().map(Into::into).collect(),
+            params: value.params().iter().map(Into::into).collect(),
+            results: value.results().iter().map(Into::into).collect(),
         }
     }
 }
