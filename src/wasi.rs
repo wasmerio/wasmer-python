@@ -164,20 +164,20 @@ impl StateBuilder {
             inner: wasmer_wasi::WasiState::new(program_name.as_str()),
         };
 
-        if arguments.is_some() {
-            wasi.self_arguments(arguments.unwrap());
+        if let Some(arguments) = arguments {
+            wasi.self_arguments(arguments);
         }
 
-        if environments.is_some() {
-            wasi.self_environments(environments.unwrap());
+        if let Some(environments) = environments {
+            wasi.self_environments(environments);
         }
 
-        if preopen_directories.is_some() {
-            wasi.self_preopen_directories(preopen_directories.unwrap())?;
+        if let Some(preopen_directories) = preopen_directories {
+            wasi.self_preopen_directories(preopen_directories)?;
         }
 
-        if map_directories.is_some() {
-            wasi.self_map_directories(map_directories.unwrap())?;
+        if let Some(map_directories) = map_directories {
+            wasi.self_map_directories(map_directories)?;
         }
 
         Ok(wasi)
