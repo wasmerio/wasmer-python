@@ -102,7 +102,11 @@ python-run file='':
 
 # Run the tests.
 test files='tests':
-	@py.test -v -s {{files}}
+	for test in $(find {{files}} -name "test_*.py"); do \
+		echo $test; \
+		py.test -v -s $test; \
+	done
+	#@py.test -v -s {{files}}
 
 # Run one or more benchmarks.
 benchmark benchmark-filename='':
