@@ -38,7 +38,7 @@ impl Memory {
     }
 
     #[getter]
-    fn data_size(&self) -> usize {
+    fn data_size(&self) -> u64 {
         self.inner.data_size()
     }
 
