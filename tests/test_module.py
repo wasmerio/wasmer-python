@@ -24,8 +24,8 @@ def test_failed_to_compile():
     with pytest.raises(RuntimeError) as context_manager:
         Module(Store(), INVALID_TEST_BYTES)
 
-def test_name_some():
-    assert Module(Store(), '(module $moduleName)').name == 'moduleName'
+#def test_name_some():
+#    assert Module(Store(), '(module $moduleName)').name == 'moduleName'
 
 def test_name_none():
     assert Module(Store(), '(module)').name == None
