@@ -21,6 +21,13 @@ def test_exports():
 
     assert isinstance(instance.exports, Exports)
 
+def test_exports_not_clone():
+    instance = Instance(Module(Store(), TEST_BYTES))
+    exports1 = instance.exports
+    exports2 = instance.exports
+
+    assert exports1 == exports2
+
 def test_exports_len():
     instance = Instance(Module(Store(), TEST_BYTES))
 
