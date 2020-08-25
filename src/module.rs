@@ -35,22 +35,23 @@ impl Module {
 
     #[new]
     fn new(store: &Store, bytes: &PyAny) -> PyResult<Self> {
+        let store = store.inner();
+
         // Read the bytes as if there were real bytes or a WAT string.
-        <PyBytes as PyTryFrom>::try_from(bytes)
-            .map(|bytes| bytes.as_bytes())
-            .or_else(|_| {
-                <PyString as PyTryFrom>::try_from(bytes)
-                    .map_err(|_| {
-                        to_py_err::<TypeError, _>("`Module` accepts Wasm bytes or a WAT string")
-                    })
-                    .and_then(|string| string.as_bytes())
-            })
-            .and_then(|bytes| {
-                Ok(Module {
-                    inner: wasmer::Module::new(store.inner(), bytes)
-                        .map_err(to_py_err::<RuntimeError, _>)?,
-                })
-            })
+        let module = if let Ok(bytes) = bytes.downcast::<PyBytes>() {
+            wasmer::Module::new(store, bytes.as_bytes())
+        } else if let Ok(string) = bytes.downcast::<PyString>() {
+            // Taking ownership of the string's bytes, so that we don't mess with the GC.
+            wasmer::Module::new(store, string.to_string()?.to_owned().as_bytes())
+        } else {
+            return Err(to_py_err::<TypeError, _>(
+                "`Module` accepts Wasm bytes or a WAT string",
+            ));
+        };
+
+        Ok(Module {
+            inner: module.map_err(to_py_err::<RuntimeError, _>)?,
+        })
     }
 
     #[getter]
