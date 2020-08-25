@@ -5,7 +5,7 @@ use crate::{
 use pyo3::{exceptions::RuntimeError, prelude::*};
 
 #[pyclass(unsendable)]
-#[text_signature = "(module)"]
+#[text_signature = "(module, import_object)"]
 pub struct Instance {
     inner: wasmer::Instance,
     #[pyo3(get)]
