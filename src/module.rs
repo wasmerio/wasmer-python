@@ -41,8 +41,7 @@ impl Module {
         let module = if let Ok(bytes) = bytes.downcast::<PyBytes>() {
             wasmer::Module::new(store, bytes.as_bytes())
         } else if let Ok(string) = bytes.downcast::<PyString>() {
-            // Taking ownership of the string's bytes, so that we don't mess with the GC.
-            wasmer::Module::new(store, string.to_string()?.to_owned().as_bytes())
+            wasmer::Module::new(store, string.to_string()?.as_bytes())
         } else {
             return Err(to_py_err::<TypeError, _>(
                 "`Module` accepts Wasm bytes or a WAT string",
