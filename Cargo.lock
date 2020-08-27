@@ -353,7 +353,7 @@ checksum = "7abc8dd8451921606d809ba32e95b6111925cd2906060d2dcc29c070220503eb"
 dependencies = [
  "cfg-if",
  "libc",
- "wasi",
+ "wasi 0.9.0+wasi-snapshot-preview1",
 ]
 
 [[package]]
@@ -546,9 +546,9 @@ dependencies = [
 
 [[package]]
 name = "llvm-sys"
-version = "100.1.1"
+version = "100.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "31069d5023e1a4789900ae3dde23dc3c71bfa5a49d7927d33a528c2b08dca036"
+checksum = "9109e19fbfac3458f2970189719fa19f1007c6fd4e08c44fdebf4be0ddbe261d"
 dependencies = [
  "cc",
  "lazy_static",
@@ -1118,11 +1118,12 @@ dependencies = [
 
 [[package]]
 name = "time"
-version = "0.1.43"
+version = "0.1.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca8a50ef2360fbd1eeb0ecd46795a87a19024eb4b53c5dc916ca1fd95fe62438"
+checksum = "6db9e6914ab8b1ae1c260a4ae7a49b6c5611b40328a735b21862567685e73255"
 dependencies = [
  "libc",
+ "wasi 0.10.0+wasi-snapshot-preview1",
  "winapi",
 ]
 
@@ -1207,9 +1208,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
 
 [[package]]
+name = "wasi"
+version = "0.10.0+wasi-snapshot-preview1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
+
+[[package]]
 name = "wasmer"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#3f7d2ec54311ed22224c46d494a48a6989ed2ee6"
+source = "git+https://github.com/wasmerio/wasmer#80290e48055655a63f05f2c329f2ace4adbc712f"
 dependencies = [
  "cfg-if",
  "indexmap",
@@ -1232,7 +1239,7 @@ dependencies = [
 [[package]]
 name = "wasmer-compiler"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#3f7d2ec54311ed22224c46d494a48a6989ed2ee6"
+source = "git+https://github.com/wasmerio/wasmer#80290e48055655a63f05f2c329f2ace4adbc712f"
 dependencies = [
  "enumset",
  "raw-cpuid",
@@ -1249,7 +1256,7 @@ dependencies = [
 [[package]]
 name = "wasmer-compiler-cranelift"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#3f7d2ec54311ed22224c46d494a48a6989ed2ee6"
+source = "git+https://github.com/wasmerio/wasmer#80290e48055655a63f05f2c329f2ace4adbc712f"
 dependencies = [
  "cranelift-codegen",
  "cranelift-frontend",
@@ -1266,7 +1273,7 @@ dependencies = [
 [[package]]
 name = "wasmer-compiler-llvm"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#3f7d2ec54311ed22224c46d494a48a6989ed2ee6"
+source = "git+https://github.com/wasmerio/wasmer#80290e48055655a63f05f2c329f2ace4adbc712f"
 dependencies = [
  "byteorder",
  "cc",
@@ -1289,7 +1296,7 @@ dependencies = [
 [[package]]
 name = "wasmer-compiler-singlepass"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#3f7d2ec54311ed22224c46d494a48a6989ed2ee6"
+source = "git+https://github.com/wasmerio/wasmer#80290e48055655a63f05f2c329f2ace4adbc712f"
 dependencies = [
  "byteorder",
  "dynasm",
@@ -1307,7 +1314,7 @@ dependencies = [
 [[package]]
 name = "wasmer-engine"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#3f7d2ec54311ed22224c46d494a48a6989ed2ee6"
+source = "git+https://github.com/wasmerio/wasmer#80290e48055655a63f05f2c329f2ace4adbc712f"
 dependencies = [
  "backtrace",
  "bincode",
@@ -1326,7 +1333,7 @@ dependencies = [
 [[package]]
 name = "wasmer-engine-jit"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#3f7d2ec54311ed22224c46d494a48a6989ed2ee6"
+source = "git+https://github.com/wasmerio/wasmer#80290e48055655a63f05f2c329f2ace4adbc712f"
 dependencies = [
  "bincode",
  "cfg-if",
@@ -1343,7 +1350,7 @@ dependencies = [
 [[package]]
 name = "wasmer-engine-native"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#3f7d2ec54311ed22224c46d494a48a6989ed2ee6"
+source = "git+https://github.com/wasmerio/wasmer#80290e48055655a63f05f2c329f2ace4adbc712f"
 dependencies = [
  "bincode",
  "cfg-if",
@@ -1362,7 +1369,7 @@ dependencies = [
 [[package]]
 name = "wasmer-object"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#3f7d2ec54311ed22224c46d494a48a6989ed2ee6"
+source = "git+https://github.com/wasmerio/wasmer#80290e48055655a63f05f2c329f2ace4adbc712f"
 dependencies = [
  "object 0.19.0",
  "thiserror",
@@ -1385,7 +1392,7 @@ dependencies = [
 [[package]]
 name = "wasmer-types"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#3f7d2ec54311ed22224c46d494a48a6989ed2ee6"
+source = "git+https://github.com/wasmerio/wasmer#80290e48055655a63f05f2c329f2ace4adbc712f"
 dependencies = [
  "cranelift-entity",
  "serde",
@@ -1394,7 +1401,7 @@ dependencies = [
 [[package]]
 name = "wasmer-vm"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#3f7d2ec54311ed22224c46d494a48a6989ed2ee6"
+source = "git+https://github.com/wasmerio/wasmer#80290e48055655a63f05f2c329f2ace4adbc712f"
 dependencies = [
  "backtrace",
  "cc",
@@ -1413,7 +1420,7 @@ dependencies = [
 [[package]]
 name = "wasmer-wasi"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#3f7d2ec54311ed22224c46d494a48a6989ed2ee6"
+source = "git+https://github.com/wasmerio/wasmer#80290e48055655a63f05f2c329f2ace4adbc712f"
 dependencies = [
  "bincode",
  "byteorder",
@@ -1437,18 +1444,18 @@ checksum = "32fddd575d477c6e9702484139cf9f23dcd554b06d185ed0f56c857dd3a47aa6"
 
 [[package]]
 name = "wasmparser"
-version = "0.61.0"
+version = "0.62.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa9a757f1eca9446ed0f9541924a0cf3adbfdd4793d287db4647186ffc6a2c8d"
+checksum = "e36b5b8441a5d83ea606c9eb904a3ee3889ebfeda1df1a5c48b84725239d93ce"
 
 [[package]]
 name = "wasmprinter"
-version = "0.2.8"
+version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ef15d666725b111460672073e6e33c6d0bf02ecbdad37eced9628b174b1d9cb"
+checksum = "adc9e10f7145e1c15f16c809d6c0937ab51a79478f53458fb78ded3491819a94"
 dependencies = [
  "anyhow",
- "wasmparser 0.61.0",
+ "wasmparser 0.62.0",
 ]
 
 [[package]]
