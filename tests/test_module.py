@@ -3,7 +3,6 @@ from wasmer import Store, Module, ExportType, ImportType, FunctionType, MemoryTy
 from enum import IntEnum
 import os
 import pytest
-import faulthandler
 
 here = os.path.dirname(os.path.realpath(__file__))
 TEST_BYTES = open(here + '/tests.wasm', 'rb').read()
@@ -19,7 +18,6 @@ def test_compile_bytes():
     assert isinstance(Module(Store(), TEST_BYTES), Module)
 
 def test_compile_wat():
-    faulthandler.enable()
     assert isinstance(Module(Store(), '(module)'), Module)
 
 def test_failed_to_compile():

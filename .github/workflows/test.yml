@@ -18,7 +18,7 @@ jobs:
           # Windows, amd64
           #{ id: 'windows-amd64', os: 'windows-latest', rust-target: 'x86_64-pc-windows-msvc', rust-toolchain: 'stable' },
           # Windows, x86
-          #{ id: 'windows-x86', os: 'windows-latest', rust-target: 'i686-pc-windows-msvc' },
+          { id: 'windows-x86', os: 'windows-latest', rust-target: 'i686-pc-windows-msvc' },
           # Linux, aarch64
           #{ id: 'linux-aarch64', os: ['self-hosted', 'aarch64'], rust-target: 'aarch64-unknown-linux-gnu', rust-toolchain: 'stable' },
         ]
@@ -28,7 +28,7 @@ jobs:
         3.8]
       # As soon as one job fails in the matrix, all the other
       # in-progress jobs are canceled.
-      fail-fast: true
+      fail-fast: false
 
     runs-on: ${{ matrix.target.os }}
 
