@@ -117,26 +117,26 @@ def test_exports():
 #    assert module.custom_sections('hello') == [b'World!']
 #    assert module.custom_sections('foo') == []
 
-def test_serialize():
-    assert type(Module(Store(), "(module)").serialize()) == bytes
-
-def test_deserialize():
-    store = Store()
-
-    serialized_module = Module(
-        store,
-        """
-        (module
-          (func (export "function") (param i32 i64)))
-        """
-    ).serialize()
-    module = Module.deserialize(store, serialized_module)
-    del serialized_module
-
-    exports = module.exports
-
-    assert len(module.exports) == 1
-    assert exports[0].name == "function"
-    assert isinstance(exports[0].type, FunctionType)
-    assert exports[0].type.params == [Type.I32, Type.I64]
-    assert exports[0].type.results == []
+#def test_serialize():
+#    assert type(Module(Store(), "(module)").serialize()) == bytes
+#
+#def test_deserialize():
+#    store = Store()
+#
+#    serialized_module = Module(
+#        store,
+#        """
+#        (module
+#          (func (export "function") (param i32 i64)))
+#        """
+#    ).serialize()
+#    module = Module.deserialize(store, serialized_module)
+#    del serialized_module
+#
+#    exports = module.exports
+#
+#    assert len(module.exports) == 1
+#    assert exports[0].name == "function"
+#    assert isinstance(exports[0].type, FunctionType)
+#    assert exports[0].type.params == [Type.I32, Type.I64]
+#    assert exports[0].type.results == []
