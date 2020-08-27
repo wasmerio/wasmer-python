@@ -17,8 +17,8 @@ def test_validate_invalid():
 def test_compile_bytes():
     assert isinstance(Module(Store(), TEST_BYTES), Module)
 
-#def test_compile_wat():
-#    assert isinstance(Module(Store(), '(module)'), Module)
+def test_compile_wat():
+    assert isinstance(Module(Store(), '(module (func (export "f"))'), Module)
 
 def test_failed_to_compile():
     with pytest.raises(RuntimeError) as context_manager:
