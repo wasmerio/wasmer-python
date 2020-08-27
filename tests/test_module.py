@@ -111,11 +111,11 @@ def test_exports():
 #    assert imports[3].type.maximum == 4
 #    assert imports[3].type.shared == False
 
-def test_custom_section():
-    module = Module(Store(), open(here + '/custom_sections.wasm', 'rb').read())
-    assert module.custom_sections('easter_egg') == [b'Wasmer']
-    assert module.custom_sections('hello') == [b'World!']
-    assert module.custom_sections('foo') == []
+#def test_custom_section():
+#    module = Module(Store(), open(here + '/custom_sections.wasm', 'rb').read())
+#    assert module.custom_sections('easter_egg') == [b'Wasmer']
+#    assert module.custom_sections('hello') == [b'World!']
+#    assert module.custom_sections('foo') == []
 
 def test_serialize():
     assert type(Module(Store(), "(module)").serialize()) == bytes
