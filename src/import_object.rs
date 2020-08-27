@@ -7,15 +7,19 @@ use pyo3::{
     prelude::*,
     types::{PyDict, PyString},
 };
+use std::sync::Arc;
 
 #[pyclass(unsendable)]
 pub struct ImportObject {
+    #[allow(unused)]
+    store: Option<Arc<wasmer::Store>>,
+
     inner: wasmer::ImportObject,
 }
 
 impl ImportObject {
-    pub fn raw_new(inner: wasmer::ImportObject) -> Self {
-        Self { inner }
+    pub fn raw_new(store: Option<Arc<wasmer::Store>>, inner: wasmer::ImportObject) -> Self {
+        Self { store, inner }
     }
 
     pub fn inner(&self) -> &wasmer::ImportObject {
@@ -27,9 +31,7 @@ impl ImportObject {
 impl ImportObject {
     #[new]
     fn new() -> Self {
-        ImportObject {
-            inner: Default::default(),
-        }
+        ImportObject::raw_new(None, Default::default())
     }
 
     #[text_signature = "($self, namespace_name)"]

@@ -27,7 +27,7 @@ impl Memory {
     #[new]
     fn new(store: &Store, memory_type: &MemoryType) -> PyResult<Self> {
         Ok(Self::raw_new(
-            wasmer::Memory::new(store.inner(), memory_type.into())
+            wasmer::Memory::new(&store.inner(), memory_type.into())
                 .map_err(to_py_err::<RuntimeError, _>)?,
         ))
     }

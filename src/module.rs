@@ -4,21 +4,22 @@ use pyo3::{
     prelude::*,
     types::{PyAny, PyBytes, PyList, PyString},
 };
-use std::convert::TryInto;
+use std::{convert::TryInto, sync::Arc};
 
 #[pyclass(unsendable)]
 #[text_signature = "(store, bytes)"]
 pub struct Module {
-    inner: wasmer::Module,
+    store: Arc<wasmer::Store>,
+    inner: Arc<wasmer::Module>,
 }
 
 impl Module {
-    pub fn store(&self) -> &wasmer::Store {
-        self.inner.store()
+    pub fn store(&self) -> Arc<wasmer::Store> {
+        Arc::clone(&self.store)
     }
 
-    pub fn inner(&self) -> &wasmer::Module {
-        &self.inner
+    pub fn inner(&self) -> Arc<wasmer::Module> {
+        Arc::clone(&self.inner)
     }
 }
 
@@ -28,7 +29,7 @@ impl Module {
     #[staticmethod]
     fn validate(store: &Store, bytes: &PyAny) -> bool {
         match bytes.downcast::<PyBytes>() {
-            Ok(bytes) => wasmer::Module::validate(store.inner(), bytes.as_bytes()).is_ok(),
+            Ok(bytes) => wasmer::Module::validate(&store.inner(), bytes.as_bytes()).is_ok(),
             _ => false,
         }
     }
@@ -39,9 +40,9 @@ impl Module {
 
         // Read the bytes as if there were real bytes or a WAT string.
         let module = if let Ok(bytes) = bytes.downcast::<PyBytes>() {
-            wasmer::Module::new(store, bytes.as_bytes())
+            wasmer::Module::new(&store, bytes.as_bytes())
         } else if let Ok(string) = bytes.downcast::<PyString>() {
-            wasmer::Module::new(store, string.to_string()?.as_bytes())
+            wasmer::Module::new(&store, string.to_string()?.as_bytes())
         } else {
             return Err(to_py_err::<TypeError, _>(
                 "`Module` accepts Wasm bytes or a WAT string",
@@ -49,7 +50,8 @@ impl Module {
         };
 
         Ok(Module {
-            inner: module.map_err(to_py_err::<RuntimeError, _>)?,
+            store,
+            inner: Arc::new(module.map_err(to_py_err::<RuntimeError, _>)?),
         })
     }
 
@@ -60,7 +62,9 @@ impl Module {
 
     #[setter(name)]
     fn set_name(&mut self, name: &str) -> PyResult<()> {
-        self.inner.set_name(name);
+        Arc::get_mut(&mut self.inner)
+            .ok_or_else(|| to_py_err::<RuntimeError, _>("Value already shared with mutability"))?
+            .set_name(name);
 
         Ok(())
     }
@@ -100,9 +104,14 @@ impl Module {
     #[text_signature = "($self, bytes)"]
     #[staticmethod]
     fn deserialize(store: &Store, bytes: &PyBytes) -> PyResult<Self> {
+        let store = store.inner();
+
         Ok(Module {
-            inner: unsafe { wasmer::Module::deserialize(store.inner(), bytes.as_bytes()) }
-                .map_err(to_py_err::<RuntimeError, _>)?,
+            store: Arc::clone(&store),
+            inner: Arc::new(
+                unsafe { wasmer::Module::deserialize(&Arc::clone(&store), bytes.as_bytes()) }
+                    .map_err(to_py_err::<RuntimeError, _>)?,
+            ),
         })
     }
 }

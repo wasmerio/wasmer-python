@@ -34,8 +34,8 @@ impl Global {
 
         Self {
             inner: match mutable {
-                Some(true) => wasmer::Global::new_mut(store, value),
-                _ => wasmer::Global::new(store, value),
+                Some(true) => wasmer::Global::new_mut(&store, value),
+                _ => wasmer::Global::new(&store, value),
             },
         }
     }

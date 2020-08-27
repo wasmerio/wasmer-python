@@ -1,14 +1,15 @@
 use crate::wasmer_inner::wasmer;
 use pyo3::prelude::*;
+use std::sync::Arc;
 
 #[pyclass]
 pub struct Store {
-    inner: wasmer::Store,
+    inner: Arc<wasmer::Store>,
 }
 
 impl Store {
-    pub fn inner(&self) -> &wasmer::Store {
-        &self.inner
+    pub(crate) fn inner(&self) -> Arc<wasmer::Store> {
+        Arc::clone(&self.inner)
     }
 }
 
@@ -17,7 +18,7 @@ impl Store {
     #[new]
     fn new() -> Self {
         Store {
-            inner: wasmer::Store::default(),
+            inner: Arc::new(wasmer::Store::default()),
         }
     }
 }
