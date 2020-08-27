@@ -1,5 +1,5 @@
 import wasmer
-from wasmer import Store, Module, ExportType, ImportType, FunctionType, MemoryType, GlobalType, TableType, Type
+from wasmer import Store, Module, ExportType, ImportType, FunctionType, MemoryType, GlobalType, TableType, Type, wat2wasm
 from enum import IntEnum
 import os
 import pytest
@@ -74,13 +74,15 @@ def test_exports():
 def test_imports():
     imports = Module(
         Store(),
-        """
-        (module
-          (import "ns" "function" (func))
-          (import "ns" "global" (global f32))
-          (import "ns" "table" (table 1 2 anyfunc))
-          (import "ns" "memory" (memory 3 4)))
-        """
+        wat2wasm(
+            """
+            (module
+            (import "ns" "function" (func))
+            (import "ns" "global" (global f32))
+            (import "ns" "table" (table 1 2 anyfunc))
+            (import "ns" "memory" (memory 3 4)))
+            """
+        )
     ).imports
 
     assert isinstance(imports[0], ImportType)
