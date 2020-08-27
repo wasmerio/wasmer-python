@@ -7,7 +7,7 @@ use pyo3::{
     prelude::*,
     types::{PyDict, PyList},
 };
-use std::{path::PathBuf, slice, sync::Arc};
+use std::{path::PathBuf, slice};
 
 #[derive(Copy, Clone)]
 #[repr(u8)]
@@ -311,16 +311,14 @@ impl Environment {
     }
 
     fn generate_import_object(&self, store: &Store, wasi_version: Version) -> ImportObject {
-        let store = store.inner();
+        let store = store.cloned_inner();
+        let import_object = wasmer_wasi::generate_import_object_from_env(
+            &store,
+            self.inner.clone(),
+            wasi_version.into(),
+        );
 
-        ImportObject::raw_new(
-            Some(Arc::clone(&store)),
-            wasmer_wasi::generate_import_object_from_env(
-                &store,
-                self.inner.clone(),
-                wasi_version.into(),
-            ),
-        )
+        ImportObject::raw_new(Some(store), import_object)
     }
 }
 

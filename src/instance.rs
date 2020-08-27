@@ -3,19 +3,11 @@ use crate::{
     wasmer_inner::wasmer,
 };
 use pyo3::{exceptions::RuntimeError, prelude::*};
-use std::sync::Arc;
 
 #[pyclass(unsendable)]
 #[text_signature = "(module, import_object)"]
 pub struct Instance {
-    #[allow(unused)]
-    store: Arc<wasmer::Store>,
-
-    #[allow(unused)]
-    module: Arc<wasmer::Module>,
-
     inner: wasmer::Instance,
-
     #[pyo3(get)]
     exports: Py<Exports>,
 }
@@ -31,7 +23,6 @@ impl Instance {
         module: &Module,
         import_object: Option<&ImportObject>,
     ) -> Result<Self, InstanceError> {
-        let store = module.store();
         let module = module.inner();
 
         let instance = match import_object {
@@ -44,15 +35,9 @@ impl Instance {
             Py::new(py, Exports::new(instance.exports.clone())).map_err(InstanceError::PyErr)?;
 
         Ok(Instance {
-            store,
-            module,
             inner: instance,
             exports,
         })
-    }
-
-    pub fn store(&self) -> &wasmer::Store {
-        self.inner.module().store()
     }
 }
 

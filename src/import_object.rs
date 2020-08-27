@@ -7,18 +7,17 @@ use pyo3::{
     prelude::*,
     types::{PyDict, PyString},
 };
-use std::sync::Arc;
 
 #[pyclass(unsendable)]
 pub struct ImportObject {
     #[allow(unused)]
-    store: Option<Arc<wasmer::Store>>,
+    store: Option<wasmer::Store>,
 
     inner: wasmer::ImportObject,
 }
 
 impl ImportObject {
-    pub fn raw_new(store: Option<Arc<wasmer::Store>>, inner: wasmer::ImportObject) -> Self {
+    pub fn raw_new(store: Option<wasmer::Store>, inner: wasmer::ImportObject) -> Self {
         Self { store, inner }
     }
 

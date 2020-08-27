@@ -9,16 +9,16 @@ use std::{convert::TryInto, sync::Arc};
 #[pyclass(unsendable)]
 #[text_signature = "(store, bytes)"]
 pub struct Module {
-    store: Arc<wasmer::Store>,
+    store: wasmer::Store,
     inner: Arc<wasmer::Module>,
 }
 
 impl Module {
-    pub fn store(&self) -> Arc<wasmer::Store> {
-        Arc::clone(&self.store)
+    pub(crate) fn cloned_store(&self) -> wasmer::Store {
+        self.store.clone()
     }
 
-    pub fn inner(&self) -> Arc<wasmer::Module> {
+    pub(crate) fn inner(&self) -> Arc<wasmer::Module> {
         Arc::clone(&self.inner)
     }
 }
@@ -29,14 +29,14 @@ impl Module {
     #[staticmethod]
     fn validate(store: &Store, bytes: &PyAny) -> bool {
         match bytes.downcast::<PyBytes>() {
-            Ok(bytes) => wasmer::Module::validate(&store.inner(), bytes.as_bytes()).is_ok(),
+            Ok(bytes) => wasmer::Module::validate(&store.cloned_inner(), bytes.as_bytes()).is_ok(),
             _ => false,
         }
     }
 
     #[new]
     fn new(store: &Store, bytes: &PyAny) -> PyResult<Self> {
-        let store = store.inner();
+        let store = store.cloned_inner();
 
         // Read the bytes as if there were real bytes or a WAT string.
         let module = if let Ok(bytes) = bytes.downcast::<PyBytes>() {
@@ -104,14 +104,13 @@ impl Module {
     #[text_signature = "($self, bytes)"]
     #[staticmethod]
     fn deserialize(store: &Store, bytes: &PyBytes) -> PyResult<Self> {
-        let store = store.inner();
+        let store = store.cloned_inner();
+        let module = unsafe { wasmer::Module::deserialize(&store, bytes.as_bytes()) }
+            .map_err(to_py_err::<RuntimeError, _>)?;
 
         Ok(Module {
-            store: Arc::clone(&store),
-            inner: Arc::new(
-                unsafe { wasmer::Module::deserialize(&Arc::clone(&store), bytes.as_bytes()) }
-                    .map_err(to_py_err::<RuntimeError, _>)?,
-            ),
+            store,
+            inner: Arc::new(module),
         })
     }
 }

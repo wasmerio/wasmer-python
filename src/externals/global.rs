@@ -29,7 +29,7 @@ impl Global {
 impl Global {
     #[new]
     fn new(store: &Store, value: &Value, mutable: Option<bool>) -> Self {
-        let store = store.inner();
+        let store = store.cloned_inner();
         let value = value.inner().clone();
 
         Self {
