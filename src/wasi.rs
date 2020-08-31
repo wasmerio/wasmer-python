@@ -311,14 +311,13 @@ impl Environment {
     }
 
     fn generate_import_object(&self, store: &Store, wasi_version: Version) -> ImportObject {
-        let store = store.cloned_inner();
         let import_object = wasmer_wasi::generate_import_object_from_env(
-            &store,
+            store.inner(),
             self.inner.clone(),
             wasi_version.into(),
         );
 
-        ImportObject::raw_new(Some(store), import_object)
+        ImportObject::raw_new(import_object)
     }
 }
 

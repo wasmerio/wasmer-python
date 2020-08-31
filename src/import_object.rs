@@ -10,18 +10,15 @@ use pyo3::{
 
 #[pyclass(unsendable)]
 pub struct ImportObject {
-    #[allow(unused)]
-    store: Option<wasmer::Store>,
-
     inner: wasmer::ImportObject,
 }
 
 impl ImportObject {
-    pub fn raw_new(store: Option<wasmer::Store>, inner: wasmer::ImportObject) -> Self {
-        Self { store, inner }
+    pub(crate) fn raw_new(inner: wasmer::ImportObject) -> Self {
+        Self { inner }
     }
 
-    pub fn inner(&self) -> &wasmer::ImportObject {
+    pub(crate) fn inner(&self) -> &wasmer::ImportObject {
         &self.inner
     }
 }
@@ -30,7 +27,7 @@ impl ImportObject {
 impl ImportObject {
     #[new]
     fn new() -> Self {
-        ImportObject::raw_new(None, Default::default())
+        ImportObject::raw_new(Default::default())
     }
 
     #[text_signature = "($self, namespace_name)"]

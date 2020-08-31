@@ -98,7 +98,7 @@ impl Function {
         };
 
         let host_function = wasmer::Function::new_with_env(
-            &store.cloned_inner(),
+            store.inner(),
             &wasmer::FunctionType::new(argument_types, result_types.clone()),
             environment,
             move |environment,

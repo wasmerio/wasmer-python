@@ -7,8 +7,8 @@ pub struct Store {
 }
 
 impl Store {
-    pub(crate) fn cloned_inner(&self) -> wasmer::Store {
-        self.inner.clone()
+    pub(crate) fn inner(&self) -> &wasmer::Store {
+        &self.inner
     }
 }
 

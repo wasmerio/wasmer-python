@@ -29,13 +29,13 @@ impl Global {
 impl Global {
     #[new]
     fn new(store: &Store, value: &Value, mutable: Option<bool>) -> Self {
-        let store = store.cloned_inner();
+        let store = store.inner();
         let value = value.inner().clone();
 
         Self {
             inner: match mutable {
-                Some(true) => wasmer::Global::new_mut(&store, value),
-                _ => wasmer::Global::new(&store, value),
+                Some(true) => wasmer::Global::new_mut(store, value),
+                _ => wasmer::Global::new(store, value),
             },
         }
     }

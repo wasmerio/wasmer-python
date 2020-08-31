@@ -24,7 +24,7 @@ impl Table {
     fn new(store: &Store, table_type: &TableType, initial_value: &Value) -> PyResult<Self> {
         Ok(Self {
             inner: wasmer::Table::new(
-                &store.cloned_inner(),
+                store.inner(),
                 table_type.into(),
                 initial_value.inner().clone(),
             )
