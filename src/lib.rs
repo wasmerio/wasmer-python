@@ -26,6 +26,48 @@ mod wat;
 /// Wasmer is an advanced and mature WebAssembly runtime. The `wasmer`
 /// Python package is a native Python extension to embed Wasmer inside
 /// Python.
+///
+/// # Example
+///
+/// The very basic example is the following:
+///
+/// ```py
+/// from wasmer import Store, Module, Instance
+///
+/// # Create a store, which holds the engine, the compiler etc.
+/// store = Store()
+///
+/// # Let's assume we don't have WebAssembly bytes at hand. We will
+/// # write WebAssembly manually.
+/// module = Module(
+///     store,
+///     """
+///     (module
+///       (type (func (param i32 i32) (result i32)))
+///       (func (type 0)
+///         local.get 0
+///         local.get 1
+///         i32.add)
+///       (export "sum" (func 0)))
+///     """
+/// )
+///
+/// # Instantiates the module.
+/// instance = Instance(module)
+///
+/// # Now, let's execute the `sum` function.
+/// assert instance.exports.sum(1, 2) == 3
+/// ```
+///
+/// That's it. Now explore the API! Some pointers for the adventurers:
+///
+/// * Exports of an instance are represented by the `Exports` object,
+/// * Maybe your module needs to import `Function`, `Memory`, `Global`
+///   or `Table`? Well, there is the `ImportObject` for that!
+/// * It is possible to read and write `Memory` data with the Python
+///   buffer protocol with `Buffer`.
+///
+/// Have fun!
 #[pymodule]
 fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     let enum_module = py.import("enum")?;
