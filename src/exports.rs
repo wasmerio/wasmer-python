@@ -9,6 +9,35 @@ use pyo3::{
     prelude::*,
 };
 
+/// Represents all the exports of an instance. It is built by
+/// `Instance.exports`.
+///
+/// Exports can be of kind `Function`, `Global`, `Table`, or `Memory`.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import Store, Module, Instance, Exports, Function, Global, Table, Memory
+///
+/// module = Module(
+///     Store(),
+///     """
+///     (module
+///       (func (export "func") (param i32 i64))
+///       (global (export "glob") i32 (i32.const 7))
+///       (table (export "tab") 0 funcref)
+///       (memory (export "mem") 1))
+///     """
+/// )
+/// instance = Instance(module)
+/// exports = instance.exports
+///
+/// assert isinstance(exports, Exports)
+/// assert isinstance(exports.func, Function)
+/// assert isinstance(exports.glob, Global)
+/// assert isinstance(exports.tab, Table)
+/// assert isinstance(exports.mem, Memory)
+/// ```
 #[pyclass(unsendable)]
 #[derive(Clone)]
 pub struct Exports {
