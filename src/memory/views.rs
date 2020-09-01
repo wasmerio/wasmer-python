@@ -12,6 +12,8 @@ macro_rules! memory_view {
         /// Represents a read-and-write view over the data of a
         /// memory.
         ///
+        /// It is built by the `Memory.uint8_view` and siblings getters.
+        ///
         /// It implements the [Python mapping
         /// protocol][mapping-protocol], so it is possible to read and
         /// write bytes with a standard Python API.
