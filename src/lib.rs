@@ -23,11 +23,27 @@ mod values;
 mod wasi;
 mod wat;
 
+/// <p align="center">
+///   <a href="https://wasmer.io" target="_blank" rel="noopener">
+///     <img width="300" src="https://raw.githubusercontent.com/wasmerio/wasmer/master/assets/logo.png" alt="Wasmer logo">
+///   </a>
+/// </p>
+///
+/// <p align="center">
+///   <a href="https://spectrum.chat/wasmer">
+///     <img src="https://withspectrum.github.io/badge/badge.svg" alt="Join the Wasmer Community" valign="middle"></a>
+///   <a href="https://pypi.org/project/wasmer/">
+///       <img src="https://img.shields.io/pypi/format/wasmer.svg" alt="Pypi" valign="middle"/></a>
+///   <a href="https://pypi.org/project/wasmer/">
+///       <img src="https://pepy.tech/badge/wasmer" alt="Number of downloads on Pypi" valign="middle"/></a>
+///   <a href="https://github.com/wasmerio/wasmer/blob/master/LICENSE">
+///     <img src="https://img.shields.io/github/license/wasmerio/wasmer.svg" alt="License" valign="middle"></a>
+/// </p>
 /// Wasmer is an advanced and mature WebAssembly runtime. The `wasmer`
 /// Python package is a native Python extension to embed Wasmer inside
 /// Python.
 ///
-/// # Example
+/// ## Example
 ///
 /// The very basic example is the following:
 ///
@@ -61,6 +77,7 @@ mod wat;
 ///
 /// That's it. Now explore the API! Some pointers for the adventurers:
 ///
+/// * The basic elements are `Module` and `Instance`,
 /// * Exports of an instance are represented by the `Exports` object,
 /// * Maybe your module needs to import `Function`, `Memory`, `Global`
 ///   or `Table`? Well, there is the `ImportObject` for that!
