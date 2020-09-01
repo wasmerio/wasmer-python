@@ -3,7 +3,17 @@ use crate::{
 };
 use pyo3::{exceptions::RuntimeError, prelude::*};
 
+/// A WebAssembly table instance.
+///
+/// The `Table` class is an array-like structure representing a
+/// WebAssembly table, which stores function references.
+///
+/// A table created by the host or in WebAssembly code will be
+/// accessible and mutable from both host and WebAssembly.
+///
+/// Specification: https://webassembly.github.io/spec/core/exec/runtime.html#table-instances
 #[pyclass(unsendable)]
+#[text_signature = "(store, table_type, initial_value)"]
 pub struct Table {
     inner: wasmer::Table,
 }
@@ -32,11 +42,40 @@ impl Table {
         })
     }
 
+    /// Gets the table size (in elements).
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import Store, Module, Instance, Table
+    ///
+    /// module = Module(Store(), '(module (table (export "table") 2 funcref))')
+    /// instance = Instance(module)
+    /// table = instance.exports.table
+    ///
+    /// assert table.size == 2
+    /// ```
     #[getter]
     fn size(&self) -> u32 {
         self.inner.size()
     }
 
+    /// Gets the table type, as an object of kind `TableType`.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import Store, Module, Instance, Table, Type
+    ///
+    /// module = Module(Store(), '(module (table (export "table") 2 funcref))')
+    /// instance = Instance(module)
+    /// table = instance.exports.table
+    /// table_type = table.type
+    ///
+    /// assert table_type == Type.FUNC_REF
+    /// assert table_type.minimum == 0
+    /// assert table_type.maximum == None
+    /// ```
     #[getter(type)]
     fn ty(&self) -> TableType {
         self.inner.ty().into()
