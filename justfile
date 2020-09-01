@@ -110,7 +110,9 @@ benchmark benchmark-filename='':
 
 # Generate the documentation.
 doc:
-	@pdoc --html --output-dir doc/html --force wasmer
+	@pdoc --html --output-dir docs/api --force wasmer
+	@mv doc/api/wasmer.html docs/api/index.html
+
 
 # Inspect the `python-ext-wasm` extension.
 inspect:
