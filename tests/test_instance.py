@@ -1,5 +1,5 @@
 import wasmer
-from wasmer import Instance, Module, Store, Exports
+from wasmer import Instance, Module, Store, Exports, Function, Global, Table, Memory
 import os
 import pytest
 
@@ -20,6 +20,26 @@ def test_exports():
     instance = Instance(Module(Store(), TEST_BYTES))
 
     assert isinstance(instance.exports, Exports)
+
+def test_exports_all_kind():
+    module = Module(
+        Store(),
+        """
+        (module
+          (func (export "func") (param i32 i64))
+          (global (export "glob") i32 (i32.const 7))
+          (table (export "tab") 0 funcref)
+          (memory (export "mem") 1))
+        """
+    )
+    instance = Instance(module)
+    exports = instance.exports
+
+    assert isinstance(exports, Exports)
+    assert isinstance(exports.func, Function)
+    assert isinstance(exports.glob, Global)
+    assert isinstance(exports.tab, Table)
+    assert isinstance(exports.mem, Memory)
 
 def test_exports_not_clone():
     instance = Instance(Module(Store(), TEST_BYTES))
