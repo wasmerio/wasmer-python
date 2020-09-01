@@ -11,7 +11,7 @@ use pyo3::{
 /// An `ImportObject` represents all of the import data used when
 /// instantiating a WebAssembly module.
 ///
-/// # Example
+/// ## Example
 ///
 /// Importing a function, `math.sum`, and call it through the exported
 /// `add_one` function:
