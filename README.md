@@ -123,7 +123,11 @@ $ python examples/simple.py
 
 # API of the `wasmer` package
 
-Run `just build` followed by `just doc` to generate the documentation inside `doc/html/wasmer.html`. Or you can browse it at …
+Browse the documentation at
+https://wasmerio.github.io/python-ext-wasm/.
+
+Alternatively, run `just build` followed by `just doc` to generate the
+documentation inside `docs/api/index.html`.
 
 # Development
 
