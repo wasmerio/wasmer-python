@@ -124,7 +124,7 @@ $ python examples/simple.py
 # API of the `wasmer` package
 
 Browse the documentation at
-https://wasmerio.github.io/python-ext-wasm/.
+https://wasmerio.github.io/python-ext-wasm/api/.
 
 Alternatively, run `just build` followed by `just doc` to generate the
 documentation inside `docs/api/index.html`.
