@@ -5,26 +5,23 @@
 </p>
 
 <p align="center">
-  <a href="https://spectrum.chat/wasmer">
-    <img src="https://withspectrum.github.io/badge/badge.svg" alt="Join the Wasmer Community" valign="middle"></a>
-  <a href="https://pypi.org/project/wasmer/">
-      <img src="https://img.shields.io/pypi/format/wasmer.svg" alt="Pypi" valign="middle"/></a>
   <a href="https://pypi.org/project/wasmer/">
       <img src="https://pepy.tech/badge/wasmer" alt="Number of downloads on Pypi" valign="middle"/></a>
-  <a href="https://github.com/wasmerio/wasmer/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/wasmerio/wasmer.svg" alt="License" valign="middle"></a>
+  <a href="https://slack.wasmer.io">
+    <img src="https://img.shields.io/static/v1?label=Slack&message=join%20chat&color=brighgreen&style=flat-square" alt="Slack channel">
+  </a> 
 </p>
 
-[Wasmer] is advanced and mature WebAssembly runtime. The `wasmer`
+[Wasmer] is an advanced and mature WebAssembly runtime. The `wasmer`
 Python package is a native Python extension to embed Wasmer inside
-Python. It is:
+Python. Wasmer is:
 
   * **Easy to use**: The `wasmer` API mimics the standard WebAssembly API,
   * **Fast**: `wasmer` executes the WebAssembly modules as fast as
     possible, close to **native speed**,
   * **Safe**: All calls to WebAssembly will be fast, but more
     importantly, completely safe and sandboxed.
-    
+
 [Wasmer]: https://github.com/wasmerio/wasmer
 
 # Install
