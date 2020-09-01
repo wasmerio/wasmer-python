@@ -38,10 +38,12 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
 
     /// Translate WebAssembly text source to WebAssembly binary format.
     ///
-    /// # Example
+    /// ## Example
     ///
-    /// ```
-    /// >>> print("hello")
+    /// ```py
+    /// from wasmer import wat2wasm
+    ///
+    /// assert wat2wasm('(module)') == b'\x00asm\x01\x00\x00\x00'
     /// ```
     #[pyfn(module, "wat2wasm")]
     #[text_signature = "(wat)"]
@@ -50,6 +52,12 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     }
 
     /// Disassemble WebAssembly binary to WebAssembly text format.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// assert wasm2wat(b'\x00asm\x01\x00\x00\x00') == '(module)'
+    /// ```
     #[pyfn(module, "wasm2wat")]
     #[text_signature = "(bytes)"]
     fn wasm2wat(bytes: &PyBytes) -> PyResult<String> {
