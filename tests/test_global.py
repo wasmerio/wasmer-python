@@ -1,20 +1,76 @@
-from wasmer import Instance
-import inspect
-import os
+from wasmer import Instance, Module, Store, Global, GlobalType, Type, Value
 import pytest
 
-here = os.path.dirname(os.path.realpath(__file__))
-TEST_BYTES = open(here + '/global.wasm', 'rb').read()
+TEST_BYTES = """
+(module
+  (global $x (export "x") (mut i32) (i32.const 0))
+  (global $y (export "y") (mut i32) (i32.const 7))
+  (global $z (export "z") i32 (i32.const 42))
+ 
+  (func (export "get_x") (result i32)
+    (global.get $x))
+ 
+  (func (export "increment_x")
+    (global.set $x
+      (i32.add (global.get $x) (i32.const 1)))))
+"""
+
+def instance():
+    return Instance(Module(Store(), TEST_BYTES))
+
+def test_constructor():
+    store = Store()
+    global_ = Global(store, Value.i32(42))
+
+    assert global_.value == 42
+
+    type = global_.type
+
+    assert type.type == Type.I32
+    assert type.mutable == False
+
+    global_ = Global(store, Value.i64(153), mutable=False)
+
+    assert global_.value == 153
+
+    type = global_.type
+
+    assert type.type == Type.I64
+    assert type.mutable == False
+
+def test_constructor_mutable():
+    store = Store()
+    global_ = Global(store, Value.i32(42), mutable=True)
+
+    assert global_.value == 42
+
+    type = global_.type
+
+    assert type.type == Type.I32
+    assert type.mutable == True
+
+    global_.value = 153
+
+    assert global_.value == 153
+
+def test_export():
+    assert isinstance(instance().exports.x, Global)
+
+def test_type():
+    type = instance().exports.x.type
+
+    assert type.type == Type.I32
+    assert type.mutable == True
 
 def test_global_mutable():
-    globals = Instance(TEST_BYTES).globals
+    exports = instance().exports
 
-    assert globals.x.mutable == True
-    assert globals.y.mutable == True
-    assert globals.z.mutable == False
+    assert exports.x.mutable == True
+    assert exports.y.mutable == True
+    assert exports.z.mutable == False
 
 def test_global_read_write():
-    y = Instance(TEST_BYTES).globals.y
+    y = instance().exports.y
 
     assert y.value == 7
 
@@ -23,9 +79,8 @@ def test_global_read_write():
     assert y.value == 8
 
 def test_global_read_write_and_exported_functions():
-    instance = Instance(TEST_BYTES)
-    exports = instance.exports
-    x = instance.globals.x
+    exports = instance().exports
+    x = exports.x
 
     assert x.value == 0
     assert exports.get_x() == 0
@@ -41,7 +96,7 @@ def test_global_read_write_and_exported_functions():
     assert exports.get_x() == 2
 
 def test_global_read_write_constant():
-    z = Instance(TEST_BYTES).globals.z
+    z = instance().exports.z
 
     assert z.value == 42
 
@@ -50,5 +105,5 @@ def test_global_read_write_constant():
 
     exception = context_manager.value
     assert str(exception) == (
-        'The global variable `z` is not mutable, cannot set a new value.'
+        'The global variable is not mutable, cannot set a new value'
     )

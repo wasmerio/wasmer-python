@@ -1,28 +1,25 @@
-use crate::{import::ImportObject, module::Module};
+use crate::{
+    errors::to_py_err, externals::Memory, import_object::ImportObject, module::Module,
+    store::Store, wasmer_inner::wasmer_wasi,
+};
 use pyo3::{
-    exceptions::{RuntimeError, ValueError},
+    exceptions::{RuntimeError, TypeError, ValueError},
     prelude::*,
-    pycell::PyCell,
     types::{PyDict, PyList},
 };
-use std::{
-    convert::{TryFrom, TryInto},
-    path::PathBuf,
-    slice,
-};
-use wasmer_wasi::{state, WasiVersion};
+use std::{path::PathBuf, slice};
 
 #[derive(Copy, Clone)]
 #[repr(u8)]
 pub enum Version {
-    Snapshot0 = 1,
-    Snapshot1 = 2,
-    Latest = 3,
+    Latest = 1,
+    Snapshot0 = 2,
+    Snapshot1 = 3,
 }
 
 impl Version {
     pub fn iter() -> slice::Iter<'static, Version> {
-        static VARIANTS: [Version; 3] = [Version::Snapshot0, Version::Snapshot1, Version::Latest];
+        static VARIANTS: [Version; 3] = [Version::Latest, Version::Snapshot0, Version::Snapshot1];
 
         VARIANTS.iter()
     }
@@ -31,42 +28,9 @@ impl Version {
 impl From<&Version> for &'static str {
     fn from(value: &Version) -> Self {
         match value {
-            Version::Snapshot0 => "Snapshot0",
-            Version::Snapshot1 => "Snapshot1",
-            Version::Latest => "Latest",
-        }
-    }
-}
-
-impl TryFrom<u8> for Version {
-    type Error = String;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            1 => Ok(Version::Snapshot0),
-            2 => Ok(Version::Snapshot1),
-            3 => Ok(Version::Latest),
-            e => Err(format!("Unknown WASI version `{}`", e)),
-        }
-    }
-}
-
-impl From<WasiVersion> for Version {
-    fn from(value: WasiVersion) -> Self {
-        match value {
-            WasiVersion::Snapshot0 => Version::Snapshot0,
-            WasiVersion::Snapshot1 => Version::Snapshot1,
-            WasiVersion::Latest => Version::Latest,
-        }
-    }
-}
-
-impl From<Version> for WasiVersion {
-    fn from(value: Version) -> Self {
-        match value {
-            Version::Snapshot0 => WasiVersion::Snapshot0,
-            Version::Snapshot1 => WasiVersion::Snapshot1,
-            Version::Latest => WasiVersion::Latest,
+            Version::Latest => "LATEST",
+            Version::Snapshot0 => "SNAPSHOT0",
+            Version::Snapshot1 => "SNAPSHOT1",
         }
     }
 }
@@ -77,19 +41,58 @@ impl ToPyObject for Version {
     }
 }
 
-/// `Wasi` is a Python class that helps to build a WASI state, i.e. to
-/// define WASI arguments, environments, preopened directories, mapped
-/// directories etc.
-#[pyclass]
-#[text_signature = "(arguments=[], environments={}, preopen_directories=[], map_directories={})"]
-pub struct Wasi {
-    pub(crate) inner: state::WasiStateBuilder,
+impl IntoPy<PyObject> for Version {
+    fn into_py(self, py: Python) -> PyObject {
+        self.to_object(py)
+    }
 }
 
-impl Wasi {
+impl<'source> FromPyObject<'source> for Version {
+    fn extract(obj: &'source PyAny) -> PyResult<Self> {
+        let variant = u8::extract(obj)?;
+
+        Ok(match variant {
+            1 => Self::Latest,
+            2 => Self::Snapshot0,
+            3 => Self::Snapshot1,
+            _ => {
+                return Err(to_py_err::<ValueError, _>(
+                    "Failed to extract `Version` from `PyAny`",
+                ))
+            }
+        })
+    }
+}
+
+impl From<wasmer_wasi::WasiVersion> for Version {
+    fn from(value: wasmer_wasi::WasiVersion) -> Self {
+        match value {
+            wasmer_wasi::WasiVersion::Latest => Self::Latest,
+            wasmer_wasi::WasiVersion::Snapshot0 => Self::Snapshot0,
+            wasmer_wasi::WasiVersion::Snapshot1 => Self::Snapshot1,
+        }
+    }
+}
+
+impl Into<wasmer_wasi::WasiVersion> for Version {
+    fn into(self) -> wasmer_wasi::WasiVersion {
+        match self {
+            Self::Latest => wasmer_wasi::WasiVersion::Latest,
+            Self::Snapshot0 => wasmer_wasi::WasiVersion::Snapshot0,
+            Self::Snapshot1 => wasmer_wasi::WasiVersion::Snapshot1,
+        }
+    }
+}
+
+#[pyclass]
+#[text_signature = "(arguments=[], environments={}, preopen_directories=[], map_directories={})"]
+pub struct StateBuilder {
+    inner: wasmer_wasi::WasiStateBuilder,
+}
+
+impl StateBuilder {
     pub fn self_arguments(&mut self, arguments: &PyList) {
-        self.inner
-            .args(arguments.iter().map(|any_item| any_item.to_string()));
+        self.inner.args(arguments.iter().map(ToString::to_string));
     }
 
     pub fn self_argument(&mut self, argument: String) {
@@ -115,12 +118,7 @@ impl Wasi {
                     .iter()
                     .map(|any_item| PathBuf::from(any_item.to_string())),
             )
-            .map_err(|error| {
-                RuntimeError::py_err(format!(
-                    "Failed to configure preopened directories when creating the WASI state: {}",
-                    error
-                ))
-            })?;
+            .map_err(to_py_err::<RuntimeError, _>)?;
 
         Ok(())
     }
@@ -128,12 +126,7 @@ impl Wasi {
     pub fn self_preopen_directory(&mut self, preopen_directory: String) -> PyResult<()> {
         self.inner
             .preopen_dir(PathBuf::from(preopen_directory))
-            .map_err(|error| {
-                RuntimeError::py_err(format!(
-                    "Failed to configure the preopened directory when creating the WASI state: {}",
-                    error
-                ))
-            })?;
+            .map_err(to_py_err::<RuntimeError, _>)?;
 
         Ok(())
     }
@@ -143,98 +136,53 @@ impl Wasi {
             .map_dirs(map_directories.iter().map(|(any_key, any_value)| {
                 (any_key.to_string(), PathBuf::from(any_value.to_string()))
             }))
-            .map_err(|error| {
-                RuntimeError::py_err(format!(
-                    "Failed to configure map directories when creating the WASI state: {}",
-                    error
-                ))
-            })?;
+            .map_err(to_py_err::<RuntimeError, _>)?;
 
         Ok(())
     }
 
     pub fn self_map_directory(&mut self, alias: String, directory: String) -> PyResult<()> {
         self.inner
-            .map_dir(alias.as_str(), PathBuf::from(directory.to_string()))
-            .map_err(|error| {
-                RuntimeError::py_err(format!(
-                    "Failed to configure the map directory when creating the WASI state: {}",
-                    error
-                ))
-            })?;
+            .map_dir(alias.as_str(), PathBuf::from(directory))
+            .map_err(to_py_err::<RuntimeError, _>)?;
 
         Ok(())
     }
 }
 
 #[pymethods]
-impl Wasi {
-    /// Build a `Wasi` object. The constructor can be used to
-    /// initialize its state, and its methods help to update its
-    /// state.
-    ///
-    /// # Examples
-    ///
-    /// Thus, both next notations are equivalent and can be mixed:
-    ///
-    /// ```py
-    /// wasi = Wasi(
-    ///     program_name="wasi_test_program",
-    ///     arguments=["--test"],
-    ///     environments={"COLOR": "true", "APP_SHOULD_LOG": "false"},
-    ///     map_directories={"the_host_current_dir": "."}
-    /// )
-    /// ```
-    ///
-    /// could be rewritten:
-    ///
-    /// ```py
-    /// wasi = \
-    ///     Wasi("wasi_test_program"). \
-    ///         argument("--test"). \
-    ///         environment("COLOR", "true"). \
-    ///         environment("APP_SHOULD_LOG", "false"). \
-    ///         map_directory("the_host_current_dir", ".")
-    /// ```
+impl StateBuilder {
     #[new]
-    #[args(
-        arguments = "PyList::empty(_py)",
-        environments = "PyDict::new(_py)",
-        preopen_directories = "PyList::empty(_py)",
-        map_directories = "PyDict::new(_py)"
-    )]
     fn new(
         program_name: String,
-        arguments: &PyList,
-        environments: &PyDict,
-        preopen_directories: &PyList,
-        map_directories: &PyDict,
+        arguments: Option<&PyList>,
+        environments: Option<&PyDict>,
+        preopen_directories: Option<&PyList>,
+        map_directories: Option<&PyDict>,
     ) -> PyResult<Self> {
         let mut wasi = Self {
-            inner: state::WasiState::new(program_name.as_str()),
+            inner: wasmer_wasi::WasiState::new(program_name.as_str()),
         };
 
-        if !arguments.is_empty() {
+        if let Some(arguments) = arguments {
             wasi.self_arguments(arguments);
         }
 
-        if !environments.is_empty() {
+        if let Some(environments) = environments {
             wasi.self_environments(environments);
         }
 
-        if !preopen_directories.is_empty() {
+        if let Some(preopen_directories) = preopen_directories {
             wasi.self_preopen_directories(preopen_directories)?;
         }
 
-        if !map_directories.is_empty() {
+        if let Some(map_directories) = map_directories {
             wasi.self_map_directories(map_directories)?;
         }
 
         Ok(wasi)
     }
 
-    /// Add a list of arguments to the program.
-    /// The arguments must not contain the `nul` (`0x0`) byte.
     #[text_signature = "($self, arguments)"]
     pub fn arguments<'py>(
         slf: &'py PyCell<Self>,
@@ -246,8 +194,6 @@ impl Wasi {
         Ok(slf)
     }
 
-    /// Add a single argument to the program.
-    /// The argument must not contain the `nul` (`0x0`) byte.
     #[text_signature = "($self, argument)"]
     pub fn argument<'py>(slf: &'py PyCell<Self>, argument: String) -> PyResult<&'py PyCell<Self>> {
         let mut slf_mut = slf.try_borrow_mut()?;
@@ -256,9 +202,6 @@ impl Wasi {
         Ok(slf)
     }
 
-    /// Add environment variables to the program.
-    /// The pairs key and value must not contain the `=` (`0x3d`) or
-    /// `nul` (`0x0)` byte.
     #[text_signature = "($self, environments)"]
     pub fn environments<'py>(
         slf: &'py PyCell<Self>,
@@ -270,9 +213,6 @@ impl Wasi {
         Ok(slf)
     }
 
-    /// Add a single environment variable to the program.
-    /// The pair key and value must not contain the `=` (`0x3d`) or
-    /// `nul` (`0x0)` byte.
     #[text_signature = "($self, key, value)"]
     pub fn environment<'py>(
         slf: &'py PyCell<Self>,
@@ -285,7 +225,6 @@ impl Wasi {
         Ok(slf)
     }
 
-    /// Add preopened directories to the program.
     #[text_signature = "($self, preopen_directories)"]
     pub fn preopen_directories<'py>(
         slf: &'py PyCell<Self>,
@@ -297,7 +236,6 @@ impl Wasi {
         Ok(slf)
     }
 
-    /// Add a single preopened directory to the program.
     #[text_signature = "($self, preopen_directory)"]
     pub fn preopen_directory<'py>(
         slf: &'py PyCell<Self>,
@@ -309,7 +247,6 @@ impl Wasi {
         Ok(slf)
     }
 
-    /// Add preopened directories with different names.
     #[text_signature = "($self, map_directories)"]
     pub fn map_directories<'py>(
         slf: &'py PyCell<Self>,
@@ -321,7 +258,6 @@ impl Wasi {
         Ok(slf)
     }
 
-    /// Add a single preopened directory with a different name.
     #[text_signature = "($self, alias, directory)"]
     pub fn map_directory<'py>(
         slf: &'py PyCell<Self>,
@@ -334,39 +270,57 @@ impl Wasi {
         Ok(slf)
     }
 
-    /// Transform this WASI object into an `ImportObject` object for a
-    /// particular module. The WASI version is optional; if absent, it
-    /// will be guessed with the strict parameter turned off (see
-    /// `Module::wasi_version` to learn more).
-    ///
-    /// # Examples
-    ///
-    /// ```py
-    /// module = Module(wasm_bytes)
-    /// wasi = Wasi("test_program", arguments=["--foobar"], environments={"BAZ": "qux"})
-    /// import_object = wasi.generate_import_object_for_module(module)
-    /// instance = module.instantiate(import_object)
-    /// ```
-    #[text_signature = "($self, module, version=0)"]
-    #[args(version = 0)]
-    pub fn generate_import_object_for_module(
-        &mut self,
-        module: &Module,
-        version: u8,
-    ) -> PyResult<ImportObject> {
-        let version: Version = if version == 0 {
-            wasmer_wasi::get_wasi_version(&module.inner, false)
-                .ok_or(())
-                .map(Into::into)
-                .map_err(|_| {
-                    RuntimeError::py_err("Failed to generate an import object from a WASI state because the given module has no WASI imports")
-                })?
-        } else {
-            version
-                .try_into()
-                .map_err(|e: String| ValueError::py_err(e))?
-        };
-
-        ImportObject::new_with_wasi(module.inner.clone(), version, self)
+    #[text_signature = "($self)"]
+    pub fn finalize(&mut self) -> PyResult<Environment> {
+        Ok(Environment::raw_new(
+            self.inner
+                .finalize()
+                .map_err(to_py_err::<RuntimeError, _>)?,
+        ))
     }
+}
+
+#[pyclass(unsendable)]
+pub struct Environment {
+    inner: wasmer_wasi::WasiEnv,
+}
+
+impl Environment {
+    fn raw_new(inner: wasmer_wasi::WasiEnv) -> Self {
+        Self { inner }
+    }
+}
+
+#[pymethods]
+impl Environment {
+    #[setter]
+    fn memory(&mut self, memory: &PyAny) -> PyResult<()> {
+        match memory.downcast::<PyCell<Memory>>() {
+            Ok(memory) => {
+                let memory = memory.borrow();
+
+                self.inner.set_memory(memory.inner().clone());
+
+                Ok(())
+            }
+
+            _ => Err(to_py_err::<TypeError, _>(
+                "Can only set a `Memory` object to `Environment.memory`",
+            )),
+        }
+    }
+
+    fn generate_import_object(&self, store: &Store, wasi_version: Version) -> ImportObject {
+        let import_object = wasmer_wasi::generate_import_object_from_env(
+            store.inner(),
+            self.inner.clone(),
+            wasi_version.into(),
+        );
+
+        ImportObject::raw_new(import_object)
+    }
+}
+
+pub fn get_version(module: &Module, strict: bool) -> Option<Version> {
+    wasmer_wasi::get_wasi_version(&module.inner(), strict).map(Into::into)
 }

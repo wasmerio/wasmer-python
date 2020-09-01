@@ -16,7 +16,7 @@ prelude:
 	pip3 install virtualenv
 	virtualenv .env
 	if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-	pip3 install maturin pytest pytest-benchmark twine
+	pip3 install maturin pytest pytest-benchmark twine pdoc3
 
 	which maturin
 	maturin --version
@@ -48,7 +48,7 @@ build rust_target='':
 
         if test -z "${build_features}"; then
                 if test "{{arch()}}" = "aarch64"; then
-                        build_features="backend-singlepass";
+                        build_features="default-singlepass";
                 fi
         fi
 
@@ -76,7 +76,7 @@ build-wheel python_version rust_target:
 
         if test -z "${build_features}"; then
                 if test "{{arch()}}" = "aarch64"; then
-                        build_features="backend-singlepass";
+                        build_features="default-singlepass";
                 fi
         fi
 
@@ -101,12 +101,18 @@ python-run file='':
 	@python {{file}}
 
 # Run the tests.
-test:
-	@py.test -v -s tests
+test files='tests':
+	@py.test -v -s {{files}}
 
 # Run one or more benchmarks.
 benchmark benchmark-filename='':
 	@py.test benchmarks/{{benchmark-filename}}
+
+# Generate the documentation.
+doc:
+	@pdoc --html --output-dir docs/api --force wasmer
+	@mv doc/api/wasmer.html docs/api/index.html
+
 
 # Inspect the `python-ext-wasm` extension.
 inspect:

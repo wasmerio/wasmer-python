@@ -1,27 +1,60 @@
-//! The `*Array` Python objects to represent WebAsembly memory views.
-
+use crate::{errors::to_py_err, wasmer_inner::wasmer};
 use pyo3::{
     class::PyMappingProtocol,
     exceptions::{IndexError, RuntimeError, ValueError},
     prelude::*,
     types::{PyAny, PyInt, PyLong, PySequence, PySlice},
 };
-use std::{cmp::min, mem::size_of, ops::Range, sync::Arc};
-use wasmer_runtime::memory::Memory;
+use std::{cell::Cell, cmp::min, mem::size_of, ops::Range};
 
 macro_rules! memory_view {
     ($class_name:ident over $wasm_type:ty | $bytes_per_element:expr) => {
+        /// Represents a read-and-write view over the data of a
+        /// memory.
+        ///
+        /// It is built by the `Memory.uint8_view` and siblings getters.
+        ///
+        /// It implements the [Python mapping
+        /// protocol][mapping-protocol], so it is possible to read and
+        /// write bytes with a standard Python API.
+        ///
+        /// [mapping-protocol]: https://docs.python.org/3/c-api/mapping.html
+        ///
+        /// ## Example
+        ///
+        /// This is an example for the `Uint8Array` view, but it is
+        /// the same for its siblings!
+        ///
+        /// ```py
+        /// from wasmer import Store, Module, Instance, Uint8Array
+        ///
+        /// module = Module(Store(), open('tests/tests.wasm', 'rb').read())
+        /// instance = Instance(module)
+        /// exports = instance.exports
+        ///
+        /// pointer = exports.string()
+        /// memory = exports.memory.uint8_view(offset=pointer)
+        /// nth = 0
+        /// string = ''
+        ///
+        /// while (0 != memory[nth]):
+        ///     string += chr(memory[nth])
+        ///     nth += 1
+        ///
+        /// assert string == 'Hello, World!'
+        /// ```
         #[pyclass]
         pub struct $class_name {
-            pub memory: Arc<Memory>,
-            pub offset: usize,
+            pub(crate) memory: wasmer::Memory,
+            pub(crate) offset: usize,
         }
 
         #[pymethods]
         impl $class_name {
+            /// Gets the number of bytes per element.
             #[getter]
-            fn bytes_per_element(&self) -> PyResult<u8> {
-                Ok($bytes_per_element)
+            fn bytes_per_element(&self) -> u8 {
+                $bytes_per_element
             }
         }
 
@@ -42,13 +75,13 @@ macro_rules! memory_view {
                     let slice = slice.indices(view.len() as _)?;
 
                     if slice.start >= slice.stop {
-                        return Err(IndexError::py_err(format!(
-                            "Slice `{}:{}` cannot be empty.",
+                        return Err(to_py_err::<IndexError, _>(format!(
+                            "Slice `{}:{}` cannot be empty",
                             slice.start, slice.stop
                         )));
                     } else if slice.step > 1 {
-                        return Err(IndexError::py_err(format!(
-                            "Slice must have a step of 1 for now; given {}.",
+                        return Err(to_py_err::<IndexError, _>(format!(
+                            "Slice must have a step of 1 for now; given {}",
                             slice.step
                         )));
                     }
@@ -56,8 +89,8 @@ macro_rules! memory_view {
                     (offset + slice.start as usize)..(min(offset + slice.stop as usize, view.len()))
                 } else if let Ok(index) = index.extract::<isize>() {
                     if index < 0 {
-                        return Err(IndexError::py_err(
-                            "Out of bound: Index cannot be negative.",
+                        return Err(to_py_err::<IndexError, _>(
+                            "Out of bound: Index cannot be negative",
                         ));
                     }
 
@@ -72,20 +105,20 @@ macro_rules! memory_view {
                         index..index + 1
                     }
                 } else {
-                    return Err(ValueError::py_err(
-                        "Only integers and slices are valid to represent an index.",
+                    return Err(to_py_err::<ValueError, _>(
+                        "Only integers and slices are valid to represent an index",
                     ));
                 };
 
                 if view.len() <= (range.end - 1) {
-                    return Err(IndexError::py_err(format!(
-                        "Out of bound: Maximum index {} is larger than the memory size {}.",
+                    return Err(to_py_err::<IndexError, _>(format!(
+                        "Out of bound: Maximum index {} is larger than the memory size {}",
                         range.end - 1,
                         view.len()
                     )));
                 }
 
-                let gil = GILGuard::acquire();
+                let gil = Python::acquire_gil();
                 let py = gil.python();
 
                 if range.end - range.start == 1 {
@@ -93,7 +126,7 @@ macro_rules! memory_view {
                 } else {
                     Ok(view[range]
                         .iter()
-                        .map(|cell| cell.get())
+                        .map(Cell::get)
                         .collect::<Vec<$wasm_type>>()
                         .into_py(py))
                 }
@@ -108,26 +141,22 @@ macro_rules! memory_view {
                 let view = self.memory.view::<$wasm_type>();
 
                 if let (Ok(slice), Ok(values)) = (
-                    index.cast_as::<PySlice>(),
+                    index.cast_as::<PySlice>().map_err(PyErr::from),
                     value
                         .cast_as::<PySequence>()
-                        .map_err(|_| {
-                            RuntimeError::py_err(
-                                "Failed to downcast `value` to a Python sequence.",
-                            )
-                        })
+                        .map_err(PyErr::from)
                         .and_then(|sequence| sequence.list()),
                 ) {
                     let slice = slice.indices(view.len() as _)?;
 
                     if slice.start >= slice.stop {
-                        return Err(IndexError::py_err(format!(
-                            "Slice `{}:{}` cannot be empty.",
+                        return Err(to_py_err::<IndexError, _>(format!(
+                            "Slice `{}:{}` cannot be empty",
                             slice.start, slice.stop
                         )));
                     } else if slice.step < 1 {
-                        return Err(IndexError::py_err(format!(
-                            "Slice must have a positive step; given {}.",
+                        return Err(to_py_err::<IndexError, _>(format!(
+                            "Slice must have a positive step; given {}",
                             slice.step
                         )));
                     }
@@ -141,8 +170,8 @@ macro_rules! memory_view {
                     // Normally unreachable since the slice is bound
                     // to the size of the memory view.
                     if iterator.len() > view.len() {
-                        return Err(IndexError::py_err(format!(
-                            "Out of bound: The given key slice will write out of memory; memory length is {}, memory offset is {}, slice length is {}.",
+                        return Err(to_py_err::<IndexError, _>(format!(
+                            "Out of bound: The given key slice will write out of memory; memory length is {}, memory offset is {}, slice length is {}",
                             view.len(),
                             offset,
                             iterator.len()
@@ -160,32 +189,24 @@ macro_rules! memory_view {
                 } else if let (Ok(index), Ok(value)) = (
                     index
                         .cast_as::<PyLong>()
-                        .map_err(|_| {
-                            RuntimeError::py_err(
-                                "Failed to downcast `index` to a Python long value.",
-                            )
-                        })
+                        .map_err(PyErr::from)
                         .and_then(|pylong| pylong.extract::<isize>()),
                     value
                         .cast_as::<PyInt>()
-                        .map_err(|_| {
-                            RuntimeError::py_err(
-                                "Failed to downcast `value` to a Python int value.",
-                            )
-                        })
+                        .map_err(PyErr::from)
                         .and_then(|pyint| pyint.extract::<$wasm_type>()),
                 ) {
                     if index < 0 {
-                        return Err(IndexError::py_err(
-                            "Out of bound: Index cannot be negative.",
+                        return Err(to_py_err::<IndexError, _>(
+                            "Out of bound: Index cannot be negative",
                         ));
                     }
 
                     let index = index as usize;
 
                     if view.len() <= offset + index {
-                        Err(IndexError::py_err(format!(
-                            "Out of bound: Absolute index {} is larger than the memory size {}.",
+                        Err(to_py_err::<IndexError, _>(format!(
+                            "Out of bound: Absolute index {} is larger than the memory size {}",
                             offset + index,
                             view.len()
                         )))
@@ -195,7 +216,7 @@ macro_rules! memory_view {
                         Ok(())
                     }
                 } else {
-                    Err(RuntimeError::py_err("When setting data to the memory view, the index and the value can only have the following types: Either `int` and `int`, or `slice` and `sequence`."))
+                    Err(to_py_err::<RuntimeError, _>("When setting data to the memory view, the index and the value can only have the following types: Either `int` and `int`, or `slice` and `sequence`"))
                 }
             }
         }

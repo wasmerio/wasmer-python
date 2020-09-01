@@ -1,6 +1,5 @@
-from wasmer import Module, WasiVersion, Wasi, ImportKind, Features
+from wasmer import wasi, Store, ImportObject, Module, Instance
 from enum import IntEnum
-import inspect
 import os
 import pytest
 import subprocess
@@ -10,83 +9,55 @@ here = os.path.dirname(os.path.realpath(__file__))
 TEST_BYTES = open(here + '/wasi.wasm', 'rb').read()
 
 def test_wasi_version():
-    assert issubclass(WasiVersion, IntEnum)
-    assert len(WasiVersion) == 3
-    assert WasiVersion.Snapshot0 == 1
-    assert WasiVersion.Snapshot1 == 2
-    assert WasiVersion.Latest == 3
+    assert issubclass(wasi.Version, IntEnum)
+    assert len(wasi.Version) == 3
+    assert wasi.Version.LATEST == 1
+    assert wasi.Version.SNAPSHOT0 == 2
+    assert wasi.Version.SNAPSHOT1 == 3
+
+def test_wasi_get_version():
+    assert wasi.get_version(Module(Store(), TEST_BYTES), strict=True) == wasi.Version.SNAPSHOT1
+
+def test_wasi_state_builder():
+    state_builder = \
+        wasi.StateBuilder("test-program"). \
+            argument("--foo"). \
+            environments({"ABC": "DEF", "X": "YZ"}). \
+            map_directory("the_host_current_dir", ".")   
+
+    assert isinstance(state_builder, wasi.StateBuilder)
+
+def test_wasi_env():
+    assert isinstance(wasi.StateBuilder("foo").finalize(), wasi.Environment)
 
 def test_wasi_import_object():
-    module = Module(TEST_BYTES)
-    import_object = Wasi('test-program').generate_import_object_for_module(module)
-    descriptors = sorted(import_object.import_descriptors(), key=lambda item: item['name'])
+    env = wasi.StateBuilder("foo").finalize()
 
-    assert descriptors == [
-        {'kind': ImportKind.FUNCTION, 'name': 'args_get', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'args_sizes_get', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'clock_res_get', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'clock_time_get', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'environ_get', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'environ_sizes_get', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_advise', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_allocate', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_close', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_datasync', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_fdstat_get', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_fdstat_set_flags', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_fdstat_set_rights', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_filestat_get', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_filestat_set_size', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_filestat_set_times', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_pread', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_prestat_dir_name', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_prestat_get', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_pwrite', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_read', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_readdir', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_renumber', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_seek', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_sync', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_tell', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'fd_write', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'path_create_directory', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'path_filestat_get', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'path_filestat_set_times', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'path_link', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'path_open', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'path_readlink', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'path_remove_directory', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'path_rename', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'path_symlink', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'path_unlink_file', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'poll_oneoff', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'proc_exit', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'proc_raise', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'random_get', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'sched_yield', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'sock_recv', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'sock_send', 'namespace': 'wasi_snapshot_preview1'},
-        {'kind': ImportKind.FUNCTION, 'name': 'sock_shutdown', 'namespace': 'wasi_snapshot_preview1'}
-    ]
+    assert isinstance(env.generate_import_object(Store(), wasi.Version.LATEST), ImportObject)
 
-def test_wasi_version_from_module():
-    module = Module(TEST_BYTES)
+def test_wasi_env_memory():
+    store = Store()
+    wasi_env = wasi.StateBuilder("foo").finalize()
+    import_object = wasi_env.generate_import_object(store, wasi.Version.LATEST)
 
-    assert module.is_wasi_module == True
-    assert module.wasi_version() == WasiVersion.Snapshot1
-    assert module.wasi_version(True) == WasiVersion.Snapshot1
+    instance = Instance(Module(store, TEST_BYTES), import_object)
 
-@pytest.mark.skipif(Features.wasi() == False, reason='WASI is not supported on aarch64 for the moment')
+    wasi_env.memory = instance.exports.memory
+
 def test_wasi():
     python = sys.executable
     result = subprocess.check_output(
         [
             python,
             '-c',
-            'from wasmer import Module, Wasi; \
-            module = Module(open("tests/wasi.wasm", "rb").read()); \
-            import_object = Wasi("test-program").argument("--foo").environments({"ABC": "DEF", "X": "YZ"}).map_directory("the_host_current_dir", ".").generate_import_object_for_module(module); \
-            instance = module.instantiate(import_object); \
+            'from wasmer import wasi, Store, Module, Instance; \
+            store = Store(); \
+            module = Module(store, open("tests/wasi.wasm", "rb").read()); \
+            wasi_version = wasi.get_version(module, strict=True); \
+            wasi_env = wasi.StateBuilder("test-program").argument("--foo").environments({"ABC": "DEF", "X": "YZ"}).map_directory("the_host_current_dir", ".").finalize(); \
+            import_object = wasi_env.generate_import_object(store, wasi_version); \
+            instance = Instance(module, import_object); \
+            wasi_env.memory = instance.exports.memory; \
             instance.exports._start()'
         ]
     )

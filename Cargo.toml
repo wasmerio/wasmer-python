@@ -1,5 +1,5 @@
 [package]
-name = "wasmer"
+name = "wasmer-py"
 version = "0.4.2-beta-11"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
@@ -15,18 +15,18 @@ name = "wasmer"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer-runtime = { version = "0.17", default-features = false }
-wasmer-runtime-core = { version = "0.17", features = ["dynamicfunc-fat-closures"] }
-wasmer-wasi = { version = "0.17" }
+wasmer = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
+wasmer-types = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
+wasmer-wasi = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
 pyo3 = { version = "0.11", features = ["extension-module"] }
 wat = "1.0"
 wasmprinter = "0.2"
 
 [features]
-default = ["backend-cranelift"]
-backend-cranelift = ["wasmer-runtime/default-backend-cranelift"]
-backend-singlepass = ["wasmer-runtime/default-backend-singlepass"]
-backend-llvm = ["wasmer-runtime/default-backend-llvm"]
+default = ["default-cranelift"]
+default-singlepass = ["wasmer/default-singlepass"]
+default-cranelift = ["wasmer/default-cranelift"]
+default-llvm = ["wasmer/default-llvm"]
 
 [package.metadata.maturin]
 project-url = [

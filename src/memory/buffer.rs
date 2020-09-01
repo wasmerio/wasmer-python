@@ -1,11 +1,10 @@
-//! The `Buffer` Python object to represent a WebAssembly memory
-//! through the Python Buffer Protocol.
-
+use crate::{errors::to_py_err, wasmer_inner::wasmer};
 use pyo3::{
     class::buffer::PyBufferProtocol,
     exceptions::BufferError,
     ffi::{PyBUF_FORMAT, PyBUF_ND, PyBUF_STRIDES, PyBUF_WRITABLE, Py_buffer},
     prelude::*,
+    pycell::PyRefMut,
 };
 use std::{
     ffi::{c_void, CStr},
@@ -13,21 +12,64 @@ use std::{
     ops::Deref,
     os::raw::{c_char, c_int},
     ptr,
-    sync::Arc,
 };
-use wasmer_runtime::memory::Memory;
 
-#[pyclass]
+/// Represents a read-and-write buffer over data of a memory.
+///
+/// It is built by the `Memory.buffer` getter.
+///
+/// It implements the [Python buffer protocol][buffer-protocol], so it
+/// is possible to read and write bytes with [`bytes`][bytes],
+/// [`bytearray`][bytearray] or [`memoryview`][memoryview].
+///
+/// [buffer-protocol]: https://docs.python.org/3/c-api/buffer.html
+/// [bytes]: https://docs.python.org/3/library/stdtypes.html#bytes
+/// [bytearray]: https://docs.python.org/3/library/stdtypes.html#bytearray
+/// [memoryview]: https://docs.python.org/3/library/stdtypes.html?#memoryview
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import Memory, MemoryType
+///
+/// store = Store()
+/// memory = Memory(store, MemoryType(128, shared=False))
+///
+/// # Let's write data with a `Int8Array` view for example.
+/// int8 = memory.int8_view()
+/// int8[0] = 1
+/// int8[1] = 2
+/// int8[2] = 3
+/// int8[3] = 0x57
+/// int8[4] = 0x61
+/// int8[5] = 0x73
+/// int8[6] = 0x6d
+/// int8[7] = 0x65
+/// int8[8] = 0x72
+///
+/// # Let's read data with a `Buffer` for example.
+/// byte_array = bytearray(memory.buffer)
+///
+/// assert byte_array[0:3] == b'\x01\x02\x03'
+/// assert byte_array[3:9].decode() == 'Wasmer'
+/// ```
+#[pyclass(unsendable)]
 pub struct Buffer {
-    pub memory: Arc<Memory>,
+    memory: wasmer::Memory,
+}
+
+impl Buffer {
+    pub fn new(memory: wasmer::Memory) -> Self {
+        Buffer { memory }
+    }
 }
 
 #[pyproto]
 impl PyBufferProtocol for Buffer {
     fn bf_getbuffer(slf: PyRefMut<Self>, view: *mut Py_buffer, flags: c_int) -> PyResult<()> {
         if view.is_null() {
-            return Err(BufferError::py_err(
-                "`Py_buffer` cannot be filled because it is null.",
+            return Err(to_py_err::<BufferError, _>(
+                "`Py_buffer` cannot be filled because it is null",
             ));
         }
 

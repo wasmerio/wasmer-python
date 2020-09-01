@@ -1,10 +1,10 @@
-from wasmer import Instance
+from wasmer import Store, Module, Instance
 import os
 
 __dir__ = os.path.dirname(os.path.realpath(__file__))
 
-wasm_bytes = open(__dir__ + '/add_one.wasm', 'rb').read()
-instance = Instance(wasm_bytes)
+module = Module(Store(), open(__dir__ + '/add_one.wasm', 'rb').read())
+instance = Instance(module)
 
 result = instance.exports.add_one(1)
 
