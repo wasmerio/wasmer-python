@@ -109,11 +109,30 @@ impl Into<wasmer::Type> for Type {
     }
 }
 
+/// Represents the signature of a function that is either implemented
+/// in WebAssembly module or exposed to WebAssembly by the host.
+///
+/// WebAssembly functions can have 0 or more parameters and results.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import FunctionType, Type
+///
+/// # Type: (i32, i32) -> i32
+/// function_type = FunctionType(
+///     params=[Type.I32, Type.I32],
+///     results=[Type.I32]
+/// )
+/// ```
 #[pyclass]
+#[text_signature = "(params, results)"]
 pub struct FunctionType {
+    /// Parameters, i.e. inputs, of the function.
     #[pyo3(get)]
     pub params: Vec<Type>,
 
+    /// Results, i.e. outputs, of the function.
     #[pyo3(get)]
     pub results: Vec<Type>,
 }
@@ -152,14 +171,33 @@ impl Into<wasmer::FunctionType> for &FunctionType {
     }
 }
 
+/// A descriptor for a WebAssembly memory type.
+///
+/// Memories are described in units of pages (64Kb) and represent
+/// contiguous chunks of addressable memory.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import MemoryType
+///
+/// memory_type = MemoryType(
+///     minimum=1,
+///     shared=True
+/// )
+/// ```
 #[pyclass]
+#[text_signature = "(minimum, maximum, shared)"]
 pub struct MemoryType {
+    /// The minimum number of pages in the memory.
     #[pyo3(get)]
     pub minimum: u32,
 
+    /// The maximum number of pages in the memory. It is optional.
     #[pyo3(get)]
     pub maximum: Option<u32>,
 
+    /// Whether the memory may be shared between multiple threads.
     #[pyo3(get)]
     pub shared: bool,
 }
@@ -192,11 +230,24 @@ impl Into<wasmer::MemoryType> for &MemoryType {
     }
 }
 
+/// A descriptor for a WebAssembly global.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import GlobalType, Type
+///
+/// # Describes a global of kind `i32` which is immutable.
+/// global_type = GlobalType(Type.I32, mutable=False)
+/// ```
 #[pyclass]
+#[text_signature = "(type, mutable)"]
 pub struct GlobalType {
+    /// The type of the value stored in the global.
     #[pyo3(get)]
     pub r#type: Type,
 
+    /// A flag indicating whether the value may change at runtime.
     #[pyo3(get)]
     pub mutable: bool,
 }
@@ -218,14 +269,32 @@ impl From<&wasmer::GlobalType> for GlobalType {
     }
 }
 
+/// A descriptor for a table in a WebAssembly module.
+///
+/// Tables are contiguous chunks of a specific element, typically a
+/// `funcref` or `externref`. The most common use for tables is a
+/// function table through which `call_indirect` can invoke other
+/// functions.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import TableType, Type
+///
+/// table_type = TableType(Type.I32, minimum=7, maximum=42)
+/// ```
 #[pyclass]
+#[text_signature = "(type, minium, maximum)"]
 pub struct TableType {
+    /// The type of data stored in elements of the table.
     #[pyo3(get)]
     pub r#type: Type,
 
+    /// The minimum number of elements in the table.
     #[pyo3(get)]
     pub minimum: u32,
 
+    /// The maximum number of elements in the table.
     #[pyo3(get)]
     pub maximum: Option<u32>,
 }
@@ -388,7 +457,7 @@ impl TryFrom<wasmer::ExportType> for ExportType {
 /// assert imports[3].type.shared == False
 /// ```
 #[pyclass]
-#[text_signature = "(name, type)"]
+#[text_signature = "(module, name, type)"]
 pub struct ImportType {
     /// The namespace name (also known as module name).
     #[pyo3(get)]
