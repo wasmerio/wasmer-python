@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://pypi.org/project/wasmer/">
-      <img src="https://pepy.tech/badge/wasmer" alt="Number of downloads on Pypi" valign="middle"/></a>
+      <img src="https://pepy.tech/badge/wasmer" alt="Number of downloads on Pypi"/></a>
   <a href="https://slack.wasmer.io">
     <img src="https://img.shields.io/static/v1?label=Slack&message=join%20chat&color=brighgreen&style=flat-square" alt="Slack channel">
   </a> 
