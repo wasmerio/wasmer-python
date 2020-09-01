@@ -14,6 +14,45 @@ use std::{
     ptr,
 };
 
+/// Represents a read-and-write buffer over data of a memory.
+///
+/// It is built by the `Memory.buffer` getter.
+///
+/// It implements the [Python buffer protocol][buffer-protocol], so it
+/// is possible to read and write bytes with [`bytes`],
+/// [`bytearray`] or [`memoryview`].
+///
+/// [buffer-protocol]: https://docs.python.org/3/c-api/buffer.html
+/// [`bytes`]: https://docs.python.org/3/library/stdtypes.html#bytes
+/// [`bytearray`]: https://docs.python.org/3/library/stdtypes.html#bytearray
+/// [`memoryview`]: https://docs.python.org/3/library/stdtypes.html?#memoryview
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import Memory, MemoryType
+///
+/// store = Store()
+/// memory = Memory(store, MemoryType(128, shared=False))
+///
+/// # Let's write data with a `Int8Array` view for example.
+/// int8 = memory.int8_view()
+/// int8[0] = 1
+/// int8[1] = 2
+/// int8[2] = 3
+/// int8[3] = 0x57
+/// int8[4] = 0x61
+/// int8[5] = 0x73
+/// int8[6] = 0x6d
+/// int8[7] = 0x65
+/// int8[8] = 0x72
+///
+/// # Let's read data with a `Buffer` for example.
+/// byte_array = bytearray(memory.buffer)
+///
+/// assert byte_array[0:3] == b'\x01\x02\x03'
+/// assert byte_array[3:9].decode() == 'Wasmer'
+/// ```
 #[pyclass(unsendable)]
 pub struct Buffer {
     memory: wasmer::Memory,
