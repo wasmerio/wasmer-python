@@ -12,7 +12,52 @@ use pyo3::{
 };
 use std::io;
 
+/// Represents a WebAssembly function instance.
+///
+/// A function instance is the runtime representation of a
+/// function. It effectively is a closure of the original function
+/// (defined in either the host or the WebAssembly module) over the
+/// runtime `Instance` of its originating `Module`.
+///
+/// The module instance is used to resolve references to other
+/// definitions during executing of the function.
+///
+/// Specification: https://webassembly.github.io/spec/core/exec/runtime.html#function-instances
+///
+/// Note that the function can be invoked/called by the host only when
+/// it is an exported function (see `Exports` to see an example).
+///
+/// # Example
+///
+/// To build a `Function`, we need its type. It can either be inferred
+/// from Python thanks to annotations, or be given with a
+/// `FunctionType` value.
+///
+/// First, let's see with Python annotations:
+///
+/// ```py
+/// from wasmer import Store, Function
+///
+/// def sum(x: int, y: int) -> int:
+///     return x + y
+///
+/// store = Store()
+/// function = Function(store, sum)
+/// ```
+///
+/// Second, the same code but without annotations and a `FunctionType`:
+///
+/// ```py
+/// from wasmer import Store, Function, FunctionType, Type
+///
+/// def sum(x, y):
+///     return x + y
+///
+/// store = Store()
+/// function = Function(store, sum, FunctionType([Type.I32, Type.I32], [Type.I32]))
+/// ```
 #[pyclass(unsendable)]
+#[text_signature = "(store, function, function_type)"]
 pub struct Function {
     inner: wasmer::Function,
 }
@@ -150,6 +195,7 @@ impl Function {
         Ok(Self::raw_new(host_function))
     }
 
+    /// Calls the function as a regular Python function.
     #[call]
     #[args(arguments = "*")]
     fn __call__<'p>(&self, py: Python<'p>, arguments: &PyTuple) -> PyResult<PyObject> {
@@ -178,6 +224,33 @@ impl Function {
         })
     }
 
+    /// Returns the type of the function as a `FunctionType` object.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import Store, Module, Instance, FunctionType, Type
+    ///
+    /// module = Module(
+    ///     Store(),
+    ///     """
+    ///     (module
+    ///       (type (func (param i32 i32) (result i32)))
+    ///       (func (type 0)
+    ///         local.get 0
+    ///         local.get 1
+    ///         i32.add)
+    ///       (export "sum" (func 0)))
+    ///     """
+    /// )
+    /// instance = Instance(module)
+    /// sum = instance.exports.sum
+    /// sum_type = sum.type
+    ///
+    /// assert isinstance(sum_type, FunctionType)
+    /// assert sum_type.params == [Type.I32, Type.I32]
+    /// assert sum_type.results == [Type.I32]
+    /// ```
     #[getter(type)]
     fn ty(&self) -> FunctionType {
         self.inner.ty().into()
