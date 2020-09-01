@@ -19,13 +19,13 @@ use std::{
 /// It is built by the `Memory.buffer` getter.
 ///
 /// It implements the [Python buffer protocol][buffer-protocol], so it
-/// is possible to read and write bytes with [`bytes`],
-/// [`bytearray`] or [`memoryview`].
+/// is possible to read and write bytes with [`bytes`][bytes],
+/// [`bytearray`][bytearray] or [`memoryview`][memoryview].
 ///
 /// [buffer-protocol]: https://docs.python.org/3/c-api/buffer.html
-/// [`bytes`]: https://docs.python.org/3/library/stdtypes.html#bytes
-/// [`bytearray`]: https://docs.python.org/3/library/stdtypes.html#bytearray
-/// [`memoryview`]: https://docs.python.org/3/library/stdtypes.html?#memoryview
+/// [bytes]: https://docs.python.org/3/library/stdtypes.html#bytes
+/// [bytearray]: https://docs.python.org/3/library/stdtypes.html#bytearray
+/// [memoryview]: https://docs.python.org/3/library/stdtypes.html?#memoryview
 ///
 /// ## Example
 ///
