@@ -258,11 +258,61 @@ impl Into<wasmer::TableType> for &TableType {
     }
 }
 
+/// Represents the type of a module's export (not to be confused with
+/// an export of an instance). It is usually built from the
+/// `Module.exports` getter.
+///
+/// ## Examples
+///
+/// ```py
+/// from wasmer import Store, Module, ExportType, FunctionType, GlobalType, TableType, MemoryType, Type
+///
+/// module = Module(
+///     Store(),
+///     """
+///     (module
+///       (func (export "function") (param i32 i64))
+///       (global (export "global") i32 (i32.const 7))
+///       (table (export "table") 0 funcref)
+///       (memory (export "memory") 1))
+///     """
+/// )
+///
+/// exports = module.exports
+///
+/// assert isinstance(exports[0], ExportType)
+///
+/// assert exports[0].name == "function"
+/// assert isinstance(exports[0].type, FunctionType)
+/// assert exports[0].type.params == [Type.I32, Type.I64]
+/// assert exports[0].type.results == []
+///
+/// assert exports[1].name == "global"
+/// assert isinstance(exports[1].type, GlobalType)
+/// assert exports[1].type.type == Type.I32
+/// assert exports[1].type.mutable == False
+///
+/// assert exports[2].name == "table"
+/// assert isinstance(exports[2].type, TableType)
+/// assert exports[2].type.type == Type.FUNC_REF
+/// assert exports[2].type.minimum == 0
+/// assert exports[2].type.maximum == None
+///
+/// assert exports[3].name == "memory"
+/// assert isinstance(exports[3].type, MemoryType)
+/// assert exports[3].type.minimum == 1
+/// assert exports[3].type.maximum == None
+/// assert exports[3].type.shared == False
+/// ```
 #[pyclass]
+#[text_signature = "(name, type)"]
 pub struct ExportType {
+    /// The name of the export.
     #[pyo3(get)]
     pub name: String,
 
+    /// The type of the export. Possible values are: `FunctionType`,
+    /// `GlobalType`, `TableType` and `MemoryType`.
     #[pyo3(get)]
     pub r#type: PyObject,
 }
@@ -289,14 +339,67 @@ impl TryFrom<wasmer::ExportType> for ExportType {
     }
 }
 
+/// Represents the type of a module's import. It is usually built from
+/// the `Module.imports` getter.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import Store, Module, ImportType, FunctionTYpe, GlobalType, TableType, MemoryType, Type
+///
+/// module = Module(
+///     Store(),
+///     """
+///     (module
+///     (import "ns" "function" (func))
+///     (import "ns" "global" (global f32))
+///     (import "ns" "table" (table 1 2 anyfunc))
+///     (import "ns" "memory" (memory 3 4)))
+///     """
+/// )
+/// imports = module.imports
+///
+/// assert isinstance(imports[0], ImportType)
+///
+/// assert imports[0].module == "ns"
+/// assert imports[0].name == "function"
+/// assert isinstance(imports[0].type, FunctionType)
+/// assert imports[0].type.params == []
+/// assert imports[0].type.results == []
+///
+/// assert imports[1].module == "ns"
+/// assert imports[1].name == "global"
+/// assert isinstance(imports[1].type, GlobalType)
+/// assert imports[1].type.type == Type.F32
+/// assert imports[1].type.mutable == False
+///
+/// assert imports[2].module == "ns"
+/// assert imports[2].name == "table"
+/// assert isinstance(imports[2].type, TableType)
+/// assert imports[2].type.type == Type.FUNC_REF
+/// assert imports[2].type.minimum == 1
+/// assert imports[2].type.maximum == 2
+///
+/// assert imports[3].module == "ns"
+/// assert imports[3].name == "memory"
+/// assert isinstance(imports[3].type, MemoryType)
+/// assert imports[3].type.minimum == 3
+/// assert imports[3].type.maximum == 4
+/// assert imports[3].type.shared == False
+/// ```
 #[pyclass]
+#[text_signature = "(name, type)"]
 pub struct ImportType {
+    /// The namespace name (also known as module name).
     #[pyo3(get)]
     pub module: String,
 
+    /// The name of the import.
     #[pyo3(get)]
     pub name: String,
 
+    /// The type of the import. Possible values are: `FunctionType`,
+    /// `GlobalType`, `TableType` and `MemoryType`.
     #[pyo3(get)]
     pub r#type: PyObject,
 }

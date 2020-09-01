@@ -23,8 +23,9 @@ mod values;
 mod wasi;
 mod wat;
 
-/// The `wasmer` module provides everything necessary to compile and
-/// to execute WebAssembly.
+/// Wasmer is an advanced and mature WebAssembly runtime. The `wasmer`
+/// Python package is a native Python extension to embed Wasmer inside
+/// Python.
 #[pymodule]
 fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     let enum_module = py.import("enum")?;
@@ -36,6 +37,12 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     // Functions.
 
     /// Translate WebAssembly text source to WebAssembly binary format.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// >>> print("hello")
+    /// ```
     #[pyfn(module, "wat2wasm")]
     #[text_signature = "(wat)"]
     fn wat2wasm<'py>(py: Python<'py>, wat: String) -> PyResult<&'py PyBytes> {
