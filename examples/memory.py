@@ -1,13 +1,13 @@
-from wasmer import Instance
+from wasmer import Store, Module, Instance
 import os
 
 __dir__ = os.path.dirname(os.path.realpath(__file__))
 
-wasm_bytes = open(__dir__ + '/memory.wasm', 'rb').read()
-instance = Instance(wasm_bytes)
+module = Module(Store(), open(__dir__ + '/memory.wasm', 'rb').read())
+instance = Instance(module)
 pointer = instance.exports.return_hello()
 
-memory = instance.memory.uint8_view(pointer)
+memory = instance.exports.memory.uint8_view(pointer)
 memory_length = len(memory)
 
 nth = 0;
