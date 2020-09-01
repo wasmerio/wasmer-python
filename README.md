@@ -24,7 +24,7 @@ Python. Wasmer is:
 
 [Wasmer]: https://github.com/wasmerio/wasmer
 
-# Install
+## Install
 
 To install the `wasmer` Python library, just run this command in your
 shell:
@@ -33,56 +33,9 @@ shell:
 $ pip install wasmer
 ```
 
-**Note**: There is a limited set of wheels published so far. More are
-coming.
+[View `wasmer` package on Pypi](https://pypi.org/project/wasmer/).
 
-[View the `wasmer` on Pypi](https://pypi.org/project/wasmer/).
-
-## Wheels
-
-We try to provide wheels for as many platforms and architectures as
-possible. [Wasmer, the runtime](https://github.com/wasmerio/wasmer),
-provides several compiler backends, which address different needs and
-contexts ([learn more][compiler-backends]). While it is possible to
-force one compiler backend for your own setup, the wheels come
-pre-packaged with a particular one. For the moment, here are the
-supported platforms and architectures:
-
-| Platform | Architecture | Triple | Default compiler backend |
-|-|-|-|-|
-| Linux | `amd64` | `x86_64-unknown-linux-gnu` | Cranelift |
-| Linux | `aarch64` | `aarch64-unknown-linux-gnu` | Singlepass |
-| Darwin | `amd64` | `x86_64-apple-darwin` | Cranelift |
-| Windows | `amd64` | `x86_64-pc-windows-msvc` | Cranelift |
-
-Note: it's also possible to [build Wasmer in Python with a specific
-backend](#use-a-particular-wasmer-compiler-backend), for example using
-LLVM for extra speed.
-
-Wheels are all built for the following Python versions:
-
-* Python 3.5,
-* Python 3.6,
-* Python 3.7,
-* Python 3.8.
-
-<details>
-<summary>Learn about the “fallback” <code>py3-none-any</code> wheel</summary>
-
-### `py3-none-any.whl`
-
-A special `wasmer-$(version)-py3-none-any` wheel is built as a
-fallback. The `wasmer` libray will be installable, but it will raise
-an `ImportError` exception saying that “Wasmer is not available on
-this system”.
-
-This wheel will be installed if none matches before (learn more by
-reading the [PEP 425, Compatibility Tags for Built
-Distributions](https://www.python.org/dev/peps/pep-0425/)).
-
-</details>
-
-# Example
+## Example
 
 There is a toy program in `examples/simple.rs`, written in Rust (or
 any other language that compiles to WebAssembly):
@@ -118,7 +71,7 @@ And then, finally, enjoy by running:
 $ python examples/simple.py
 ```
 
-# API of the `wasmer` package
+# Documentation
 
 Browse the documentation at
 https://wasmerio.github.io/python-ext-wasm/api/.
@@ -173,6 +126,7 @@ Finally, to inspect the extension; run:
 $ just inspect
 ```
 
+
 ## Use a particular Wasmer compiler backend
 
 Wasmer, the runtime, comes with several compiler backends addressing
@@ -188,6 +142,51 @@ To enable those features with `just build`, use such syntax:
 ```sh
 $ just --set build_features backend-llvm build
 ```
+
+## Supported platforms
+
+We try to provide wheels for as many platforms and architectures as
+possible. [Wasmer, the runtime](https://github.com/wasmerio/wasmer),
+provides several compiler backends, which address different needs and
+contexts ([learn more][compiler-backends]). While it is possible to
+force one compiler backend for your own setup, the wheels come
+pre-packaged with a particular one. For the moment, here are the
+supported platforms and architectures:
+
+| Platform | Architecture | Triple | Default compiler backend |
+|-|-|-|-|
+| Linux | `amd64` | `x86_64-unknown-linux-gnu` | Cranelift |
+| Linux | `aarch64` | `aarch64-unknown-linux-gnu` | Singlepass |
+| Darwin | `amd64` | `x86_64-apple-darwin` | Cranelift |
+| Windows | `amd64` | `x86_64-pc-windows-msvc` | Cranelift |
+
+Note: it's also possible to [build Wasmer in Python with a specific
+backend](#use-a-particular-wasmer-compiler-backend), for example using
+LLVM for extra speed.
+
+Wheels are all built for the following Python versions:
+
+* Python 3.5,
+* Python 3.6,
+* Python 3.7,
+* Python 3.8.
+
+<details>
+<summary>Learn about the “fallback” <code>py3-none-any</code> wheel</summary>
+
+### `py3-none-any.whl`
+
+A special `wasmer-$(version)-py3-none-any` wheel is built as a
+fallback. The `wasmer` libray will be installable, but it will raise
+an `ImportError` exception saying that “Wasmer is not available on
+this system”.
+
+This wheel will be installed if none matches before (learn more by
+reading the [PEP 425, Compatibility Tags for Built
+Distributions](https://www.python.org/dev/peps/pep-0425/)).
+
+</details>
+
 
 # Testing
 
