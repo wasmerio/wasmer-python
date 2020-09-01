@@ -90,6 +90,18 @@ pub(crate) fn to_py_object<'p>(py: Python<'p>) -> impl Fn(&wasmer::Value) -> PyO
     }
 }
 
+/// Represents a WebAssembly value of a specific type.
+///
+/// Most of the time, the types for WebAssembly values will be
+/// inferred. When it's not possible, the `Value` class is necessary.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import Value
+///
+/// value = Value.i32(42)
+/// ```
 #[pyclass(unsendable)]
 pub struct Value {
     inner: wasmer::Value,
@@ -103,6 +115,15 @@ impl Value {
 
 #[pymethods]
 impl Value {
+    /// Build a WebAssembly `i32` value.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import Value
+    ///
+    /// value = Value.i32(42)
+    /// ```
     #[staticmethod]
     #[text_signature = "(value)"]
     fn i32(value: i32) -> Self {
@@ -111,6 +132,15 @@ impl Value {
         }
     }
 
+    /// Build a WebAssembly `i64` value.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import Value
+    ///
+    /// value = Value.i64(42)
+    /// ```
     #[staticmethod]
     #[text_signature = "(value)"]
     fn i64(value: i64) -> Self {
@@ -119,6 +149,15 @@ impl Value {
         }
     }
 
+    /// Build a WebAssembly `f32` value.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import Value
+    ///
+    /// value = Value.f32(4.2)
+    /// ```
     #[staticmethod]
     #[text_signature = "(value)"]
     fn f32(value: f32) -> Self {
@@ -128,6 +167,14 @@ impl Value {
     }
 
     /// Build a WebAssembly `f64` value.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import Value
+    ///
+    /// value = Value.f64(4.2)
+    /// ```
     #[staticmethod]
     #[text_signature = "(value)"]
     fn f64(value: f64) -> Self {
@@ -137,6 +184,14 @@ impl Value {
     }
 
     /// Build a WebAssembly `v128` value.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import Value
+    ///
+    /// value = Value.v128(42)
+    /// ```
     #[staticmethod]
     #[text_signature = "(value)"]
     fn v128(value: u128) -> Self {
