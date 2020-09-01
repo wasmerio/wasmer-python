@@ -9,14 +9,47 @@ use std::{cell::Cell, cmp::min, mem::size_of, ops::Range};
 
 macro_rules! memory_view {
     ($class_name:ident over $wasm_type:ty | $bytes_per_element:expr) => {
+        /// Represents a read-and-write view over the data of a
+        /// memory.
+        ///
+        /// It implements the [Python mapping
+        /// protocol][mapping-protocol], so it is possible to read and
+        /// write bytes with a standard Python API.
+        ///
+        /// [mapping-protocol]: https://docs.python.org/3/c-api/mapping.html
+        ///
+        /// ## Example
+        ///
+        /// This is an example for the `Uint8Array` view, but it is
+        /// the same for its siblings!
+        ///
+        /// ```py
+        /// from wasmer import Store, Module, Instance, Uint8Array
+        ///
+        /// module = Module(Store(), open('tests/tests.wasm', 'rb').read())
+        /// instance = Instance(module)
+        /// exports = instance.exports
+        ///
+        /// pointer = exports.string()
+        /// memory = exports.memory.uint8_view(offset=pointer)
+        /// nth = 0
+        /// string = ''
+        ///
+        /// while (0 != memory[nth]):
+        ///     string += chr(memory[nth])
+        ///     nth += 1
+        ///
+        /// assert string == 'Hello, World!'
+        /// ```
         #[pyclass]
         pub struct $class_name {
-            pub memory: wasmer::Memory,
-            pub offset: usize,
+            pub(crate) memory: wasmer::Memory,
+            pub(crate) offset: usize,
         }
 
         #[pymethods]
         impl $class_name {
+            /// Gets the number of bytes per element.
             #[getter]
             fn bytes_per_element(&self) -> u8 {
                 $bytes_per_element
