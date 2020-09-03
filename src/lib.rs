@@ -173,14 +173,56 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     Ok(())
 }
 
-/// This `wasi` module provides WASI supports to `wasmer`.
+/// Wasmer's [WASI](https://github.com/WebAssembly/WASI)
+/// implementation.
+///
+/// From the user perspective, WASI is a bunch of imports. To generate
+/// the appropriated imports, you can use `StateBuilder` to build an
+/// `Environment`. This environment holds the WASI memory, and can be
+/// used to generate a valid `wasmer.ImportObject`. This last one can
+/// be passed to `wasmer.Instance` to instantiate a `wasmer.Module`
+/// that needs WASI support.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import wasi, Store, Module, Instance
+///
+/// store = Store()
+/// module = Module(store, open('tests/wasi.wasm', 'rb').read())
+///
+/// # Get the WASI version.
+/// wasi_version = wasi.get_version(module, strict=True)
+///
+/// # Build a WASI environment for the imports.
+/// wasi_env = wasi.StateBuilder('test-program').argument('--foo').finalize()
+///
+/// # Generate an `ImportObject` from the WASI environment.
+/// import_object = wasi_env.generate_import_object(store, wasi_version)
+///
+/// # Now we are ready to instantiate the module.
+/// instance = Instance(module, import_object)
+///
+/// # … But (!) WASI needs an access to the memory of the
+/// # module. Simple, pass it.
+/// wasi_env.memory = instance.exports.memory
+///
+/// # Here we go, let's start the program.
+/// instance.exports._start()
+/// ```
 #[pymodule]
 fn wasi(py: Python, module: &PyModule) -> PyResult<()> {
     let enum_module = py.import("enum")?;
 
     // Functions.
 
-    /// Try to find the WASI version of the given module.
+    /// Detect the version of WASI being used based on the import
+    /// namespaces.
+    ///
+    /// A strict detection expects that all imports live in a single WASI
+    /// namespace. A non-strict detection expects that at least one WASI
+    /// namespace exits to detect the version. Note that the strict
+    /// detection is faster than the non-strict one.
     #[pyfn(module, "get_version")]
     #[text_signature = "(module, strict)"]
     fn get_version(module: &module::Module, strict: bool) -> Option<wasi::Version> {
