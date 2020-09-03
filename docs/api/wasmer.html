@@ -1,0 +1,1761 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2.dev1+g1334dfa" />
+<title>wasmer API documentation</title>
+<meta name="description" content="&lt;img height=&#34;48&#34; src=&#34;https://wasmer.io/static/icons/favicon-96x96.png&#34; alt=&#34;Wasmer logo&#34; valign=&#34;middle&#34;&gt; Wasmer Python [![PyPI …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>wasmer</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="wasmer-python"><img height="48" src="https://wasmer.io/static/icons/favicon-96x96.png" alt="Wasmer logo" valign="middle"> Wasmer Python <a href="https://badge.fury.io/py/wasmer"><img alt="PyPI version" src="https://badge.fury.io/py/wasmer.svg?"></a> <a href="https://wasmerio.github.io/wasmer-python/api/"><img alt="Wasmer Python Documentation" src="https://img.shields.io/badge/docs-read-green"></a> <a href="https://pypi.org/project/wasmer/"><img alt="Wasmer PyPI downloads" src="https://pepy.tech/badge/wasmer"></a> <a href="https://slack.wasmer.io"><img alt="Wasmer Slack Channel" src="https://img.shields.io/static/v1?label=chat&amp;message=on%20Slack&amp;color=green"></a></h1>
+<p>A complete and mature WebAssembly runtime for Python based on <a href="https://github.com/wasmerio/wasmer">Wasmer</a>.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li><strong>Easy to use</strong>: The <code><a title="wasmer" href="#wasmer">wasmer</a></code> API mimics the standard WebAssembly API,</li>
+<li><strong>Fast</strong>: <code><a title="wasmer" href="#wasmer">wasmer</a></code> executes the WebAssembly modules as fast as
+possible, close to <strong>native speed</strong>,</li>
+<li><strong>Safe</strong>: All calls to WebAssembly will be fast, but more
+importantly, completely safe and sandboxed.</li>
+</ul>
+<h2 id="example">Example</h2>
+<p>The very basic example is the following:</p>
+<pre><code class="py">from wasmer import Store, Module, Instance
+
+# Create a store, which holds the engine, the compiler etc.
+store = Store()
+
+# Let's assume we don't have WebAssembly bytes at hand. We will
+# write WebAssembly manually.
+module = Module(
+    store,
+    &quot;&quot;&quot;
+    (module
+      (type (func (param i32 i32) (result i32)))
+      (func (type 0)
+        local.get 0
+        local.get 1
+        i32.add)
+      (export &quot;sum&quot; (func 0)))
+    &quot;&quot;&quot;
+)
+
+# Instantiates the module.
+instance = Instance(module)
+
+# Now, let's execute the `sum` function.
+assert instance.exports.sum(1, 2) == 3
+</code></pre>
+<p>That's it. Now explore the API! Some pointers for the adventurers:</p>
+<ul>
+<li>The basic elements are <code><a title="wasmer.Module" href="#wasmer.Module">Module</a></code> and <code><a title="wasmer.Instance" href="#wasmer.Instance">Instance</a></code>,</li>
+<li>Exports of an instance are represented by the <code><a title="wasmer.Exports" href="#wasmer.Exports">Exports</a></code> object,</li>
+<li>Maybe your module needs to import <code><a title="wasmer.Function" href="#wasmer.Function">Function</a></code>, <code><a title="wasmer.Memory" href="#wasmer.Memory">Memory</a></code>, <code><a title="wasmer.Global" href="#wasmer.Global">Global</a></code>
+or <code><a title="wasmer.Table" href="#wasmer.Table">Table</a></code>? Well, there is the <code><a title="wasmer.ImportObject" href="#wasmer.ImportObject">ImportObject</a></code> for that!</li>
+<li>It is possible to read and write <code><a title="wasmer.Memory" href="#wasmer.Memory">Memory</a></code> data with the Python
+buffer protocol with <code><a title="wasmer.Buffer" href="#wasmer.Buffer">Buffer</a></code>.</li>
+</ul>
+<p>Have fun!</p>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="wasi" href="wasi.html">wasi</a></code></dt>
+<dd>
+<div class="desc"><p>Wasmer's <a href="https://github.com/WebAssembly/WASI">WASI</a>
+implementation …</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="wasmer.wasm2wat"><code class="name flex">
+<span>def <span class="ident">wasm2wat</span></span>(<span>bytes)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Disassemble WebAssembly binary to WebAssembly text format.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">assert wasm2wat(b'\x00asm\x01\x00\x00\x00') == '(module)'
+</code></pre></div>
+</dd>
+<dt id="wasmer.wat2wasm"><code class="name flex">
+<span>def <span class="ident">wat2wasm</span></span>(<span>wat)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Translate WebAssembly text source to WebAssembly binary format.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import wat2wasm
+
+assert wat2wasm('(module)') == b'\x00asm\x01\x00\x00\x00'
+</code></pre></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="wasmer.Buffer"><code class="flex name class">
+<span>class <span class="ident">Buffer</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a read-and-write buffer over data of a memory.</p>
+<p>It is built by the <code><a title="wasmer.Memory.buffer" href="#wasmer.Memory.buffer">Memory.buffer</a></code> getter.</p>
+<p>It implements the <a href="https://docs.python.org/3/c-api/buffer.html">Python buffer protocol</a>, so it
+is possible to read and write bytes with <a href="https://docs.python.org/3/library/stdtypes.html#bytes"><code>bytes</code></a>,
+<a href="https://docs.python.org/3/library/stdtypes.html#bytearray"><code>bytearray</code></a> or <a href="https://docs.python.org/3/library/stdtypes.html?#memoryview"><code>memoryview</code></a>.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Memory, MemoryType
+
+store = Store()
+memory = Memory(store, MemoryType(128, shared=False))
+
+# Let's write data with a `Int8Array` view for example.
+int8 = memory.int8_view()
+int8[0] = 1
+int8[1] = 2
+int8[2] = 3
+int8[3] = 0x57
+int8[4] = 0x61
+int8[5] = 0x73
+int8[6] = 0x6d
+int8[7] = 0x65
+int8[8] = 0x72
+
+# Let's read data with a `Buffer` for example.
+byte_array = bytearray(memory.buffer)
+
+assert byte_array[0:3] == b'\x01\x02\x03'
+assert byte_array[3:9].decode() == 'Wasmer'
+</code></pre></div>
+</dd>
+<dt id="wasmer.ExportType"><code class="flex name class">
+<span>class <span class="ident">ExportType</span></span>
+<span>(</span><span>name, type)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents the type of a module's export (not to be confused with
+an export of an instance). It is usually built from the
+<code><a title="wasmer.Module.exports" href="#wasmer.Module.exports">Module.exports</a></code> getter.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="py">from wasmer import Store, Module, ExportType, FunctionType, GlobalType, TableType, MemoryType, Type
+
+module = Module(
+    Store(),
+    &quot;&quot;&quot;
+    (module
+      (func (export &quot;function&quot;) (param i32 i64))
+      (global (export &quot;global&quot;) i32 (i32.const 7))
+      (table (export &quot;table&quot;) 0 funcref)
+      (memory (export &quot;memory&quot;) 1))
+    &quot;&quot;&quot;
+)
+
+exports = module.exports
+
+assert isinstance(exports[0], ExportType)
+
+assert exports[0].name == &quot;function&quot;
+assert isinstance(exports[0].type, FunctionType)
+assert exports[0].type.params == [Type.I32, Type.I64]
+assert exports[0].type.results == []
+
+assert exports[1].name == &quot;global&quot;
+assert isinstance(exports[1].type, GlobalType)
+assert exports[1].type.type == Type.I32
+assert exports[1].type.mutable == False
+
+assert exports[2].name == &quot;table&quot;
+assert isinstance(exports[2].type, TableType)
+assert exports[2].type.type == Type.FUNC_REF
+assert exports[2].type.minimum == 0
+assert exports[2].type.maximum == None
+
+assert exports[3].name == &quot;memory&quot;
+assert isinstance(exports[3].type, MemoryType)
+assert exports[3].type.minimum == 1
+assert exports[3].type.maximum == None
+assert exports[3].type.shared == False
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.ExportType.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>The name of the export.</p></div>
+</dd>
+<dt id="wasmer.ExportType.type"><code class="name">var <span class="ident">type</span></code></dt>
+<dd>
+<div class="desc"><p>The type of the export. Possible values are: <code><a title="wasmer.FunctionType" href="#wasmer.FunctionType">FunctionType</a></code>,
+<code><a title="wasmer.GlobalType" href="#wasmer.GlobalType">GlobalType</a></code>, <code><a title="wasmer.TableType" href="#wasmer.TableType">TableType</a></code> and <code><a title="wasmer.MemoryType" href="#wasmer.MemoryType">MemoryType</a></code>.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Exports"><code class="flex name class">
+<span>class <span class="ident">Exports</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents all the exports of an instance. It is built by
+<code><a title="wasmer.Instance.exports" href="#wasmer.Instance.exports">Instance.exports</a></code>.</p>
+<p>Exports can be of kind <code><a title="wasmer.Function" href="#wasmer.Function">Function</a></code>, <code><a title="wasmer.Global" href="#wasmer.Global">Global</a></code>, <code><a title="wasmer.Table" href="#wasmer.Table">Table</a></code>, or <code><a title="wasmer.Memory" href="#wasmer.Memory">Memory</a></code>.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Module, Instance, Exports, Function, Global, Table, Memory
+
+module = Module(
+    Store(),
+    &quot;&quot;&quot;
+    (module
+      (func (export &quot;func&quot;) (param i32 i64))
+      (global (export &quot;glob&quot;) i32 (i32.const 7))
+      (table (export &quot;tab&quot;) 0 funcref)
+      (memory (export &quot;mem&quot;) 1))
+    &quot;&quot;&quot;
+)
+instance = Instance(module)
+exports = instance.exports
+
+assert isinstance(exports, Exports)
+assert isinstance(exports.func, Function)
+assert isinstance(exports.glob, Global)
+assert isinstance(exports.tab, Table)
+assert isinstance(exports.mem, Memory)
+</code></pre></div>
+</dd>
+<dt id="wasmer.Function"><code class="flex name class">
+<span>class <span class="ident">Function</span></span>
+<span>(</span><span>store, function, function_type)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a WebAssembly function instance.</p>
+<p>A function instance is the runtime representation of a
+function. It effectively is a closure of the original function
+(defined in either the host or the WebAssembly module) over the
+runtime <code><a title="wasmer.Instance" href="#wasmer.Instance">Instance</a></code> of its originating <code><a title="wasmer.Module" href="#wasmer.Module">Module</a></code>.</p>
+<p>The module instance is used to resolve references to other
+definitions during executing of the function.</p>
+<p>Specification: <a href="https://webassembly.github.io/spec/core/exec/runtime.html#function-instances">https://webassembly.github.io/spec/core/exec/runtime.html#function-instances</a></p>
+<p>Note that the function can be invoked/called by the host only when
+it is an exported function (see <code><a title="wasmer.Exports" href="#wasmer.Exports">Exports</a></code> to see an example).</p>
+<h1 id="example">Example</h1>
+<p>To build a <code><a title="wasmer.Function" href="#wasmer.Function">Function</a></code>, we need its type. It can either be inferred
+from Python thanks to annotations, or be given with a
+<code><a title="wasmer.FunctionType" href="#wasmer.FunctionType">FunctionType</a></code> value.</p>
+<p>First, let's see with Python annotations:</p>
+<pre><code class="py">from wasmer import Store, Function
+
+def sum(x: int, y: int) -&gt; int:
+    return x + y
+
+store = Store()
+function = Function(store, sum)
+</code></pre>
+<p>Second, the same code but without annotations and a <code><a title="wasmer.FunctionType" href="#wasmer.FunctionType">FunctionType</a></code>:</p>
+<pre><code class="py">from wasmer import Store, Function, FunctionType, Type
+
+def sum(x, y):
+    return x + y
+
+store = Store()
+function = Function(store, sum, FunctionType([Type.I32, Type.I32], [Type.I32]))
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Function.type"><code class="name">var <span class="ident">type</span></code></dt>
+<dd>
+<div class="desc"><p>Returns the type of the function as a <code><a title="wasmer.FunctionType" href="#wasmer.FunctionType">FunctionType</a></code> object.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Module, Instance, FunctionType, Type
+
+module = Module(
+    Store(),
+    &quot;&quot;&quot;
+    (module
+      (type (func (param i32 i32) (result i32)))
+      (func (type 0)
+        local.get 0
+        local.get 1
+        i32.add)
+      (export &quot;sum&quot; (func 0)))
+    &quot;&quot;&quot;
+)
+instance = Instance(module)
+sum = instance.exports.sum
+sum_type = sum.type
+
+assert isinstance(sum_type, FunctionType)
+assert sum_type.params == [Type.I32, Type.I32]
+assert sum_type.results == [Type.I32]
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.FunctionType"><code class="flex name class">
+<span>class <span class="ident">FunctionType</span></span>
+<span>(</span><span>params, results)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents the signature of a function that is either implemented
+in WebAssembly module or exposed to WebAssembly by the host.</p>
+<p>WebAssembly functions can have 0 or more parameters and results.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import FunctionType, Type
+
+# Type: (i32, i32) -&gt; i32
+function_type = FunctionType(
+    params=[Type.I32, Type.I32],
+    results=[Type.I32]
+)
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.FunctionType.params"><code class="name">var <span class="ident">params</span></code></dt>
+<dd>
+<div class="desc"><p>Parameters, i.e. inputs, of the function.</p></div>
+</dd>
+<dt id="wasmer.FunctionType.results"><code class="name">var <span class="ident">results</span></code></dt>
+<dd>
+<div class="desc"><p>Results, i.e. outputs, of the function.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Global"><code class="flex name class">
+<span>class <span class="ident">Global</span></span>
+<span>(</span><span>store, value, mutable)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a WebAssembly global instance.</p>
+<p>A global instance is the runtime representation of a global
+variable. It consists of an individual value and a flag indicating
+whether it is mutable.</p>
+<p>Specification: <a href="https://webassembly.github.io/spec/core/exec/runtime.html#global-instances">https://webassembly.github.io/spec/core/exec/runtime.html#global-instances</a></p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Global, Value, Type
+
+store = Store()
+
+# Let's create an immutable global.
+global_ = Global(store, Value.i32(42))
+global_type = global_.type
+
+assert global_.value == 42
+assert global_type.type == Type.I32
+assert global_type.mutable == False
+
+# Let's create an mutable global.
+global_ = Global(store, Value.i32(42), mutable=True)
+
+assert global_.mutable == True
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Global.mutable"><code class="name">var <span class="ident">mutable</span></code></dt>
+<dd>
+<div class="desc"><p>Checks whether the global is mutable.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Global, Value
+
+store = Store()
+global_ = Global(store, Value.i32(42), mutable=True)
+
+assert global_.mutable == True
+</code></pre></div>
+</dd>
+<dt id="wasmer.Global.type"><code class="name">var <span class="ident">type</span></code></dt>
+<dd>
+<div class="desc"><p>Returns the type of the global as a value of kind <code><a title="wasmer.GlobalType" href="#wasmer.GlobalType">GlobalType</a></code>.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Global, Value, Type
+
+store = Store()
+
+global_ = Global(store, Value.i32(42), mutable=False)
+global_type = global.type
+
+assert global_type.type == Type.I32
+assert global_type.mutable == False
+</code></pre></div>
+</dd>
+<dt id="wasmer.Global.value"><code class="name">var <span class="ident">value</span></code></dt>
+<dd>
+<div class="desc"><p>Get or set a custom value to the global instance.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Global, Value
+
+store = Store()
+global_ = Global(store, Value.i32(42), mutable=True)
+
+assert global_.value == 42
+
+global_.value = 153
+
+assert global_.value == 153
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.GlobalType"><code class="flex name class">
+<span>class <span class="ident">GlobalType</span></span>
+<span>(</span><span>type, mutable)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A descriptor for a WebAssembly global.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import GlobalType, Type
+
+# Describes a global of kind `i32` which is immutable.
+global_type = GlobalType(Type.I32, mutable=False)
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.GlobalType.mutable"><code class="name">var <span class="ident">mutable</span></code></dt>
+<dd>
+<div class="desc"><p>A flag indicating whether the value may change at runtime.</p></div>
+</dd>
+<dt id="wasmer.GlobalType.type"><code class="name">var <span class="ident">type</span></code></dt>
+<dd>
+<div class="desc"><p>The type of the value stored in the global.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.ImportObject"><code class="flex name class">
+<span>class <span class="ident">ImportObject</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>An <code><a title="wasmer.ImportObject" href="#wasmer.ImportObject">ImportObject</a></code> represents all of the import data used when
+instantiating a WebAssembly module.</p>
+<h2 id="example">Example</h2>
+<p>Importing a function, <code>math.sum</code>, and call it through the exported
+<code>add_one</code> function:</p>
+<pre><code class="py">from wasmer import Store, Module, Instance, ImportObject, Function
+def sum(x: int, y: int) -&gt; int:
+    return x + y
+
+store = Store()
+module = Module(
+    store,
+    &quot;&quot;&quot;
+    (module
+      (import &quot;math&quot; &quot;sum&quot; (func $sum (param i32 i32) (result i32)))
+      (func (export &quot;add_one&quot;) (param i32) (result i32)
+        local.get 0
+        i32.const 1
+        call $sum))
+    &quot;&quot;&quot;
+)
+
+import_object = ImportObject()
+import_object.register(
+    &quot;math&quot;,
+    {
+        &quot;sum&quot;: Function(store, sum)
+    }
+)
+
+instance = Instance(module, import_object)
+
+assert instance.exports.add_one(1) == 2
+</code></pre>
+<p>Importing a memory:</p>
+<pre><code class="py">from wasmer import Store, Module, Instance, Memory, MemoryType, ImportObject
+
+store = Store()
+module = Module(
+    store,
+    &quot;&quot;&quot;
+    (module
+      (import &quot;env&quot; &quot;memory&quot; (memory $memory 1))
+      (func (export &quot;increment&quot;)
+        i32.const 0
+        i32.const 0
+        i32.load    ;; load 0
+        i32.const 1
+        i32.add     ;; add 1
+        i32.store   ;; store at 0
+        ))
+    &quot;&quot;&quot;
+)
+
+memory = Memory(store, MemoryType(1, shared=False))
+view = memory.uint8_view(offset=0)
+
+import_object = ImportObject()
+import_object.register(
+    &quot;env&quot;,
+    {
+        &quot;memory&quot;: memory
+    }
+)
+
+instance = Instance(module, import_object)
+
+assert view[0] == 0
+instance.exports.increment()
+assert view[0] == 1
+instance.exports.increment()
+assert view[0] == 2
+</code></pre>
+<p>Importing a global:</p>
+<pre><code class="py">from wasmer import Store, Module, Instance, ImportObject, Global, Value
+
+store = Store()
+module = Module(
+    store,
+    &quot;&quot;&quot;
+    (module
+      (import &quot;env&quot; &quot;global&quot; (global $global (mut i32)))
+      (func (export &quot;read_g&quot;) (result i32)
+        global.get $global)
+      (func (export &quot;write_g&quot;) (param i32)
+        local.get 0
+        global.set $global))
+    &quot;&quot;&quot;
+)
+
+global_ = Global(store, Value.i32(7), mutable=True)
+
+import_object = ImportObject()
+import_object.register(
+    &quot;env&quot;,
+    {
+        &quot;global&quot;: global_
+    }
+)
+
+instance = Instance(module, import_object)
+
+assert instance.exports.read_g() == 7
+global_.value = 153
+assert instance.exports.read_g() == 153
+instance.exports.write_g(11)
+assert global_.value == 11
+</code></pre>
+<p>etc.</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="wasmer.ImportObject.contains_namespace"><code class="name flex">
+<span>def <span class="ident">contains_namespace</span></span>(<span>self, /, namespace_name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Checks whether the import object contains a specific namespace.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import ImportObject
+
+import_object = ImportObject()
+
+assert import_object.contains_namespace(&quot;foo&quot;) == False
+</code></pre></div>
+</dd>
+<dt id="wasmer.ImportObject.register"><code class="name flex">
+<span>def <span class="ident">register</span></span>(<span>self, /, namespace_name, namespace)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Registers a set of <code><a title="wasmer.Function" href="#wasmer.Function">Function</a></code>, <code><a title="wasmer.Memory" href="#wasmer.Memory">Memory</a></code>, <code><a title="wasmer.Global" href="#wasmer.Global">Global</a></code> or <code><a title="wasmer.Table" href="#wasmer.Table">Table</a></code>
+to a particular namespace.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import ImportObject, Function, Memory, MemoryType
+
+store = Store()
+
+def sum(x: int, y: int) -&gt; int:
+    return x + y
+
+import_object = ImportObject()
+import_object.register(
+    &quot;env&quot;,
+    {
+        &quot;sum&quot;: Function(store, sum),
+        &quot;memory&quot;: Memory(store, MemoryType(1, shared=False))
+    }
+)
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.ImportType"><code class="flex name class">
+<span>class <span class="ident">ImportType</span></span>
+<span>(</span><span>module, name, type)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents the type of a module's import. It is usually built from
+the <code><a title="wasmer.Module.imports" href="#wasmer.Module.imports">Module.imports</a></code> getter.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Module, ImportType, FunctionTYpe, GlobalType, TableType, MemoryType, Type
+
+module = Module(
+    Store(),
+    &quot;&quot;&quot;
+    (module
+    (import &quot;ns&quot; &quot;function&quot; (func))
+    (import &quot;ns&quot; &quot;global&quot; (global f32))
+    (import &quot;ns&quot; &quot;table&quot; (table 1 2 anyfunc))
+    (import &quot;ns&quot; &quot;memory&quot; (memory 3 4)))
+    &quot;&quot;&quot;
+)
+imports = module.imports
+
+assert isinstance(imports[0], ImportType)
+
+assert imports[0].module == &quot;ns&quot;
+assert imports[0].name == &quot;function&quot;
+assert isinstance(imports[0].type, FunctionType)
+assert imports[0].type.params == []
+assert imports[0].type.results == []
+
+assert imports[1].module == &quot;ns&quot;
+assert imports[1].name == &quot;global&quot;
+assert isinstance(imports[1].type, GlobalType)
+assert imports[1].type.type == Type.F32
+assert imports[1].type.mutable == False
+
+assert imports[2].module == &quot;ns&quot;
+assert imports[2].name == &quot;table&quot;
+assert isinstance(imports[2].type, TableType)
+assert imports[2].type.type == Type.FUNC_REF
+assert imports[2].type.minimum == 1
+assert imports[2].type.maximum == 2
+
+assert imports[3].module == &quot;ns&quot;
+assert imports[3].name == &quot;memory&quot;
+assert isinstance(imports[3].type, MemoryType)
+assert imports[3].type.minimum == 3
+assert imports[3].type.maximum == 4
+assert imports[3].type.shared == False
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.ImportType.module"><code class="name">var <span class="ident">module</span></code></dt>
+<dd>
+<div class="desc"><p>The namespace name (also known as module name).</p></div>
+</dd>
+<dt id="wasmer.ImportType.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>The name of the import.</p></div>
+</dd>
+<dt id="wasmer.ImportType.type"><code class="name">var <span class="ident">type</span></code></dt>
+<dd>
+<div class="desc"><p>The type of the import. Possible values are: <code><a title="wasmer.FunctionType" href="#wasmer.FunctionType">FunctionType</a></code>,
+<code><a title="wasmer.GlobalType" href="#wasmer.GlobalType">GlobalType</a></code>, <code><a title="wasmer.TableType" href="#wasmer.TableType">TableType</a></code> and <code><a title="wasmer.MemoryType" href="#wasmer.MemoryType">MemoryType</a></code>.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Instance"><code class="flex name class">
+<span>class <span class="ident">Instance</span></span>
+<span>(</span><span>module, import_object)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A WebAssembly instance is a stateful, executable instance of a
+WebAssembly <code><a title="wasmer.Module" href="#wasmer.Module">Module</a></code>.</p>
+<p>Instance objects contain all the exported WebAssembly functions,
+memories, tables and globals that allow interacting with
+WebAssembly.</p>
+<p>Specification: <a href="https://webassembly.github.io/spec/core/exec/runtime.html#module-instances">https://webassembly.github.io/spec/core/exec/runtime.html#module-instances</a></p>
+<h2 id="example">Example</h2>
+<p>Example without an import object. The following creates a module
+with a <code>sum</code> exported function that sum two integers.</p>
+<pre><code class="py">from wasmer import Store, Module, Instance
+
+module = Module(
+    Store(),
+    &quot;&quot;&quot;
+    (module
+      (type (func (param i32 i32) (result i32)))
+      (func (type 0)
+        local.get 0
+        local.get 1
+        i32.add)
+      (export &quot;sum&quot; (func 0)))
+    &quot;&quot;&quot;
+)
+instance = Instance(module)
+
+assert instance.exports.sum(1, 2) == 3
+</code></pre>
+<p>Example with an import object. The following creates a module that
+(i) imports a <code>sum</code> function from the <code>math</code> namespace, and (ii)
+exports a <code>add_one</code> function that adds 1 to any given integer (by
+using the <code>math.sum</code> function).</p>
+<pre><code class="py">from wasmer import Store, Module, Instance, ImportObject, Function
+
+# Let's define the `sum` function!
+def sum(x: int, y: int) -&gt; int:
+    return x + y
+
+# Let's build a store, as usual.
+store = Store()
+
+# Let's compile the WebAssembly module.
+module = Module(
+    store,
+    &quot;&quot;&quot;
+    (module
+      (import &quot;math&quot; &quot;sum&quot; (func $sum (param i32 i32) (result i32)))
+      (func (export &quot;add_one&quot;) (param i32) (result i32)
+        local.get 0
+        i32.const 1
+        call $sum))
+    &quot;&quot;&quot;
+)
+
+# Now, let's create an import object, and register the `sum`
+# function.
+import_object = ImportObject()
+import_object.register(
+    &quot;math&quot;,
+    {
+        &quot;sum&quot;: Function(store, sum)
+    }
+)
+
+# Here we go, let's instantiate the module with the import object!
+instance = Instance(module, import_object)
+
+# Let's test it!
+assert instance.exports.add_one(41) == 42
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Instance.exports"><code class="name">var <span class="ident">exports</span></code></dt>
+<dd>
+<div class="desc"><p>The exports of the instance, as an object of kind <code><a title="wasmer.Exports" href="#wasmer.Exports">Exports</a></code>.</p>
+<h2 id="example">Example</h2>
+<p>See the <code><a title="wasmer.Exports" href="#wasmer.Exports">Exports</a></code> class.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Int16Array"><code class="flex name class">
+<span>class <span class="ident">Int16Array</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a read-and-write view over the data of a
+memory.</p>
+<p>It is built by the <code><a title="wasmer.Memory.uint8_view" href="#wasmer.Memory.uint8_view">Memory.uint8_view()</a></code> and siblings getters.</p>
+<p>It implements the <a href="https://docs.python.org/3/c-api/mapping.html">Python mapping
+protocol</a>, so it is possible to read and
+write bytes with a standard Python API.</p>
+<h2 id="example">Example</h2>
+<p>This is an example for the <code><a title="wasmer.Uint8Array" href="#wasmer.Uint8Array">Uint8Array</a></code> view, but it is
+the same for its siblings!</p>
+<pre><code class="py">from wasmer import Store, Module, Instance, Uint8Array
+
+module = Module(Store(), open('tests/tests.wasm', 'rb').read())
+instance = Instance(module)
+exports = instance.exports
+
+pointer = exports.string()
+memory = exports.memory.uint8_view(offset=pointer)
+nth = 0
+string = ''
+
+while (0 != memory[nth]):
+    string += chr(memory[nth])
+    nth += 1
+
+assert string == 'Hello, World!'
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Int16Array.bytes_per_element"><code class="name">var <span class="ident">bytes_per_element</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the number of bytes per element.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Int32Array"><code class="flex name class">
+<span>class <span class="ident">Int32Array</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a read-and-write view over the data of a
+memory.</p>
+<p>It is built by the <code><a title="wasmer.Memory.uint8_view" href="#wasmer.Memory.uint8_view">Memory.uint8_view()</a></code> and siblings getters.</p>
+<p>It implements the <a href="https://docs.python.org/3/c-api/mapping.html">Python mapping
+protocol</a>, so it is possible to read and
+write bytes with a standard Python API.</p>
+<h2 id="example">Example</h2>
+<p>This is an example for the <code><a title="wasmer.Uint8Array" href="#wasmer.Uint8Array">Uint8Array</a></code> view, but it is
+the same for its siblings!</p>
+<pre><code class="py">from wasmer import Store, Module, Instance, Uint8Array
+
+module = Module(Store(), open('tests/tests.wasm', 'rb').read())
+instance = Instance(module)
+exports = instance.exports
+
+pointer = exports.string()
+memory = exports.memory.uint8_view(offset=pointer)
+nth = 0
+string = ''
+
+while (0 != memory[nth]):
+    string += chr(memory[nth])
+    nth += 1
+
+assert string == 'Hello, World!'
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Int32Array.bytes_per_element"><code class="name">var <span class="ident">bytes_per_element</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the number of bytes per element.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Int8Array"><code class="flex name class">
+<span>class <span class="ident">Int8Array</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a read-and-write view over the data of a
+memory.</p>
+<p>It is built by the <code><a title="wasmer.Memory.uint8_view" href="#wasmer.Memory.uint8_view">Memory.uint8_view()</a></code> and siblings getters.</p>
+<p>It implements the <a href="https://docs.python.org/3/c-api/mapping.html">Python mapping
+protocol</a>, so it is possible to read and
+write bytes with a standard Python API.</p>
+<h2 id="example">Example</h2>
+<p>This is an example for the <code><a title="wasmer.Uint8Array" href="#wasmer.Uint8Array">Uint8Array</a></code> view, but it is
+the same for its siblings!</p>
+<pre><code class="py">from wasmer import Store, Module, Instance, Uint8Array
+
+module = Module(Store(), open('tests/tests.wasm', 'rb').read())
+instance = Instance(module)
+exports = instance.exports
+
+pointer = exports.string()
+memory = exports.memory.uint8_view(offset=pointer)
+nth = 0
+string = ''
+
+while (0 != memory[nth]):
+    string += chr(memory[nth])
+    nth += 1
+
+assert string == 'Hello, World!'
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Int8Array.bytes_per_element"><code class="name">var <span class="ident">bytes_per_element</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the number of bytes per element.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Memory"><code class="flex name class">
+<span>class <span class="ident">Memory</span></span>
+<span>(</span><span>store, memory_type)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A WebAssembly memory instance.</p>
+<p>A memory instance is the runtime representation of a linear
+memory. It consists of a vector of bytes and an optional maximum
+size.</p>
+<p>The length of the vector always is a multiple of the WebAssembly
+page size, which is defined to be the constant 65536 – abbreviated
+64Ki. Like in a memory type, the maximum size in a memory
+instance is given in units of this page size.</p>
+<p>A memory created by the host or in WebAssembly code will be accessible and
+mutable from both host and WebAssembly.</p>
+<p>Specification: <a href="https://webassembly.github.io/spec/core/exec/runtime.html#memory-instances">https://webassembly.github.io/spec/core/exec/runtime.html#memory-instances</a></p>
+<h2 id="example">Example</h2>
+<p>Creates a <code><a title="wasmer.Memory" href="#wasmer.Memory">Memory</a></code> from scratch:</p>
+<pre><code class="py">from wasmer import Store, Memory, MemoryType
+
+store = Store()
+memory_type = MemoryType(3, shared=False)
+memory = Memory(store, memory_type)
+
+assert memory.size == 3
+</code></pre>
+<p>Gets a memory from the exports of an instance:</p>
+<pre><code class="py">from wasmer import Store, Module, Instance, Memory
+
+module = Module(Store(), open('tests/tests.wasm', 'rb').read())
+instance = Instance(module)
+
+memory = instance.exports.memory
+
+assert isinstance(memory, Memory)
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Memory.buffer"><code class="name">var <span class="ident">buffer</span></code></dt>
+<dd>
+<div class="desc"><p>Creates a Python buffer to read and write the memory data. See
+the <code><a title="wasmer.Buffer" href="#wasmer.Buffer">Buffer</a></code> class to learn more.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Memory, MemoryType, Buffer
+
+store = Store()
+memory_type = MemoryType(3, shared=False)
+memory = Memory(store, memory_type)
+
+assert isinstance(memory.buffer, Buffer)
+</code></pre></div>
+</dd>
+<dt id="wasmer.Memory.data_size"><code class="name">var <span class="ident">data_size</span></code></dt>
+<dd>
+<div class="desc"><p>Returns the size (in bytes) of the <code><a title="wasmer.Memory" href="#wasmer.Memory">Memory</a></code>.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Module, Instance
+
+module = Module(Store(), open('tests/tests.wasm', 'rb').read())
+instance = Instance(module)
+memory = instance.exports.memory
+
+assert memory.size == 1114112
+</code></pre></div>
+</dd>
+<dt id="wasmer.Memory.size"><code class="name">var <span class="ident">size</span></code></dt>
+<dd>
+<div class="desc"><p>Returns the size (in pages) of the <code><a title="wasmer.Memory" href="#wasmer.Memory">Memory</a></code>.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Module, Instance
+
+module = Module(Store(), open('tests/tests.wasm', 'rb').read())
+instance = Instance(module)
+memory = instance.exports.memory
+
+assert memory.size == 17
+</code></pre></div>
+</dd>
+<dt id="wasmer.Memory.type"><code class="name">var <span class="ident">type</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the memory type, of kind <code><a title="wasmer.MemoryType" href="#wasmer.MemoryType">MemoryType</a></code>.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Memory, Instance
+
+module = Module(Store(), open('tests/tests.wasm', 'rb').read())
+instance = Instance(module)
+memory = instance.exports.memory
+memory_type = memory.type
+
+assert memory_type.minimum == 17
+assert memory_type.maximum == None
+assert memory_type.shared == False
+</code></pre></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="wasmer.Memory.grow"><code class="name flex">
+<span>def <span class="ident">grow</span></span>(<span>self, /, number_of_pages)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Grow memory by the specified amount of WebAssembly pages.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Memory, MemoryType
+
+store = Store()
+memory_type = MemoryType(3, shared=False)
+memory = Memory(store, memory_type)
+
+assert memory.size == 3
+
+memory.grow(2)
+
+assert memory.size == 5
+</code></pre></div>
+</dd>
+<dt id="wasmer.Memory.int16_view"><code class="name flex">
+<span>def <span class="ident">int16_view</span></span>(<span>self, /, offset=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a read-and-write over the memory data where elements
+are of kind <code>int16</code>. See the <code><a title="wasmer.Int16Array" href="#wasmer.Int16Array">Int16Array</a></code> view to learn more,
+and the <code><a title="wasmer.Memory.uint8_view" href="#wasmer.Memory.uint8_view">Memory.uint8_view()</a></code> method to see an example.</p></div>
+</dd>
+<dt id="wasmer.Memory.int32_view"><code class="name flex">
+<span>def <span class="ident">int32_view</span></span>(<span>self, /, offset=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a read-and-write over the memory data where elements
+are of kind <code>int32</code>. See the <code><a title="wasmer.Int32Array" href="#wasmer.Int32Array">Int32Array</a></code> view to learn more,
+and the <code><a title="wasmer.Memory.uint8_view" href="#wasmer.Memory.uint8_view">Memory.uint8_view()</a></code> method to see an example.</p></div>
+</dd>
+<dt id="wasmer.Memory.int8_view"><code class="name flex">
+<span>def <span class="ident">int8_view</span></span>(<span>self, /, offset=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a read-and-write over the memory data where elements
+are of kind <code>int8</code>. See the <code><a title="wasmer.Int8Array" href="#wasmer.Int8Array">Int8Array</a></code> view to learn more,
+and the <code><a title="wasmer.Memory.uint8_view" href="#wasmer.Memory.uint8_view">Memory.uint8_view()</a></code> method to see an example.</p></div>
+</dd>
+<dt id="wasmer.Memory.uint16_view"><code class="name flex">
+<span>def <span class="ident">uint16_view</span></span>(<span>self, /, offset=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a read-and-write over the memory data where elements
+are of kind <code>uint16</code>. See the <code><a title="wasmer.Uint16Array" href="#wasmer.Uint16Array">Uint16Array</a></code> view to learn
+more, and the <code><a title="wasmer.Memory.uint8_view" href="#wasmer.Memory.uint8_view">Memory.uint8_view()</a></code> method to see an example.</p></div>
+</dd>
+<dt id="wasmer.Memory.uint32_view"><code class="name flex">
+<span>def <span class="ident">uint32_view</span></span>(<span>self, /, offset=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a read-and-write over the memory data where elements
+are of kind <code>uint32</code>. See the <code><a title="wasmer.Uint32Array" href="#wasmer.Uint32Array">Uint32Array</a></code> view to learn
+more, and the <code><a title="wasmer.Memory.uint8_view" href="#wasmer.Memory.uint8_view">Memory.uint8_view()</a></code> method to see an example.</p></div>
+</dd>
+<dt id="wasmer.Memory.uint8_view"><code class="name flex">
+<span>def <span class="ident">uint8_view</span></span>(<span>self, /, offset=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a read-and-write view over the memory data where
+elements are of kind <code>uint8</code>. See the <code><a title="wasmer.Uint8Array" href="#wasmer.Uint8Array">Uint8Array</a></code> view to
+learn more.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="py">from wasmer import Store, Memory, MemoryType, Uint8Array
+
+store = Store()
+memory_type = MemoryType(3, shared=False)
+memory = Memory(store, memory_type)
+
+assert isinstance(memory.uint8_view(offset=42), Uint8Array)
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.MemoryType"><code class="flex name class">
+<span>class <span class="ident">MemoryType</span></span>
+<span>(</span><span>minimum, maximum, shared)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A descriptor for a WebAssembly memory type.</p>
+<p>Memories are described in units of pages (64Kb) and represent
+contiguous chunks of addressable memory.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import MemoryType
+
+memory_type = MemoryType(
+    minimum=1,
+    shared=True
+)
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.MemoryType.maximum"><code class="name">var <span class="ident">maximum</span></code></dt>
+<dd>
+<div class="desc"><p>The maximum number of pages in the memory. It is optional.</p></div>
+</dd>
+<dt id="wasmer.MemoryType.minimum"><code class="name">var <span class="ident">minimum</span></code></dt>
+<dd>
+<div class="desc"><p>The minimum number of pages in the memory.</p></div>
+</dd>
+<dt id="wasmer.MemoryType.shared"><code class="name">var <span class="ident">shared</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the memory may be shared between multiple threads.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Module"><code class="flex name class">
+<span>class <span class="ident">Module</span></span>
+<span>(</span><span>store, bytes)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A WebAssembly module contains stateless WebAssembly code that has
+already been compiled and can be instantiated multiple times.</p>
+<p>Creates a new WebAssembly Module given the configuration
+in the store.</p>
+<p>If the provided bytes are not WebAssembly-like (start with
+<code>b"\0asm"</code>), this function will try to to convert the bytes
+assuming they correspond to the WebAssembly text format.</p>
+<h2 id="security">Security</h2>
+<p>Before the code is compiled, it will be validated using the store
+features.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Module
+
+store = Store()
+
+# Let's compile WebAssembly from bytes.
+module = Module(store, open('tests/tests.wasm', 'rb').read())
+
+# Let's compile WebAssembly from WAT.
+module = Module(store, '(module)')
+</code></pre></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="wasmer.Module.deserialize"><code class="name flex">
+<span>def <span class="ident">deserialize</span></span>(<span>self, /, bytes)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Deserializes a serialized module binary into a <code><a title="wasmer.Module" href="#wasmer.Module">Module</a></code>.</p>
+<p><strong>Note</strong>: the module has to be serialized before with the
+<code>serialize</code> method.</p>
+<h2 id="safety">Safety</h2>
+<p>This function is inherently <strong>unsafe</strong> as the provided bytes:</p>
+<ol>
+<li>Are going to be deserialized directly into Rust objects.</li>
+<li>Contains the function assembly bodies and, if intercepted,
+a malicious actor could inject code into executable
+memory.</li>
+</ol>
+<p>And as such, the <code>deserialize</code> method is unsafe.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Module
+
+store = Store()
+module = Module(
+    store,
+    &quot;&quot;&quot;
+    (module
+      (func (export &quot;function&quot;) (param i32 i64)))
+    &quot;&quot;&quot;
+)
+serialized_module = module.serialize()
+
+del module
+
+module = Module.deserialize(store, serialized_module)
+
+del serialized_module
+
+assert isinstance(module, Module)
+</code></pre></div>
+</dd>
+<dt id="wasmer.Module.validate"><code class="name flex">
+<span>def <span class="ident">validate</span></span>(<span>bytes)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validates a new WebAssembly Module given the configuration
+in the <code><a title="wasmer.Store" href="#wasmer.Store">Store</a></code>.</p>
+<p>This validation is normally pretty fast and checks the enabled
+WebAssembly features in the <code><a title="wasmer.Store" href="#wasmer.Store">Store</a></code> engine to assure deterministic
+validation of the <code><a title="wasmer.Module" href="#wasmer.Module">Module</a></code>.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Module
+
+assert Module.validate(Store(), wasm_bytes)
+</code></pre></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Module.exports"><code class="name">var <span class="ident">exports</span></code></dt>
+<dd>
+<div class="desc"><p>Returns a list of <code><a title="wasmer.ExportType" href="#wasmer.ExportType">ExportType</a></code> objects, which represents all
+the exports of this module.</p>
+<p>The order of the exports is guaranteed to be the same as in
+the WebAssembly bytecode.</p>
+<h2 id="example">Example</h2>
+<p>See the <code><a title="wasmer.ExportType" href="#wasmer.ExportType">ExportType</a></code> class to learn more.</p></div>
+</dd>
+<dt id="wasmer.Module.imports"><code class="name">var <span class="ident">imports</span></code></dt>
+<dd>
+<div class="desc"><p>Returns a list of <code><a title="wasmer.ImportType" href="#wasmer.ImportType">ImportType</a></code> objects, which represents all
+the imports of this module.</p>
+<p>The order of the imports is guaranteed to be the same as in
+the WebAssembly bytecode.</p>
+<h2 id="example">Example</h2>
+<p>See the <code><a title="wasmer.ImportType" href="#wasmer.ImportType">ImportType</a></code> class to learn more.</p></div>
+</dd>
+<dt id="wasmer.Module.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>Get or set the current name of the module.</p>
+<p>This name is normally set in the WebAssembly bytecode by some
+compilers, but can be also overwritten.</p>
+<p>Not all modules have a name.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Module
+
+store = Store()
+
+# Module with an existing name.
+assert Module(store, '(module $moduleName)').name == 'moduleName'
+
+# Module with no name.
+assert Module(store, '(module)').name == None
+
+# Change the module's name.
+module = Module(store, '(module $moduleName)')
+module.name = 'hello'
+assert module.name == 'hello'
+</code></pre></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="wasmer.Module.custom_sections"><code class="name flex">
+<span>def <span class="ident">custom_sections</span></span>(<span>self, /, name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the custom sections of the module given a <code>name</code>.</p>
+<h2 id="important">Important</h2>
+<p>Following the WebAssembly specification, one name can have
+multiple custom sections. That's why a list of bytes is
+returned rather than bytes.</p>
+<p>Consequently, the empty list represents the absence of a
+custom section for the given name.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="py">from wasmer import Store, Module
+
+module = Module(Store(), open('tests/custom_sections.wasm', 'rb').read())
+
+assert module.custom_sections('easter_egg') == [b'Wasmer']
+assert module.custom_sections('hello') == [b'World!']
+assert module.custom_sections('foo') == []
+</code></pre></div>
+</dd>
+<dt id="wasmer.Module.serialize"><code class="name flex">
+<span>def <span class="ident">serialize</span></span>(<span>self, /)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Serializes a module into a binary representation that the
+<code>Engine</code> can later process via <code><a title="wasmer.Module.deserialize" href="#wasmer.Module.deserialize">Module.deserialize()</a></code>.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="py">from wasmer import Store, Module
+
+store = Store()
+module = Module(Store(), '(module)')
+serialized_module = module.serialize()
+
+assert type(serialized_module) == bytes
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Store"><code class="flex name class">
+<span>class <span class="ident">Store</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>The store represents all global state that can be manipulated by
+WebAssembly programs. It consists of the runtime representation of
+all instances of functions, tables, memories, and globals that
+have been allocated during the lifetime of the abstract machine.</p>
+<p>The <code><a title="wasmer.Store" href="#wasmer.Store">Store</a></code> holds the engine (that is —amongst many things— used
+to compile the WebAssembly bytes into a valid module artifact), in
+addition to the <code>Tunables</code> (that are used to create the memories,
+tables and globals).</p>
+<p>Specification: <a href="https://webassembly.github.io/spec/core/exec/runtime.html#store">https://webassembly.github.io/spec/core/exec/runtime.html#store</a></p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store
+
+store = Store()
+</code></pre></div>
+</dd>
+<dt id="wasmer.Table"><code class="flex name class">
+<span>class <span class="ident">Table</span></span>
+<span>(</span><span>store, table_type, initial_value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A WebAssembly table instance.</p>
+<p>The <code><a title="wasmer.Table" href="#wasmer.Table">Table</a></code> class is an array-like structure representing a
+WebAssembly table, which stores function references.</p>
+<p>A table created by the host or in WebAssembly code will be
+accessible and mutable from both host and WebAssembly.</p>
+<p>Specification: <a href="https://webassembly.github.io/spec/core/exec/runtime.html#table-instances">https://webassembly.github.io/spec/core/exec/runtime.html#table-instances</a></p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Table.size"><code class="name">var <span class="ident">size</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the table size (in elements).</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Module, Instance, Table
+
+module = Module(Store(), '(module (table (export &quot;table&quot;) 2 funcref))')
+instance = Instance(module)
+table = instance.exports.table
+
+assert table.size == 2
+</code></pre></div>
+</dd>
+<dt id="wasmer.Table.type"><code class="name">var <span class="ident">type</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the table type, as an object of kind <code><a title="wasmer.TableType" href="#wasmer.TableType">TableType</a></code>.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Store, Module, Instance, Table, Type
+
+module = Module(Store(), '(module (table (export &quot;table&quot;) 2 funcref))')
+instance = Instance(module)
+table = instance.exports.table
+table_type = table.type
+
+assert table_type == Type.FUNC_REF
+assert table_type.minimum == 0
+assert table_type.maximum == None
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.TableType"><code class="flex name class">
+<span>class <span class="ident">TableType</span></span>
+<span>(</span><span>type, minium, maximum)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A descriptor for a table in a WebAssembly module.</p>
+<p>Tables are contiguous chunks of a specific element, typically a
+<code>funcref</code> or <code>externref</code>. The most common use for tables is a
+function table through which <code>call_indirect</code> can invoke other
+functions.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import TableType, Type
+
+table_type = TableType(Type.I32, minimum=7, maximum=42)
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.TableType.maximum"><code class="name">var <span class="ident">maximum</span></code></dt>
+<dd>
+<div class="desc"><p>The maximum number of elements in the table.</p></div>
+</dd>
+<dt id="wasmer.TableType.minimum"><code class="name">var <span class="ident">minimum</span></code></dt>
+<dd>
+<div class="desc"><p>The minimum number of elements in the table.</p></div>
+</dd>
+<dt id="wasmer.TableType.type"><code class="name">var <span class="ident">type</span></code></dt>
+<dd>
+<div class="desc"><p>The type of data stored in elements of the table.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Type"><code class="flex name class">
+<span>class <span class="ident">Type</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="wasmer.Type.EXTERN_REF"><code class="name">var <span class="ident">EXTERN_REF</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wasmer.Type.F32"><code class="name">var <span class="ident">F32</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wasmer.Type.F64"><code class="name">var <span class="ident">F64</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wasmer.Type.FUNC_REF"><code class="name">var <span class="ident">FUNC_REF</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wasmer.Type.I32"><code class="name">var <span class="ident">I32</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wasmer.Type.I64"><code class="name">var <span class="ident">I64</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wasmer.Type.V128"><code class="name">var <span class="ident">V128</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Uint16Array"><code class="flex name class">
+<span>class <span class="ident">Uint16Array</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a read-and-write view over the data of a
+memory.</p>
+<p>It is built by the <code><a title="wasmer.Memory.uint8_view" href="#wasmer.Memory.uint8_view">Memory.uint8_view()</a></code> and siblings getters.</p>
+<p>It implements the <a href="https://docs.python.org/3/c-api/mapping.html">Python mapping
+protocol</a>, so it is possible to read and
+write bytes with a standard Python API.</p>
+<h2 id="example">Example</h2>
+<p>This is an example for the <code><a title="wasmer.Uint8Array" href="#wasmer.Uint8Array">Uint8Array</a></code> view, but it is
+the same for its siblings!</p>
+<pre><code class="py">from wasmer import Store, Module, Instance, Uint8Array
+
+module = Module(Store(), open('tests/tests.wasm', 'rb').read())
+instance = Instance(module)
+exports = instance.exports
+
+pointer = exports.string()
+memory = exports.memory.uint8_view(offset=pointer)
+nth = 0
+string = ''
+
+while (0 != memory[nth]):
+    string += chr(memory[nth])
+    nth += 1
+
+assert string == 'Hello, World!'
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Uint16Array.bytes_per_element"><code class="name">var <span class="ident">bytes_per_element</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the number of bytes per element.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Uint32Array"><code class="flex name class">
+<span>class <span class="ident">Uint32Array</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a read-and-write view over the data of a
+memory.</p>
+<p>It is built by the <code><a title="wasmer.Memory.uint8_view" href="#wasmer.Memory.uint8_view">Memory.uint8_view()</a></code> and siblings getters.</p>
+<p>It implements the <a href="https://docs.python.org/3/c-api/mapping.html">Python mapping
+protocol</a>, so it is possible to read and
+write bytes with a standard Python API.</p>
+<h2 id="example">Example</h2>
+<p>This is an example for the <code><a title="wasmer.Uint8Array" href="#wasmer.Uint8Array">Uint8Array</a></code> view, but it is
+the same for its siblings!</p>
+<pre><code class="py">from wasmer import Store, Module, Instance, Uint8Array
+
+module = Module(Store(), open('tests/tests.wasm', 'rb').read())
+instance = Instance(module)
+exports = instance.exports
+
+pointer = exports.string()
+memory = exports.memory.uint8_view(offset=pointer)
+nth = 0
+string = ''
+
+while (0 != memory[nth]):
+    string += chr(memory[nth])
+    nth += 1
+
+assert string == 'Hello, World!'
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Uint32Array.bytes_per_element"><code class="name">var <span class="ident">bytes_per_element</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the number of bytes per element.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Uint8Array"><code class="flex name class">
+<span>class <span class="ident">Uint8Array</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a read-and-write view over the data of a
+memory.</p>
+<p>It is built by the <code><a title="wasmer.Memory.uint8_view" href="#wasmer.Memory.uint8_view">Memory.uint8_view()</a></code> and siblings getters.</p>
+<p>It implements the <a href="https://docs.python.org/3/c-api/mapping.html">Python mapping
+protocol</a>, so it is possible to read and
+write bytes with a standard Python API.</p>
+<h2 id="example">Example</h2>
+<p>This is an example for the <code><a title="wasmer.Uint8Array" href="#wasmer.Uint8Array">Uint8Array</a></code> view, but it is
+the same for its siblings!</p>
+<pre><code class="py">from wasmer import Store, Module, Instance, Uint8Array
+
+module = Module(Store(), open('tests/tests.wasm', 'rb').read())
+instance = Instance(module)
+exports = instance.exports
+
+pointer = exports.string()
+memory = exports.memory.uint8_view(offset=pointer)
+nth = 0
+string = ''
+
+while (0 != memory[nth]):
+    string += chr(memory[nth])
+    nth += 1
+
+assert string == 'Hello, World!'
+</code></pre></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Uint8Array.bytes_per_element"><code class="name">var <span class="ident">bytes_per_element</span></code></dt>
+<dd>
+<div class="desc"><p>Gets the number of bytes per element.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wasmer.Value"><code class="flex name class">
+<span>class <span class="ident">Value</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a WebAssembly value of a specific type.</p>
+<p>Most of the time, the types for WebAssembly values will be
+inferred. When it's not possible, the <code><a title="wasmer.Value" href="#wasmer.Value">Value</a></code> class is necessary.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Value
+
+value = Value.i32(42)
+</code></pre></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="wasmer.Value.f32"><code class="name flex">
+<span>def <span class="ident">f32</span></span>(<span>value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Build a WebAssembly <code>f32</code> value.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Value
+
+value = Value.f32(4.2)
+</code></pre></div>
+</dd>
+<dt id="wasmer.Value.f64"><code class="name flex">
+<span>def <span class="ident">f64</span></span>(<span>value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Build a WebAssembly <code>f64</code> value.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Value
+
+value = Value.f64(4.2)
+</code></pre></div>
+</dd>
+<dt id="wasmer.Value.i32"><code class="name flex">
+<span>def <span class="ident">i32</span></span>(<span>value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Build a WebAssembly <code>i32</code> value.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Value
+
+value = Value.i32(42)
+</code></pre></div>
+</dd>
+<dt id="wasmer.Value.i64"><code class="name flex">
+<span>def <span class="ident">i64</span></span>(<span>value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Build a WebAssembly <code>i64</code> value.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Value
+
+value = Value.i64(42)
+</code></pre></div>
+</dd>
+<dt id="wasmer.Value.v128"><code class="name flex">
+<span>def <span class="ident">v128</span></span>(<span>value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Build a WebAssembly <code>v128</code> value.</p>
+<h2 id="example">Example</h2>
+<pre><code class="py">from wasmer import Value
+
+value = Value.v128(42)
+</code></pre></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#wasmer-python"> Wasmer Python</a><ul>
+<li><a href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="wasi" href="wasi.html">wasi</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="wasmer.wasm2wat" href="#wasmer.wasm2wat">wasm2wat</a></code></li>
+<li><code><a title="wasmer.wat2wasm" href="#wasmer.wat2wasm">wat2wasm</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="wasmer.Buffer" href="#wasmer.Buffer">Buffer</a></code></h4>
+</li>
+<li>
+<h4><code><a title="wasmer.ExportType" href="#wasmer.ExportType">ExportType</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.ExportType.name" href="#wasmer.ExportType.name">name</a></code></li>
+<li><code><a title="wasmer.ExportType.type" href="#wasmer.ExportType.type">type</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Exports" href="#wasmer.Exports">Exports</a></code></h4>
+</li>
+<li>
+<h4><code><a title="wasmer.Function" href="#wasmer.Function">Function</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.Function.type" href="#wasmer.Function.type">type</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.FunctionType" href="#wasmer.FunctionType">FunctionType</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.FunctionType.params" href="#wasmer.FunctionType.params">params</a></code></li>
+<li><code><a title="wasmer.FunctionType.results" href="#wasmer.FunctionType.results">results</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Global" href="#wasmer.Global">Global</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.Global.mutable" href="#wasmer.Global.mutable">mutable</a></code></li>
+<li><code><a title="wasmer.Global.type" href="#wasmer.Global.type">type</a></code></li>
+<li><code><a title="wasmer.Global.value" href="#wasmer.Global.value">value</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.GlobalType" href="#wasmer.GlobalType">GlobalType</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.GlobalType.mutable" href="#wasmer.GlobalType.mutable">mutable</a></code></li>
+<li><code><a title="wasmer.GlobalType.type" href="#wasmer.GlobalType.type">type</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.ImportObject" href="#wasmer.ImportObject">ImportObject</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.ImportObject.contains_namespace" href="#wasmer.ImportObject.contains_namespace">contains_namespace</a></code></li>
+<li><code><a title="wasmer.ImportObject.register" href="#wasmer.ImportObject.register">register</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.ImportType" href="#wasmer.ImportType">ImportType</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.ImportType.module" href="#wasmer.ImportType.module">module</a></code></li>
+<li><code><a title="wasmer.ImportType.name" href="#wasmer.ImportType.name">name</a></code></li>
+<li><code><a title="wasmer.ImportType.type" href="#wasmer.ImportType.type">type</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Instance" href="#wasmer.Instance">Instance</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.Instance.exports" href="#wasmer.Instance.exports">exports</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Int16Array" href="#wasmer.Int16Array">Int16Array</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.Int16Array.bytes_per_element" href="#wasmer.Int16Array.bytes_per_element">bytes_per_element</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Int32Array" href="#wasmer.Int32Array">Int32Array</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.Int32Array.bytes_per_element" href="#wasmer.Int32Array.bytes_per_element">bytes_per_element</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Int8Array" href="#wasmer.Int8Array">Int8Array</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.Int8Array.bytes_per_element" href="#wasmer.Int8Array.bytes_per_element">bytes_per_element</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Memory" href="#wasmer.Memory">Memory</a></code></h4>
+<ul class="two-column">
+<li><code><a title="wasmer.Memory.buffer" href="#wasmer.Memory.buffer">buffer</a></code></li>
+<li><code><a title="wasmer.Memory.data_size" href="#wasmer.Memory.data_size">data_size</a></code></li>
+<li><code><a title="wasmer.Memory.grow" href="#wasmer.Memory.grow">grow</a></code></li>
+<li><code><a title="wasmer.Memory.int16_view" href="#wasmer.Memory.int16_view">int16_view</a></code></li>
+<li><code><a title="wasmer.Memory.int32_view" href="#wasmer.Memory.int32_view">int32_view</a></code></li>
+<li><code><a title="wasmer.Memory.int8_view" href="#wasmer.Memory.int8_view">int8_view</a></code></li>
+<li><code><a title="wasmer.Memory.size" href="#wasmer.Memory.size">size</a></code></li>
+<li><code><a title="wasmer.Memory.type" href="#wasmer.Memory.type">type</a></code></li>
+<li><code><a title="wasmer.Memory.uint16_view" href="#wasmer.Memory.uint16_view">uint16_view</a></code></li>
+<li><code><a title="wasmer.Memory.uint32_view" href="#wasmer.Memory.uint32_view">uint32_view</a></code></li>
+<li><code><a title="wasmer.Memory.uint8_view" href="#wasmer.Memory.uint8_view">uint8_view</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.MemoryType" href="#wasmer.MemoryType">MemoryType</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.MemoryType.maximum" href="#wasmer.MemoryType.maximum">maximum</a></code></li>
+<li><code><a title="wasmer.MemoryType.minimum" href="#wasmer.MemoryType.minimum">minimum</a></code></li>
+<li><code><a title="wasmer.MemoryType.shared" href="#wasmer.MemoryType.shared">shared</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Module" href="#wasmer.Module">Module</a></code></h4>
+<ul class="two-column">
+<li><code><a title="wasmer.Module.custom_sections" href="#wasmer.Module.custom_sections">custom_sections</a></code></li>
+<li><code><a title="wasmer.Module.deserialize" href="#wasmer.Module.deserialize">deserialize</a></code></li>
+<li><code><a title="wasmer.Module.exports" href="#wasmer.Module.exports">exports</a></code></li>
+<li><code><a title="wasmer.Module.imports" href="#wasmer.Module.imports">imports</a></code></li>
+<li><code><a title="wasmer.Module.name" href="#wasmer.Module.name">name</a></code></li>
+<li><code><a title="wasmer.Module.serialize" href="#wasmer.Module.serialize">serialize</a></code></li>
+<li><code><a title="wasmer.Module.validate" href="#wasmer.Module.validate">validate</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Store" href="#wasmer.Store">Store</a></code></h4>
+</li>
+<li>
+<h4><code><a title="wasmer.Table" href="#wasmer.Table">Table</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.Table.size" href="#wasmer.Table.size">size</a></code></li>
+<li><code><a title="wasmer.Table.type" href="#wasmer.Table.type">type</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.TableType" href="#wasmer.TableType">TableType</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.TableType.maximum" href="#wasmer.TableType.maximum">maximum</a></code></li>
+<li><code><a title="wasmer.TableType.minimum" href="#wasmer.TableType.minimum">minimum</a></code></li>
+<li><code><a title="wasmer.TableType.type" href="#wasmer.TableType.type">type</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Type" href="#wasmer.Type">Type</a></code></h4>
+<ul class="two-column">
+<li><code><a title="wasmer.Type.EXTERN_REF" href="#wasmer.Type.EXTERN_REF">EXTERN_REF</a></code></li>
+<li><code><a title="wasmer.Type.F32" href="#wasmer.Type.F32">F32</a></code></li>
+<li><code><a title="wasmer.Type.F64" href="#wasmer.Type.F64">F64</a></code></li>
+<li><code><a title="wasmer.Type.FUNC_REF" href="#wasmer.Type.FUNC_REF">FUNC_REF</a></code></li>
+<li><code><a title="wasmer.Type.I32" href="#wasmer.Type.I32">I32</a></code></li>
+<li><code><a title="wasmer.Type.I64" href="#wasmer.Type.I64">I64</a></code></li>
+<li><code><a title="wasmer.Type.V128" href="#wasmer.Type.V128">V128</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Uint16Array" href="#wasmer.Uint16Array">Uint16Array</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.Uint16Array.bytes_per_element" href="#wasmer.Uint16Array.bytes_per_element">bytes_per_element</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Uint32Array" href="#wasmer.Uint32Array">Uint32Array</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.Uint32Array.bytes_per_element" href="#wasmer.Uint32Array.bytes_per_element">bytes_per_element</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Uint8Array" href="#wasmer.Uint8Array">Uint8Array</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.Uint8Array.bytes_per_element" href="#wasmer.Uint8Array.bytes_per_element">bytes_per_element</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wasmer.Value" href="#wasmer.Value">Value</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.Value.f32" href="#wasmer.Value.f32">f32</a></code></li>
+<li><code><a title="wasmer.Value.f64" href="#wasmer.Value.f64">f64</a></code></li>
+<li><code><a title="wasmer.Value.i32" href="#wasmer.Value.i32">i32</a></code></li>
+<li><code><a title="wasmer.Value.i64" href="#wasmer.Value.i64">i64</a></code></li>
+<li><code><a title="wasmer.Value.v128" href="#wasmer.Value.v128">v128</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2.dev1+g1334dfa</a>.</p>
+</footer>
+</body>
+</html>

@@ -84,6 +84,19 @@ impl Into<wasmer_wasi::WasiVersion> for Version {
     }
 }
 
+/// Convenient builder API for configuring WASI.
+///
+/// Use the constructor to pass the arguments, environments, preopen
+/// directories and map directories, or use the associated methods to
+/// build the state step-by-steps.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import wasi
+///
+/// wasi_state_builder = wasi.StateBuilder('test-program')
+/// ```
 #[pyclass]
 #[text_signature = "(arguments=[], environments={}, preopen_directories=[], map_directories={})"]
 pub struct StateBuilder {
@@ -183,6 +196,21 @@ impl StateBuilder {
         Ok(wasi)
     }
 
+    /// Add multiple arguments.
+    ///
+    /// Arguments must not contain the nul (`0x0`) byte.
+    ///
+    /// This method returns `self`.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import wasi
+    ///
+    /// wasi_state_builder = \
+    ///     wasi.StateBuilder('test-program'). \
+    ///         arguments(['--verbose --help'])
+    /// ```
     #[text_signature = "($self, arguments)"]
     pub fn arguments<'py>(
         slf: &'py PyCell<Self>,
@@ -194,6 +222,22 @@ impl StateBuilder {
         Ok(slf)
     }
 
+    /// Add an argument.
+    ///
+    /// Arguments must not contain the nul (`0x0`) byte.
+    ///
+    /// This method returns `self`.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import wasi
+    ///
+    /// wasi_state_builder = \
+    ///     wasi.StateBuilder('test-program'). \
+    ///         argument('--verbose'). \
+    ///         argument('--help')
+    /// ```
     #[text_signature = "($self, argument)"]
     pub fn argument<'py>(slf: &'py PyCell<Self>, argument: String) -> PyResult<&'py PyCell<Self>> {
         let mut slf_mut = slf.try_borrow_mut()?;
@@ -202,6 +246,22 @@ impl StateBuilder {
         Ok(slf)
     }
 
+    /// Add environment variable pairs.
+    ///
+    /// Environment variable keys and values must not contain the byte
+    /// `=` (`0x3d`) or null (`0x0`).
+    ///
+    /// This method returns `self`.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import wasi
+    ///
+    /// wasi_state_builder = \
+    ///     wasi.StateBuilder('test-program'). \
+    ///         environments({"ABC": "DEF", "X": "YZ"})
+    /// ```
     #[text_signature = "($self, environments)"]
     pub fn environments<'py>(
         slf: &'py PyCell<Self>,
@@ -213,6 +273,23 @@ impl StateBuilder {
         Ok(slf)
     }
 
+    /// Add an environment variable pair.
+    ///
+    /// Environment variable keys and values must not contain the byte
+    /// `=` (`0x3d`) or null (`0x0`).
+    ///
+    /// This method returns `self`.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import wasi
+    ///
+    /// wasi_state_builder = \
+    ///     wasi.StateBuilder('test-program'). \
+    ///         environment("ABC", "DEF"). \
+    ///         environment("X", "YZ")
+    /// ```
     #[text_signature = "($self, key, value)"]
     pub fn environment<'py>(
         slf: &'py PyCell<Self>,
@@ -225,6 +302,23 @@ impl StateBuilder {
         Ok(slf)
     }
 
+    /// Preopen directories.
+    ///
+    /// This opens the given directories at the virtual root, `/`, and
+    /// allows the WASI module to read and write to the given
+    /// directories.
+    ///
+    /// This method returns `self`.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import wasi
+    ///
+    /// wasi_state_builder = \
+    ///     wasi.StateBuilder('test-program'). \
+    ///         preopen_directories(["foo", "bar"])
+    /// ```
     #[text_signature = "($self, preopen_directories)"]
     pub fn preopen_directories<'py>(
         slf: &'py PyCell<Self>,
@@ -236,6 +330,24 @@ impl StateBuilder {
         Ok(slf)
     }
 
+    /// Preopen a directory.
+    ///
+    /// This opens the given directory at the virtual root, `/`, and
+    /// allows the WASI module to read and write to the given
+    /// directory.
+    ///
+    /// This method returns `self`.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import wasi
+    ///
+    /// wasi_state_builder = \
+    ///     wasi.StateBuilder('test-program'). \
+    ///         preopen_directory("foo"). \
+    ///         preopen_directory("bar")
+    /// ```
     #[text_signature = "($self, preopen_directory)"]
     pub fn preopen_directory<'py>(
         slf: &'py PyCell<Self>,
@@ -247,6 +359,19 @@ impl StateBuilder {
         Ok(slf)
     }
 
+    /// Preopen directories with different names exposed to the WASI.
+    ///
+    /// This method returns `self`.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import wasi
+    ///
+    /// wasi_state_builder = \
+    ///     wasi.StateBuilder('test-program'). \
+    ///         map_directories({"foo": "."})
+    /// ```
     #[text_signature = "($self, map_directories)"]
     pub fn map_directories<'py>(
         slf: &'py PyCell<Self>,
@@ -258,6 +383,19 @@ impl StateBuilder {
         Ok(slf)
     }
 
+    /// Preopen a directory with a different name exposed to the WASI.
+    ///
+    /// This method returns `self`.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import wasi
+    ///
+    /// wasi_state_builder = \
+    ///     wasi.StateBuilder('test-program'). \
+    ///         map_directory("foo", ".")
+    /// ```
     #[text_signature = "($self, alias, directory)"]
     pub fn map_directory<'py>(
         slf: &'py PyCell<Self>,
@@ -270,6 +408,18 @@ impl StateBuilder {
         Ok(slf)
     }
 
+    /// Produces a WASI `Environment` based on this state builder.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import wasi
+    ///
+    /// wasi_env = \
+    ///     wasi.StateBuilder('test-program'). \
+    ///         argument('--foo'). \
+    ///         finalize()
+    /// ```
     #[text_signature = "($self)"]
     pub fn finalize(&mut self) -> PyResult<Environment> {
         Ok(Environment::raw_new(
@@ -280,6 +430,10 @@ impl StateBuilder {
     }
 }
 
+/// The environment provided to the WASI imports.
+///
+/// To build it, use `StateBuilder`. See `StateBuilder.finalize` to
+/// learn more.
 #[pyclass(unsendable)]
 pub struct Environment {
     inner: wasmer_wasi::WasiEnv,
@@ -293,6 +447,36 @@ impl Environment {
 
 #[pymethods]
 impl Environment {
+    /// Set a memory to the WASI. Usually, it is a `wasmer.Memory`
+    /// object from `instance.exports.<memory_name>`.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import wasi, Store, Module, Instance
+    ///
+    /// store = Store()
+    /// module = Module(store, open('tests/wasi.wasm', 'rb').read())
+    ///
+    /// # Get the WASI version.
+    /// wasi_version = wasi.get_version(module, strict=True)
+    ///
+    /// # Build a WASI environment for the imports.
+    /// wasi_env = wasi.StateBuilder('test-program').argument('--foo').finalize()
+    ///
+    /// # Generate an `ImportObject` from the WASI environment.
+    /// import_object = wasi_env.generate_import_object(store, wasi_version)
+    ///
+    /// # Now we are ready to instantiate the module.
+    /// instance = Instance(module, import_object)
+    ///
+    /// # … But (!) WASI needs an access to the memory of the
+    /// # module. Simple, pass it.
+    /// wasi_env.memory = instance.exports.memory
+    ///
+    /// # Here we go, let's start the program.
+    /// instance.exports._start()
+    /// ```
     #[setter]
     fn memory(&mut self, memory: &PyAny) -> PyResult<()> {
         match memory.downcast::<PyCell<Memory>>() {
@@ -310,6 +494,23 @@ impl Environment {
         }
     }
 
+    /// Create an `wasmer.ImportObject` with an existing
+    /// `Environment`. The import object will be different according
+    /// to the WASI version.
+    ///
+    /// Use the `Version` enum to use a specific WASI version, or use
+    /// `get_version` to read the WASI version from a `wasmer.Module`.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import wasi, Store
+    ///
+    /// store = Store()
+    /// wasi_env = wasi.StateBuilder('test-program').argument('--foo')
+    /// import_object = wasi_env.generate_import_object(store, wasi.Version.SNAPSHOT1)
+    /// ```
+    //#[text_signature = "($self, store, wasi_version)"]
     fn generate_import_object(&self, store: &Store, wasi_version: Version) -> ImportObject {
         let import_object = wasmer_wasi::generate_import_object_from_env(
             store.inner(),

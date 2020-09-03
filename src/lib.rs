@@ -23,25 +23,17 @@ mod values;
 mod wasi;
 mod wat;
 
-/// <p align="center">
-///   <a href="https://wasmer.io" target="_blank" rel="noopener">
-///     <img width="300" src="https://raw.githubusercontent.com/wasmerio/wasmer/master/assets/logo.png" alt="Wasmer logo">
-///   </a>
-/// </p>
+/// # <img height="48" src="https://wasmer.io/static/icons/favicon-96x96.png" alt="Wasmer logo" valign="middle"> Wasmer Python [![PyPI version](https://badge.fury.io/py/wasmer.svg?)](https://badge.fury.io/py/wasmer) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-read-green)](https://wasmerio.github.io/wasmer-python/api/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer)](https://pypi.org/project/wasmer/) [![Wasmer Slack Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
 ///
-/// <p align="center">
-///   <a href="https://spectrum.chat/wasmer">
-///     <img src="https://withspectrum.github.io/badge/badge.svg" alt="Join the Wasmer Community" valign="middle"></a>
-///   <a href="https://pypi.org/project/wasmer/">
-///       <img src="https://img.shields.io/pypi/format/wasmer.svg" alt="Pypi" valign="middle"/></a>
-///   <a href="https://pypi.org/project/wasmer/">
-///       <img src="https://pepy.tech/badge/wasmer" alt="Number of downloads on Pypi" valign="middle"/></a>
-///   <a href="https://github.com/wasmerio/wasmer/blob/master/LICENSE">
-///     <img src="https://img.shields.io/github/license/wasmerio/wasmer.svg" alt="License" valign="middle"></a>
-/// </p>
-/// Wasmer is an advanced and mature WebAssembly runtime. The `wasmer`
-/// Python package is a native Python extension to embed Wasmer inside
-/// Python.
+/// A complete and mature WebAssembly runtime for Python based on [Wasmer](https://github.com/wasmerio/wasmer).
+///
+/// Features:
+///
+///   * **Easy to use**: The `wasmer` API mimics the standard WebAssembly API,
+///   * **Fast**: `wasmer` executes the WebAssembly modules as fast as
+///     possible, close to **native speed**,
+///   * **Safe**: All calls to WebAssembly will be fast, but more
+///     importantly, completely safe and sandboxed.
 ///
 /// ## Example
 ///
@@ -173,14 +165,56 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     Ok(())
 }
 
-/// This `wasi` module provides WASI supports to `wasmer`.
+/// Wasmer's [WASI](https://github.com/WebAssembly/WASI)
+/// implementation.
+///
+/// From the user perspective, WASI is a bunch of imports. To generate
+/// the appropriated imports, you can use `StateBuilder` to build an
+/// `Environment`. This environment holds the WASI memory, and can be
+/// used to generate a valid `wasmer.ImportObject`. This last one can
+/// be passed to `wasmer.Instance` to instantiate a `wasmer.Module`
+/// that needs WASI support.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import wasi, Store, Module, Instance
+///
+/// store = Store()
+/// module = Module(store, open('tests/wasi.wasm', 'rb').read())
+///
+/// # Get the WASI version.
+/// wasi_version = wasi.get_version(module, strict=True)
+///
+/// # Build a WASI environment for the imports.
+/// wasi_env = wasi.StateBuilder('test-program').argument('--foo').finalize()
+///
+/// # Generate an `ImportObject` from the WASI environment.
+/// import_object = wasi_env.generate_import_object(store, wasi_version)
+///
+/// # Now we are ready to instantiate the module.
+/// instance = Instance(module, import_object)
+///
+/// # … But (!) WASI needs an access to the memory of the
+/// # module. Simple, pass it.
+/// wasi_env.memory = instance.exports.memory
+///
+/// # Here we go, let's start the program.
+/// instance.exports._start()
+/// ```
 #[pymodule]
 fn wasi(py: Python, module: &PyModule) -> PyResult<()> {
     let enum_module = py.import("enum")?;
 
     // Functions.
 
-    /// Try to find the WASI version of the given module.
+    /// Detect the version of WASI being used based on the import
+    /// namespaces.
+    ///
+    /// A strict detection expects that all imports live in a single WASI
+    /// namespace. A non-strict detection expects that at least one WASI
+    /// namespace exits to detect the version. Note that the strict
+    /// detection is faster than the non-strict one.
     #[pyfn(module, "get_version")]
     #[text_signature = "(module, strict)"]
     fn get_version(module: &module::Module, strict: bool) -> Option<wasi::Version> {

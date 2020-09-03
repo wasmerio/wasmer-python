@@ -16,7 +16,7 @@ prelude:
 	pip3 install virtualenv
 	virtualenv .env
 	if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-	pip3 install maturin pytest pytest-benchmark twine pdoc3
+	pip3 install maturin pytest pytest-benchmark twine git+https://github.com/Hywan/pdoc@submodule-for-extension
 
 	which maturin
 	maturin --version
@@ -111,7 +111,7 @@ benchmark benchmark-filename='':
 # Generate the documentation.
 doc:
 	@pdoc --html --output-dir docs/api --force wasmer
-	@mv docs/api/wasmer.html docs/api/index.html
+	@ln -s -f wasmer.html docs/api/index.html
 
 
 # Inspect the `wasmer-python` extension.
