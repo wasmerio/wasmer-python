@@ -1216,7 +1216,7 @@ checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
 [[package]]
 name = "wasmer"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#fb49acd1a77a64461dc449028ebe68067ddb5623"
+source = "git+https://github.com/wasmerio/wasmer#2aa6c266acbfd9c1d6ebf8c37881ce7b6100ef0b"
 dependencies = [
  "cfg-if",
  "indexmap",
@@ -1239,7 +1239,7 @@ dependencies = [
 [[package]]
 name = "wasmer-compiler"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#fb49acd1a77a64461dc449028ebe68067ddb5623"
+source = "git+https://github.com/wasmerio/wasmer#2aa6c266acbfd9c1d6ebf8c37881ce7b6100ef0b"
 dependencies = [
  "enumset",
  "raw-cpuid",
@@ -1256,7 +1256,7 @@ dependencies = [
 [[package]]
 name = "wasmer-compiler-cranelift"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#fb49acd1a77a64461dc449028ebe68067ddb5623"
+source = "git+https://github.com/wasmerio/wasmer#2aa6c266acbfd9c1d6ebf8c37881ce7b6100ef0b"
 dependencies = [
  "cranelift-codegen",
  "cranelift-frontend",
@@ -1273,7 +1273,7 @@ dependencies = [
 [[package]]
 name = "wasmer-compiler-llvm"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#fb49acd1a77a64461dc449028ebe68067ddb5623"
+source = "git+https://github.com/wasmerio/wasmer#2aa6c266acbfd9c1d6ebf8c37881ce7b6100ef0b"
 dependencies = [
  "byteorder",
  "cc",
@@ -1296,7 +1296,7 @@ dependencies = [
 [[package]]
 name = "wasmer-compiler-singlepass"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#fb49acd1a77a64461dc449028ebe68067ddb5623"
+source = "git+https://github.com/wasmerio/wasmer#2aa6c266acbfd9c1d6ebf8c37881ce7b6100ef0b"
 dependencies = [
  "byteorder",
  "dynasm",
@@ -1314,7 +1314,7 @@ dependencies = [
 [[package]]
 name = "wasmer-engine"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#fb49acd1a77a64461dc449028ebe68067ddb5623"
+source = "git+https://github.com/wasmerio/wasmer#2aa6c266acbfd9c1d6ebf8c37881ce7b6100ef0b"
 dependencies = [
  "backtrace",
  "bincode",
@@ -1333,7 +1333,7 @@ dependencies = [
 [[package]]
 name = "wasmer-engine-jit"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#fb49acd1a77a64461dc449028ebe68067ddb5623"
+source = "git+https://github.com/wasmerio/wasmer#2aa6c266acbfd9c1d6ebf8c37881ce7b6100ef0b"
 dependencies = [
  "bincode",
  "cfg-if",
@@ -1350,7 +1350,7 @@ dependencies = [
 [[package]]
 name = "wasmer-engine-native"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#fb49acd1a77a64461dc449028ebe68067ddb5623"
+source = "git+https://github.com/wasmerio/wasmer#2aa6c266acbfd9c1d6ebf8c37881ce7b6100ef0b"
 dependencies = [
  "bincode",
  "cfg-if",
@@ -1369,7 +1369,7 @@ dependencies = [
 [[package]]
 name = "wasmer-object"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#fb49acd1a77a64461dc449028ebe68067ddb5623"
+source = "git+https://github.com/wasmerio/wasmer#2aa6c266acbfd9c1d6ebf8c37881ce7b6100ef0b"
 dependencies = [
  "object 0.19.0",
  "thiserror",
@@ -1392,7 +1392,7 @@ dependencies = [
 [[package]]
 name = "wasmer-types"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#fb49acd1a77a64461dc449028ebe68067ddb5623"
+source = "git+https://github.com/wasmerio/wasmer#2aa6c266acbfd9c1d6ebf8c37881ce7b6100ef0b"
 dependencies = [
  "cranelift-entity",
  "serde",
@@ -1401,7 +1401,7 @@ dependencies = [
 [[package]]
 name = "wasmer-vm"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#fb49acd1a77a64461dc449028ebe68067ddb5623"
+source = "git+https://github.com/wasmerio/wasmer#2aa6c266acbfd9c1d6ebf8c37881ce7b6100ef0b"
 dependencies = [
  "backtrace",
  "cc",
@@ -1420,7 +1420,7 @@ dependencies = [
 [[package]]
 name = "wasmer-wasi"
 version = "1.0.0-alpha01.0"
-source = "git+https://github.com/wasmerio/wasmer#fb49acd1a77a64461dc449028ebe68067ddb5623"
+source = "git+https://github.com/wasmerio/wasmer#2aa6c266acbfd9c1d6ebf8c37881ce7b6100ef0b"
 dependencies = [
  "bincode",
  "byteorder",
