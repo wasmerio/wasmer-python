@@ -21,7 +21,7 @@ shell:
 $ pip install wasmer
 ```
 
-[View `wasmer` package on Pypi](https://pypi.org/project/wasmer/).
+[View `wasmer` package on PyPI](https://pypi.org/project/wasmer/).
 
 ## Example
 
