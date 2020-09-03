@@ -115,33 +115,33 @@ $ just inspect
 ```
 
 
-## Use a particular Wasmer compiler backend
+## Use a particular Wasmer compiler
 
-Wasmer, the runtime, comes with several compiler backends addressing
-particular needs or contexts ([learn more][compiler-backends]). To set
-the compiler backend to use, the `Cargo.toml` file exposes 3 features:
+Wasmer, the runtime, comes with several compilers addressing
+particular needs or contexts ([learn more][compilers]). To set the
+compiler to use, the `Cargo.toml` file exposes 3 features:
 
-* `backend-singlepass`,
-* `backend-cranelift` and
-* `backend-llvm`.
+* `default-singlepass`,
+* `default-cranelift` and
+* `default-llvm`.
 
 To enable those features with `just build`, use such syntax:
 
 ```sh
-$ just --set build_features backend-llvm build
+$ just --set build_features default-llvm build
 ```
 
 ## Supported platforms
 
 We try to provide wheels for as many platforms and architectures as
 possible. [Wasmer, the runtime](https://github.com/wasmerio/wasmer),
-provides several compiler backends, which address different needs and
-contexts ([learn more][compiler-backends]). While it is possible to
-force one compiler backend for your own setup, the wheels come
-pre-packaged with a particular one. For the moment, here are the
-supported platforms and architectures:
+provides several compilers, which address different needs and contexts
+([learn more][compilers]). While it is possible to force one compiler
+for your own setup, the wheels come pre-packaged with a particular
+one. For the moment, here are the supported platforms and
+architectures:
 
-| Platform | Architecture | Triple | Default compiler backend |
+| Platform | Architecture | Triple | Default compiler |
 |-|-|-|-|
 | Linux | `amd64` | `x86_64-unknown-linux-gnu` | Cranelift |
 | Linux | `aarch64` | `aarch64-unknown-linux-gnu` | Singlepass |
@@ -149,8 +149,8 @@ supported platforms and architectures:
 | Windows | `amd64` | `x86_64-pc-windows-msvc` | Cranelift |
 
 Note: it's also possible to [build Wasmer in Python with a specific
-backend](#use-a-particular-wasmer-compiler-backend), for example using
-LLVM for extra speed.
+compiler](#use-a-particular-wasmer-compiler), for example using LLVM
+for extra speed.
 
 Wheels are all built for the following Python versions:
 
@@ -220,4 +220,4 @@ The entire project is under the MIT License. Please read [the
 [`just`]: https://github.com/casey/just/
 [license]: https://github.com/wasmerio/wasmer/blob/master/LICENSE
 [Rust]: https://www.rust-lang.org/
-[compiler-backends]: https://medium.com/wasmer/a-webassembly-compiler-tale-9ef37aa3b537
+[compilers]: https://medium.com/wasmer/a-webassembly-compiler-tale-9ef37aa3b537
