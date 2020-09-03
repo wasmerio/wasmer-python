@@ -114,7 +114,7 @@ doc:
 	@mv docs/api/wasmer.html docs/api/index.html
 
 
-# Inspect the `python-ext-wasm` extension.
+# Inspect the `wasmer-python` extension.
 inspect:
 	@python -c "help('wasmer')"
 
