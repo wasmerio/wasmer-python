@@ -5,7 +5,7 @@ authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
 description = "Python extension to run WebAssembly binaries"
 readme = "README.md"
-repository = "https://github.com/wasmerio/python-ext-wasm"
+repository = "https://github.com/wasmerio/wasmer-python"
 keywords = ["python", "extension", "webassembly"]
 categories = ["wasm"]
 build = "build.rs"
@@ -30,9 +30,9 @@ default-llvm = ["wasmer/default-llvm"]
 
 [package.metadata.maturin]
 project-url = [
-    "Source Code, https://github.com/wasmerio/python-ext-wasm/",
-    "Bug Tracker, https://github.com/wasmerio/python-ext-wasm/issues",
-    "Documentation, https://github.com/wasmerio/python-ext-wasm/",
+    "Source Code, https://github.com/wasmerio/wasmer-python/",
+    "Bug Tracker, https://github.com/wasmerio/wasmer-python/issues",
+    "Documentation, https://github.com/wasmerio/wasmer-python/",
 ]
 classifier = [
     "Programming Language :: Python",
