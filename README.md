@@ -1,20 +1,6 @@
-<p align="center">
-  <a href="https://wasmer.io" target="_blank" rel="noopener">
-    <img width="300" src="https://raw.githubusercontent.com/wasmerio/wasmer/master/assets/logo.png" alt="Wasmer logo">
-  </a>
-</p>
+# <img height="48" src="https://wasmer.io/static/icons/favicon-96x96.png" alt="Wasmer logo" valign="middle"> Wasmer Python [![PyPI version](https://badge.fury.io/py/wasmer.svg?)](https://badge.fury.io/py/wasmer) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-main-green)](https://wasmerio.github.io/wasmer-python/api/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer)](https://pypi.org/project/wasmer/) [![Wasmer Slack Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
 
-<p align="center">
-  <a href="https://pypi.org/project/wasmer/">
-      <img src="https://pepy.tech/badge/wasmer" alt="Number of downloads on Pypi"/></a>
-  <a href="https://slack.wasmer.io">
-    <img src="https://img.shields.io/static/v1?label=Slack&message=join%20chat&color=brighgreen&style=flat-square" alt="Slack channel">
-  </a> 
-</p>
-
-[Wasmer] is an advanced and mature WebAssembly runtime. The `wasmer`
-Python package is a native Python extension to embed Wasmer inside
-Python. Wasmer is:
+Wasmer Python is an advanced and mature WebAssembly runtime for Python using [Wasmer] under the hood. Wasmer is:
 
   * **Easy to use**: The `wasmer` API mimics the standard WebAssembly API,
   * **Fast**: `wasmer` executes the WebAssembly modules as fast as
