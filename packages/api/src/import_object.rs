@@ -1,6 +1,7 @@
 use crate::{
     errors::to_py_err,
     externals::{Function, Global, Memory, Table},
+    wasmer_inner::wasmer,
 };
 use pyo3::{
     exceptions::TypeError,
