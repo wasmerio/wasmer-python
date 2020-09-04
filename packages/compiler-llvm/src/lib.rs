@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-use wasmer_common_py::py::Store;
+use wasmer_common_py::OpaqueCompiler;
 
 #[pymodule]
 fn wasmer_compiler_llvm(_py: Python, module: &PyModule) -> PyResult<()> {
@@ -15,9 +15,10 @@ struct Compiler {}
 #[pymethods]
 impl Compiler {
     #[staticmethod]
-    fn into_store() -> Store {
-        let store = Store::raw_with_compiler(wasmer_compiler_llvm::LLVM::default());
+    fn into_opaque_compiler() -> Store {
+        let opaque_compiler =
+            OpaqueCompiler::raw_with_compiler(wasmer_compiler_llvm::LLVM::default());
 
-        store
+        opaque_compiler
     }
 }

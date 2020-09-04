@@ -10,10 +10,10 @@ pub(crate) mod wasmer_inner {
     pub use wasmer_wasi;
 }
 
+mod engines;
 mod errors;
 mod exports;
 mod externals;
-mod features;
 mod import_object;
 mod instance;
 mod memory;
@@ -23,8 +23,6 @@ mod types;
 mod values;
 mod wasi;
 mod wat;
-
-pub use store::Store;
 
 /// # <img height="48" src="https://wasmer.io/static/icons/favicon-96x96.png" alt="Wasmer logo" valign="middle"> Wasmer Python [![PyPI version](https://badge.fury.io/py/wasmer.svg?)](https://badge.fury.io/py/wasmer) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-read-green)](https://wasmerio.github.io/wasmer-python/api/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer)](https://pypi.org/project/wasmer/) [![Wasmer Slack Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
 ///
@@ -124,7 +122,6 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     module.add_class::<externals::Global>()?;
     module.add_class::<externals::Memory>()?;
     module.add_class::<externals::Table>()?;
-    module.add_class::<features::Features>()?;
     module.add_class::<import_object::ImportObject>()?;
     module.add_class::<instance::Instance>()?;
     module.add_class::<memory::Buffer>()?;
@@ -164,7 +161,17 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     )?;
 
     // Modules.
+    module.add_wrapped(wrap_pymodule!(engines))?;
     module.add_wrapped(wrap_pymodule!(wasi))?;
+
+    Ok(())
+}
+
+#[pymodule]
+fn engines(_py: Python, module: &PyModule) -> PyResult<()> {
+    // Classes.
+    module.add_class::<engines::JIT>()?;
+    module.add_class::<engines::Native>()?;
 
     Ok(())
 }
