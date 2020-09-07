@@ -94,13 +94,23 @@ jobs:
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+          curl --proto '=https' --tlsv1.2 -sSf https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz -L -o llvm.tar.xz
+          mkdir -p /opt/llvm
+          tar xf llvm.tar.xz --strip-components=1 -C /opt/llvm
+          echo ::add-path::/opt/llvm/bin
+          echo ::set-env name=LLVM_SYS_100_PREFIX::/opt/llvm
 
       - name: Set up LLVM (macOS)
         if: startsWith(matrix.target.id, 'darwin-')
         shell: bash
         run: |
-          brew install llvm
+          curl --proto '=https' --tlsv1.2 -sSf https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-apple-darwin.tar.xz -L -o llvm.tar.xz
+          mkdir -p ${{ env.LLVM_DIR }}
+          tar xf llvm.tar.xz --strip-components=1 -C ${{ env.LLVM_DIR }}
+          echo "::add-path::${{ env.LLVM_DIR }}/bin"
+          echo "::set-env name=LLVM_SYS_100_PREFIX::${{ env.LLVM_DIR }}"
+        env:
+          LLVM_DIR: ${{ github.workspace }}/llvm
 
       - name: Set up LLVM (Windows)
         if: startsWith(matrix.target.id, 'windows-')
