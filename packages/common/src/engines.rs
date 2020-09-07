@@ -18,12 +18,8 @@ impl JIT {
     pub(crate) fn inner(&self) -> &wasmer::JITEngine {
         &self.inner
     }
-}
 
-#[pymethods]
-impl JIT {
-    #[new]
-    fn new(compiler: Option<&PyAny>) -> PyResult<Self> {
+    pub(crate) fn raw_new(compiler: Option<&PyAny>) -> PyResult<Self> {
         Ok(Self {
             inner: match compiler {
                 None => wasmer::JIT::headless().engine(),
@@ -59,6 +55,14 @@ impl JIT {
     }
 }
 
+#[pymethods]
+impl JIT {
+    #[new]
+    fn new(compiler: Option<&PyAny>) -> PyResult<Self> {
+        Self::raw_new(compiler)
+    }
+}
+
 /// Native engine for Wasmer compilers.
 ///
 /// Given an option compiler, it generates a shared object file
@@ -77,12 +81,8 @@ impl Native {
     pub(crate) fn inner(&self) -> &wasmer::NativeEngine {
         &self.inner
     }
-}
 
-#[pymethods]
-impl Native {
-    #[new]
-    fn new(compiler: Option<&PyAny>) -> PyResult<Self> {
+    pub(crate) fn raw_new(compiler: Option<&PyAny>) -> PyResult<Self> {
         Ok(Self {
             inner: match compiler {
                 None => wasmer::Native::headless().engine(),
@@ -130,6 +130,14 @@ impl Native {
                 }
             },
         })
+    }
+}
+
+#[pymethods]
+impl Native {
+    #[new]
+    fn new(compiler: Option<&PyAny>) -> PyResult<Self> {
+        Self::raw_new(compiler)
     }
 }
 

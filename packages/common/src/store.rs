@@ -55,10 +55,9 @@ impl Store {
 #[pymethods]
 impl Store {
     #[new]
-    fn new(engine: Option<&PyAny>) -> PyResult<Self> {
+    fn new(py: Python, engine: Option<&PyAny>) -> PyResult<Self> {
         Ok(Self {
             inner: match engine {
-                None => wasmer::Store::new(&wasmer::JIT::headless().engine()),
                 Some(engine) => {
                     if let Ok(jit) = engine.downcast::<PyCell<engines::JIT>>() {
                         let jit = jit.borrow();
@@ -71,6 +70,25 @@ impl Store {
                     } else {
                         return Err(TypeError::py_err("Unknown engine"));
                     }
+                }
+
+                // No engine?
+                None => {
+                    // This package embeds the `JIT` engine, we are
+                    // going to use it. We want to load a
+                    // compiler with it.
+                    let compiler = py
+                        // Which compiler is available?
+                        .import("wasmer_compiler_cranelift")
+                        .or_else(|_| py.import("wasmer_compiler_llvm"))
+                        .or_else(|_| py.import("wasmer_compiler_singlepass"))
+                        // If any, load the `Compiler` class.
+                        .and_then(|compiler_module| compiler_module.get("Compiler"))
+                        .ok();
+
+                    let engine = engines::JIT::raw_new(compiler)?;
+
+                    wasmer::Store::new(engine.inner())
                 }
             },
         })
