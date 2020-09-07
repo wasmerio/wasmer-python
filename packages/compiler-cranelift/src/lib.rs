@@ -31,6 +31,9 @@ impl Compiler {
     /// Please don't use it. Internal use only.
     #[staticmethod]
     fn into_opaque_compiler() -> OpaqueCompiler {
-        OpaqueCompiler::raw_with_compiler(wasmer_compiler_cranelift::Cranelift::default())
+        OpaqueCompiler::raw_with_compiler(
+            wasmer_compiler_cranelift::Cranelift::default(),
+            "cranelift".to_string(),
+        )
     }
 }

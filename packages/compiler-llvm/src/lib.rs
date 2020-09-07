@@ -31,6 +31,6 @@ impl Compiler {
     /// Please don't use it. Internal use only.
     #[staticmethod]
     fn into_opaque_compiler() -> OpaqueCompiler {
-        OpaqueCompiler::raw_with_compiler(wasmer_compiler_llvm::LLVM::default())
+        OpaqueCompiler::raw_with_compiler(wasmer_compiler_llvm::LLVM::default(), "llvm".to_string())
     }
 }

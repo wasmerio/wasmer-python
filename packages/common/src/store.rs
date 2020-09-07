@@ -44,6 +44,8 @@ use pyo3::{exceptions::TypeError, prelude::*};
 #[text_signature = "(engine)"]
 pub struct Store {
     inner: wasmer::Store,
+    engine_name: String,
+    compiler_name: Option<String>,
 }
 
 impl Store {
@@ -56,41 +58,67 @@ impl Store {
 impl Store {
     #[new]
     fn new(py: Python, engine: Option<&PyAny>) -> PyResult<Self> {
+        let (inner, engine_name, compiler_name) = match engine {
+            Some(engine) => {
+                if let Ok(jit) = engine.downcast::<PyCell<engines::JIT>>() {
+                    let jit = jit.borrow();
+
+                    (
+                        wasmer::Store::new(jit.inner()),
+                        engines::JIT::name(),
+                        jit.compiler_name().cloned(),
+                    )
+                } else if let Ok(native) = engine.downcast::<PyCell<engines::Native>>() {
+                    let native = native.borrow();
+
+                    (
+                        wasmer::Store::new(native.inner()),
+                        engines::Native::name(),
+                        native.compiler_name().cloned(),
+                    )
+                } else {
+                    return Err(TypeError::py_err("Unknown engine"));
+                }
+            }
+
+            // No engine?
+            None => {
+                // This package embeds the `JIT` engine, we are
+                // going to use it. We want to load a
+                // compiler with it.
+                let compiler = py
+                    // Which compiler is available?
+                    .import("wasmer_compiler_cranelift")
+                    .or_else(|_| py.import("wasmer_compiler_llvm"))
+                    .or_else(|_| py.import("wasmer_compiler_singlepass"))
+                    // If any, load the `Compiler` class.
+                    .and_then(|compiler_module| compiler_module.get("Compiler"))
+                    .ok();
+
+                let engine = engines::JIT::raw_new(compiler)?;
+
+                (
+                    wasmer::Store::new(engine.inner()),
+                    engines::JIT::name(),
+                    engine.compiler_name().cloned(),
+                )
+            }
+        };
+
         Ok(Self {
-            inner: match engine {
-                Some(engine) => {
-                    if let Ok(jit) = engine.downcast::<PyCell<engines::JIT>>() {
-                        let jit = jit.borrow();
-
-                        wasmer::Store::new(jit.inner())
-                    } else if let Ok(native) = engine.downcast::<PyCell<engines::Native>>() {
-                        let native = native.borrow();
-
-                        wasmer::Store::new(native.inner())
-                    } else {
-                        return Err(TypeError::py_err("Unknown engine"));
-                    }
-                }
-
-                // No engine?
-                None => {
-                    // This package embeds the `JIT` engine, we are
-                    // going to use it. We want to load a
-                    // compiler with it.
-                    let compiler = py
-                        // Which compiler is available?
-                        .import("wasmer_compiler_cranelift")
-                        .or_else(|_| py.import("wasmer_compiler_llvm"))
-                        .or_else(|_| py.import("wasmer_compiler_singlepass"))
-                        // If any, load the `Compiler` class.
-                        .and_then(|compiler_module| compiler_module.get("Compiler"))
-                        .ok();
-
-                    let engine = engines::JIT::raw_new(compiler)?;
-
-                    wasmer::Store::new(engine.inner())
-                }
-            },
+            inner,
+            engine_name: engine_name.to_string(),
+            compiler_name,
         })
+    }
+
+    #[getter]
+    fn engine_name(&self) -> &String {
+        &self.engine_name
+    }
+
+    #[getter]
+    fn compiler_name(&self) -> Option<&String> {
+        self.compiler_name.as_ref()
     }
 }
