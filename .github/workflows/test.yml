@@ -91,7 +91,7 @@ jobs:
           pyenv install --skip-existing "$(cat .python-version)"
 
       - name: Set up LLVM (Linux)
-        if: startsWith(matrix.target.id, 'linux-)
+        if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
           bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
