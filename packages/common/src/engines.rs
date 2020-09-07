@@ -44,8 +44,13 @@ impl JIT {
                         })?
                     };
 
+                    // Let's clone the `OpaqueCompilerInner` so that
+                    // whatever happens to its parent `compiler`
+                    // Python object, we own a reference to it.
                     let opaque_compiler_inner: OpaqueCompilerInner =
                         opaque_compiler_inner_ref.clone();
+
+                    debug_assert_eq!(Arc::strong_count(&opaque_compiler_inner.compiler_config), 2);
 
                     wasmer::JIT::new(opaque_compiler_inner.compiler_config.as_ref()).engine()
                 }
@@ -71,6 +76,60 @@ pub struct Native {
 impl Native {
     pub(crate) fn inner(&self) -> &wasmer::NativeEngine {
         &self.inner
+    }
+}
+
+#[pymethods]
+impl Native {
+    #[new]
+    fn new(compiler: Option<&PyAny>) -> PyResult<Self> {
+        Ok(Self {
+            inner: match compiler {
+                None => wasmer::Native::headless().engine(),
+                Some(compiler) => {
+                    let opaque_compiler = compiler.call_method0("into_opaque_compiler")?;
+                    let opaque_compiler_inner_ptr = opaque_compiler
+                        .call_method0("__inner_as_ptr")?
+                        .extract::<usize>()?;
+
+                    let opaque_compiler_inner_ptr: *const OpaqueCompilerInner =
+                        opaque_compiler_inner_ptr as _;
+
+                    let opaque_compiler_inner_ref: &OpaqueCompilerInner = unsafe {
+                        opaque_compiler_inner_ptr.as_ref().ok_or_else(|| {
+                            RuntimeError::py_err(
+                                "Failed to transfer the opaque compiler from the compiler",
+                            )
+                        })?
+                    };
+
+                    // Let's clone the `OpaqueCompilerInner` so that
+                    // whatever happens to its parent `compiler`
+                    // Python object, we own a reference to it.
+                    let opaque_compiler_inner: OpaqueCompilerInner =
+                        opaque_compiler_inner_ref.clone();
+
+                    debug_assert_eq!(Arc::strong_count(&opaque_compiler_inner.compiler_config), 2);
+
+                    // Since we've cloned the `OpaqueCompilerInner`
+                    // previously, its strong count is equal to
+                    // 2. Consequently, we can't get a mutable version
+                    // of it, and we need one.
+                    //
+                    // However, we are ensure the original value won't
+                    // be used, since the value exists only in this
+                    // block of code. Thus, we believe it is safe to
+                    // cast the pointer to a mutable refeference.
+
+                    let compiler_config_ptr: *mut dyn wasmer_compiler::CompilerConfig =
+                        Arc::as_ptr(&opaque_compiler_inner.compiler_config) as *mut _;
+                    let compiler_config_ref: &mut dyn wasmer_compiler::CompilerConfig =
+                        unsafe { &mut *compiler_config_ptr };
+
+                    wasmer::Native::new(compiler_config_ref).engine()
+                }
+            },
+        })
     }
 }
 
