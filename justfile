@@ -104,7 +104,10 @@ benchmark benchmark-filename='':
 
 # Generate the documentation.
 doc:
-	@pdoc --html --output-dir docs/api --force wasmer
+	@pdoc --html --output-dir docs/api --force \
+		wasmer \
+		wasmer_compiler_cranelift \
+		wasmer_compiler_llvm
 	@ln -s -f wasmer.html docs/api/index.html
 
 publish:

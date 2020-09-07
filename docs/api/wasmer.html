@@ -74,6 +74,10 @@ buffer protocol with <code><a title="wasmer.Buffer" href="#wasmer.Buffer">Buffer
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
+<dt><code class="name"><a title="engine" href="engine.html">engine</a></code></dt>
+<dd>
+<div class="desc"><p>Wasmer Engines …</p></div>
+</dd>
 <dt><code class="name"><a title="wasi" href="wasi.html">wasi</a></code></dt>
 <dd>
 <div class="desc"><p>Wasmer's <a href="https://github.com/WebAssembly/WASI">WASI</a>
@@ -1227,6 +1231,7 @@ assert type(serialized_module) == bytes
 </dd>
 <dt id="wasmer.Store"><code class="flex name class">
 <span>class <span class="ident">Store</span></span>
+<span>(</span><span>engine)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The store represents all global state that can be manipulated by
@@ -1236,13 +1241,24 @@ have been allocated during the lifetime of the abstract machine.</p>
 <p>The <code><a title="wasmer.Store" href="#wasmer.Store">Store</a></code> holds the engine (that is —amongst many things— used
 to compile the WebAssembly bytes into a valid module artifact), in
 addition to the <code>Tunables</code> (that are used to create the memories,
-tables and globals).</p>
+tables and globals). The engine comes from the <code>wasmer.engines</code>
+module.</p>
 <p>Specification: <a href="https://webassembly.github.io/spec/core/exec/runtime.html#store">https://webassembly.github.io/spec/core/exec/runtime.html#store</a></p>
+<p>Read the documentation of the <code><a title="engine" href="engine.html">engine</a></code> submodule to learn more.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import Store
+<p>Use the JIT engine with no compiler (headless mode):</p>
+<pre><code class="py">from wasmer import engine, Store
 
-store = Store()
-</code></pre></div>
+store = Store(engine.JIT())
+</code></pre>
+<p>Use the JIT engine with the LLVM compiler:</p>
+<pre><code class="py">from wasmer import engine, Store
+from wasmer_compiler_llvm import Compiler
+
+store = Store(engine.JIT(Compiler))
+</code></pre>
+<p>If the store is built without an engine, the JIT engine with no
+compiler (headless mode) will be used.</p></div>
 </dd>
 <dt id="wasmer.Table"><code class="flex name class">
 <span>class <span class="ident">Table</span></span>
@@ -1564,6 +1580,7 @@ value = Value.v128(42)
 <ul id="index">
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
+<li><code><a title="engine" href="engine.html">engine</a></code></li>
 <li><code><a title="wasi" href="wasi.html">wasi</a></code></li>
 </ul>
 </li>

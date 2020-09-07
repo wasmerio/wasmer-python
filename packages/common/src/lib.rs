@@ -6,8 +6,6 @@ pub mod wasmer {
 }
 
 pub mod py {
-    pub use crate::engines::{Native, JIT};
+    pub use crate::engines::{Native, OpaqueCompiler, JIT};
     pub use crate::store::Store;
 }
-
-pub use crate::engines::OpaqueCompiler;

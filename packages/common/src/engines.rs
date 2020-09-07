@@ -2,24 +2,23 @@ use crate::wasmer;
 use pyo3::{exceptions::RuntimeError, prelude::*};
 use std::sync::Arc;
 
-macro_rules! engine_basis {
-    (pyclass = $pyclass:ident, engine = $engine:ident, builder = $engine_builder:ident) => {
-        #[pyclass(unsendable)]
-        #[text_signature = "(/, compiler)"]
-        pub struct $pyclass {
-            inner: wasmer::$engine,
-        }
-
-        impl $pyclass {
-            pub(crate) fn inner(&self) -> &wasmer::$engine {
-                &self.inner
-            }
-        }
-    };
+/// JIT engine for Wasmer compilers.
+///
+/// Given an option compiler, it generates the compiled machine code,
+/// and publishes it into memory so it can be used externally.
+///
+/// If the compiler is absent, it will generate a headless engine.
+#[pyclass(unsendable)]
+#[text_signature = "(/, compiler)"]
+pub struct JIT {
+    inner: wasmer::JITEngine,
 }
 
-engine_basis!(pyclass = JIT, engine = JITEngine, builder = JIT);
-engine_basis!(pyclass = Native, engine = NativeEngine, builder = Native);
+impl JIT {
+    pub(crate) fn inner(&self) -> &wasmer::JITEngine {
+        &self.inner
+    }
+}
 
 #[pymethods]
 impl JIT {
@@ -55,11 +54,34 @@ impl JIT {
     }
 }
 
+/// Native engine for Wasmer compilers.
+///
+/// Given an option compiler, it generates a shared object file
+/// (`.so`, `.dylib` or `.dll` depending on the target), saves it
+/// temporarily to disk and uses it natively via `dlopen` and `dlsym`.
+/// and publishes it into memory so it can be used externally.
+///
+/// If the compiler is absent, it will generate a headless engine.
+#[pyclass(unsendable)]
+#[text_signature = "(/, compiler)"]
+pub struct Native {
+    inner: wasmer::NativeEngine,
+}
+
+impl Native {
+    pub(crate) fn inner(&self) -> &wasmer::NativeEngine {
+        &self.inner
+    }
+}
+
 #[derive(Clone)]
 struct OpaqueCompilerInner {
     compiler_config: Arc<dyn wasmer_compiler::CompilerConfig + Send + Sync>,
 }
 
+/// Opaque compiler.
+///
+/// Internal use only.
 #[pyclass]
 pub struct OpaqueCompiler {
     inner: OpaqueCompilerInner,
