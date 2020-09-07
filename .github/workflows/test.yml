@@ -94,7 +94,7 @@ jobs:
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+          sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
 
       - name: Set up LLVM (macOS)
         if: startsWith(matrix.target.id, 'darwin-')
