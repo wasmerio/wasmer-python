@@ -188,7 +188,8 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
 /// Compilers are distributed as individual Python packages:
 ///
 /// * `wasmer_compiler_cranelift` to use the Cranelift compiler,
-/// * `wasmer_compiler_llvm` to use the LLVM compiler.
+/// * `wasmer_compiler_llvm` to use the LLVM compiler,
+/// * `wasmer_compiler_singlepass` to use the Singlepass compiler.
 ///
 /// ## Example
 ///

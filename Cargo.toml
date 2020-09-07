@@ -4,6 +4,7 @@ members = [
     "packages/common",
     "packages/compiler-cranelift",
     "packages/compiler-llvm",
+    "packages/compiler-singlepass",
 ]
 exclude = [
     "packages/any",

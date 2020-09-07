@@ -35,8 +35,11 @@ use pyo3::{exceptions::TypeError, prelude::*};
 /// store = Store(engine.JIT(Compiler))
 /// ```
 ///
-/// If the store is built without an engine, the JIT engine with no
-/// compiler (headless mode) will be used.
+/// If the store is built without an engine, the JIT engine will be
+/// used, with the first compiler found in this order:
+/// `compiler_compiler_cranelift`, `compiler_compiler_llvm`,
+/// `compiler_compiler_singlepass`, otherwise it will run in headless
+/// mode.
 #[pyclass]
 #[text_signature = "(engine)"]
 pub struct Store {
