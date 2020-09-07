@@ -1257,8 +1257,22 @@ from wasmer_compiler_llvm import Compiler
 
 store = Store(engine.JIT(Compiler))
 </code></pre>
-<p>If the store is built without an engine, the JIT engine with no
-compiler (headless mode) will be used.</p></div>
+<p>If the store is built without an engine, the JIT engine will be
+used, with the first compiler found in this order:
+<code>compiler_compiler_cranelift</code>, <code>compiler_compiler_llvm</code>,
+<code>compiler_compiler_singlepass</code>, otherwise it will run in headless
+mode.</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Store.compiler_name"><code class="name">var <span class="ident">compiler_name</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="wasmer.Store.engine_name"><code class="name">var <span class="ident">engine_name</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+</dl>
 </dd>
 <dt id="wasmer.Table"><code class="flex name class">
 <span>class <span class="ident">Table</span></span>
@@ -1710,6 +1724,10 @@ value = Value.v128(42)
 </li>
 <li>
 <h4><code><a title="wasmer.Store" href="#wasmer.Store">Store</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.Store.compiler_name" href="#wasmer.Store.compiler_name">compiler_name</a></code></li>
+<li><code><a title="wasmer.Store.engine_name" href="#wasmer.Store.engine_name">engine_name</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="wasmer.Table" href="#wasmer.Table">Table</a></code></h4>
