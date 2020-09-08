@@ -28,6 +28,13 @@ sleep:
 
 build_features := ""
 
+# Compile and install all the Python package.
+build-all rust_target='':
+	just build api {{rust_target}}
+	just build compiler-cranelift {{rust_target}}
+	just build compiler-llvm {{rust_target}}
+	just build compiler-singlepass {{rust_target}}
+
 # Compile and install the Python package.
 # Run with `--set build_features` to compile with specific Cargo features.
 build package='api' rust_target='':
