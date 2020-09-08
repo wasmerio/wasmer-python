@@ -1,0 +1,16 @@
+[package]
+name = "wasmer-common-python"
+version = "0.5.0"
+authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
+edition = "2018"
+description = "Common types for the `wasmer-*-python` crates"
+readme = "README.md"
+repository = "https://github.com/wasmerio/wasmer-python"
+keywords = ["python", "extension", "webassembly"]
+categories = ["wasm"]
+publish = false
+
+[dependencies]
+wasmer = { git = "https://github.com/wasmerio/wasmer", default-features = false, features = ["wat", "jit", "native", "compiler"], branch = "master" }
+wasmer-compiler = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
+pyo3 = { version = "0.11", features = ["extension-module"] }

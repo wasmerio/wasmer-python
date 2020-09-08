@@ -5,11 +5,12 @@ use pyo3::{
 };
 
 pub(crate) mod wasmer_inner {
-    pub use wasmer;
+    pub use wasmer_common_python::wasmer;
     pub use wasmer_types;
     pub use wasmer_wasi;
 }
 
+mod engines;
 mod errors;
 mod exports;
 mod externals;
@@ -160,7 +161,61 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     )?;
 
     // Modules.
+    module.add_wrapped(wrap_pymodule!(engine))?;
     module.add_wrapped(wrap_pymodule!(wasi))?;
+
+    Ok(())
+}
+
+/// Wasmer Engines.
+///
+/// Engines are mainly responsible for two things:
+///
+/// 1. Transform the compilation code (from any Wasmer compiler) to
+///    **create** an artifact,
+/// 2. **Load** an atifact so it can be used by the user (normally,
+///    pushing the code into executable memory and so on).
+///
+/// It currently has two implementations:
+///
+/// 1. JIT with `engine.JIT`,
+/// 2. Native with `engine.Native`.
+///
+/// Both engines receive an optional compiler. If absent, engines will
+/// run in headless mode, i.e. they won't be able to compile (create)
+/// an artifact), they will only be able to run (laod) an artifact.
+///
+/// Compilers are distributed as individual Python packages:
+///
+/// * `wasmer_compiler_cranelift` to use the Cranelift compiler,
+/// * `wasmer_compiler_llvm` to use the LLVM compiler,
+/// * `wasmer_compiler_singlepass` to use the Singlepass compiler.
+///
+/// ## Example
+///
+/// Create a JIT engine with no compiler (headless mode):
+///
+/// ```py
+/// from wasmer import engine
+///
+/// engine = engine.JIT()
+/// ```
+///
+/// Create a JIT engine with the LLVM compiler:
+///
+/// ```py
+/// from wasmer import engine
+/// from wasmer_compiler_llvm import Compiler
+///
+/// engine = engine.JIT(Compiler)
+/// ```
+///
+/// Engines are stored inside the `wasmer.Store`.
+#[pymodule]
+fn engine(_py: Python, module: &PyModule) -> PyResult<()> {
+    // Classes.
+    module.add_class::<engines::JIT>()?;
+    module.add_class::<engines::Native>()?;
 
     Ok(())
 }

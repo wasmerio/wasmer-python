@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.2.dev1+g1334dfa" />
+<meta name="generator" content="pdoc 0.9.2.dev1+gad6a554" />
 <title>wasmer API documentation</title>
 <meta name="description" content="&lt;img height=&#34;48&#34; src=&#34;https://wasmer.io/static/icons/favicon-96x96.png&#34; alt=&#34;Wasmer logo&#34; valign=&#34;middle&#34;&gt; Wasmer Python [![PyPI …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>wasmer</code></h1>
+<h1 class="title">Package <code>wasmer</code></h1>
 </header>
 <section id="section-intro">
 <h1 id="wasmer-python"><img height="48" src="https://wasmer.io/static/icons/favicon-96x96.png" alt="Wasmer logo" valign="middle"> Wasmer Python <a href="https://badge.fury.io/py/wasmer"><img alt="PyPI version" src="https://badge.fury.io/py/wasmer.svg?"></a> <a href="https://wasmerio.github.io/wasmer-python/api/"><img alt="Wasmer Python Documentation" src="https://img.shields.io/badge/docs-read-green"></a> <a href="https://pypi.org/project/wasmer/"><img alt="Wasmer PyPI downloads" src="https://pepy.tech/badge/wasmer"></a> <a href="https://slack.wasmer.io"><img alt="Wasmer Slack Channel" src="https://img.shields.io/static/v1?label=chat&amp;message=on%20Slack&amp;color=green"></a></h1>
@@ -74,7 +74,11 @@ buffer protocol with <code><a title="wasmer.Buffer" href="#wasmer.Buffer">Buffer
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt><code class="name"><a title="wasi" href="wasi.html">wasi</a></code></dt>
+<dt><code class="name"><a title="engine" href="../engine/index.html">engine</a></code></dt>
+<dd>
+<div class="desc"><p>Wasmer Engines …</p></div>
+</dd>
+<dt><code class="name"><a title="wasi" href="../wasi/index.html">wasi</a></code></dt>
 <dd>
 <div class="desc"><p>Wasmer's <a href="https://github.com/WebAssembly/WASI">WASI</a>
 implementation …</p></div>
@@ -1227,6 +1231,7 @@ assert type(serialized_module) == bytes
 </dd>
 <dt id="wasmer.Store"><code class="flex name class">
 <span>class <span class="ident">Store</span></span>
+<span>(</span><span>engine)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The store represents all global state that can be manipulated by
@@ -1236,13 +1241,38 @@ have been allocated during the lifetime of the abstract machine.</p>
 <p>The <code><a title="wasmer.Store" href="#wasmer.Store">Store</a></code> holds the engine (that is —amongst many things— used
 to compile the WebAssembly bytes into a valid module artifact), in
 addition to the <code>Tunables</code> (that are used to create the memories,
-tables and globals).</p>
+tables and globals). The engine comes from the <code>wasmer.engines</code>
+module.</p>
 <p>Specification: <a href="https://webassembly.github.io/spec/core/exec/runtime.html#store">https://webassembly.github.io/spec/core/exec/runtime.html#store</a></p>
+<p>Read the documentation of the <code><a title="engine" href="../engine/index.html">engine</a></code> submodule to learn more.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import Store
+<p>Use the JIT engine with no compiler (headless mode):</p>
+<pre><code class="py">from wasmer import engine, Store
 
-store = Store()
-</code></pre></div>
+store = Store(engine.JIT())
+</code></pre>
+<p>Use the JIT engine with the LLVM compiler:</p>
+<pre><code class="py">from wasmer import engine, Store
+from wasmer_compiler_llvm import Compiler
+
+store = Store(engine.JIT(Compiler))
+</code></pre>
+<p>If the store is built without an engine, the JIT engine will be
+used, with the first compiler found in this order:
+<code>compiler_compiler_cranelift</code>, <code>compiler_compiler_llvm</code>,
+<code>compiler_compiler_singlepass</code>, otherwise it will run in headless
+mode.</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wasmer.Store.compiler_name"><code class="name">var <span class="ident">compiler_name</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+<dt id="wasmer.Store.engine_name"><code class="name">var <span class="ident">engine_name</span></code></dt>
+<dd>
+<div class="desc"><p>Return an attribute of instance, which is of type owner.</p></div>
+</dd>
+</dl>
 </dd>
 <dt id="wasmer.Table"><code class="flex name class">
 <span>class <span class="ident">Table</span></span>
@@ -1564,7 +1594,8 @@ value = Value.v128(42)
 <ul id="index">
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li><code><a title="wasi" href="wasi.html">wasi</a></code></li>
+<li><code><a title="engine" href="../engine/index.html">engine</a></code></li>
+<li><code><a title="wasi" href="../wasi/index.html">wasi</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
@@ -1693,6 +1724,10 @@ value = Value.v128(42)
 </li>
 <li>
 <h4><code><a title="wasmer.Store" href="#wasmer.Store">Store</a></code></h4>
+<ul class="">
+<li><code><a title="wasmer.Store.compiler_name" href="#wasmer.Store.compiler_name">compiler_name</a></code></li>
+<li><code><a title="wasmer.Store.engine_name" href="#wasmer.Store.engine_name">engine_name</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="wasmer.Table" href="#wasmer.Table">Table</a></code></h4>
@@ -1755,7 +1790,7 @@ value = Value.v128(42)
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2.dev1+g1334dfa</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2.dev1+gad6a554</a>.</p>
 </footer>
 </body>
 </html>

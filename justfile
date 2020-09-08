@@ -1,13 +1,3 @@
-# Compile a Rust program to Wasm.
-compile-wasm FILE='examples/simple':
-	#!/usr/bin/env bash
-	set -euo pipefail
-	rustc --target wasm32-unknown-unknown -O --crate-type=cdylib {{FILE}}.rs -o {{FILE}}.raw.wasm
-	wasm-gc {{FILE}}.raw.wasm {{FILE}}.wasm
-	wasm-opt -Os --strip-producers {{FILE}}.wasm -o {{FILE}}.opt.wasm
-	mv {{FILE}}.opt.wasm {{FILE}}.wasm
-	rm {{FILE}}.raw.wasm
-
 # Install the environment to develop the extension.
 prelude:
 	#!/usr/bin/env bash
@@ -27,31 +17,21 @@ prelude:
 	pwd
 	ls -l .env
 
-# Setup the environment to develop the extension.
-wakeup:
-	#!/usr/bin/env bash
-	if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-
-# Unset the development environment.
-sleep:
-	deactivate
-
 build_features := ""
 
-# Compile and install the Python library.
-# Run with `--set build_features` to compile with specific Cargo features.
-build rust_target='':
+# Compile and install all the Python packages.
+build-all rust_target='':
+	just build api {{rust_target}}
+	just build compiler-cranelift {{rust_target}}
+	just build compiler-llvm {{rust_target}}
+	just build compiler-singlepass {{rust_target}}
+
+# Compile and install the Python package. Run with `--set build_features` to compile with specific Cargo features.
+build package='api' rust_target='':
         #!/usr/bin/env bash
         export PYTHON_SYS_EXECUTABLE=$(which python)
 
         build_features="{{build_features}}"
-
-        if test -z "${build_features}"; then
-                if test "{{arch()}}" = "aarch64"; then
-                        build_features="default-singlepass";
-                fi
-        fi
-
         build_args=""
 
         if test ! -z "${build_features}"; then
@@ -64,22 +44,16 @@ build rust_target='':
 
         echo "Build arguments: ${build_args}"
 
-        cargo check ${build_args}
+        cd packages/{{package}}/
+
         maturin develop --binding-crate pyo3 --release --strip --cargo-extra-args="${build_args}"
 
-# Build the wheel.
-build-wheel python_version rust_target:
+# Build the wheel of a specific package.
+build-wheel package python_version rust_target:
         #!/usr/bin/env bash
         export PYTHON_SYS_EXECUTABLE=$(which python)
 
         build_features="{{build_features}}"
-
-        if test -z "${build_features}"; then
-                if test "{{arch()}}" = "aarch64"; then
-                        build_features="default-singlepass";
-                fi
-        fi
-
         build_args=""
 
         if test ! -z "${build_features}"; then
@@ -88,13 +62,14 @@ build-wheel python_version rust_target:
 
         echo "Build arguments: ${build_args}"
 
+        cd packages/{{package}}
+
         maturin build --bindings pyo3 --release --target "{{ rust_target }}" --strip --cargo-extra-args="${build_args}" --interpreter "{{python_version}}"
 
-# Create a distribution of wasmer that can be installed
-# anywhere (it will fail on import)
+# Create a distribution of wasmer that can be installed anywhere (it will fail on import)
 build-any-wheel:
 	mkdir -p ./target/wheels/
-	cd wasmer-any && pip3 wheel . -w ../target/wheels/
+	cd packages/any/ && pip3 wheel . -w ../../target/wheels/
 
 # Run Python.
 python-run file='':
@@ -110,19 +85,28 @@ benchmark benchmark-filename='':
 
 # Generate the documentation.
 doc:
-	@pdoc --html --output-dir docs/api --force wasmer
-	@ln -s -f wasmer.html docs/api/index.html
-
-
-# Inspect the `wasmer-python` extension.
-inspect:
-	@python -c "help('wasmer')"
+	@pdoc --html --output-dir docs/api --force \
+		wasmer \
+		wasmer_compiler_cranelift \
+		wasmer_compiler_llvm \
+		wasmer_compiler_singlepass
+	@ln -s -f wasmer/index.html docs/api/index.html
 
 publish:
 	twine upload --repository pypi target/wheels/wasmer-*.whl -u wasmer
 
 publish-any:
 	twine upload --repository pypi target/wheels/wasmer-*-py3-none-any.whl -u wasmer
+
+# Compile a Rust program to Wasm.
+compile-wasm FILE='examples/simple':
+	#!/usr/bin/env bash
+	set -euo pipefail
+	rustc --target wasm32-unknown-unknown -O --crate-type=cdylib {{FILE}}.rs -o {{FILE}}.raw.wasm
+	wasm-gc {{FILE}}.raw.wasm {{FILE}}.wasm
+	wasm-opt -Os --strip-producers {{FILE}}.wasm -o {{FILE}}.opt.wasm
+	mv {{FILE}}.opt.wasm {{FILE}}.wasm
+	rm {{FILE}}.raw.wasm
 
 # Local Variables:
 # mode: makefile

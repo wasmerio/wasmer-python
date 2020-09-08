@@ -3,6 +3,8 @@
 /.env
 /.pytest_cache/
 /benchmarks/__pycache__/
+/packages/any/build
+/packages/any/dist
+/packages/any/wasmer.egg-info/
 /target
 /tests/__pycache__/
-/wasmer-any/dist

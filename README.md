@@ -1,4 +1,4 @@
-# <img height="48" src="https://wasmer.io/static/icons/favicon-96x96.png" alt="Wasmer logo" valign="middle"> Wasmer Python [![PyPI version](https://badge.fury.io/py/wasmer.svg?)](https://badge.fury.io/py/wasmer) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-read-green)](https://wasmerio.github.io/wasmer-python/api/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer)](https://pypi.org/project/wasmer/) [![Wasmer Slack Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
+# <img height="48" src="https://wasmer.io/static/icons/favicon-96x96.png" alt="Wasmer logo" valign="middle"> Wasmer Python [![PyPI version](https://img.shields.io/pypi/v/wasmer)](https://badge.fury.io/py/wasmer) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-read-green)](https://wasmerio.github.io/wasmer-python/api/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer)](https://pypi.org/project/wasmer/) [![Wasmer Slack Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
 
 A complete and mature WebAssembly runtime for Python based on [Wasmer].
 
@@ -8,20 +8,59 @@ Features:
   * **Fast**: `wasmer` executes the WebAssembly modules as fast as
     possible, close to **native speed**,
   * **Safe**: All calls to WebAssembly will be fast, but more
-    importantly, completely safe and sandboxed.
+    importantly, completely safe and sandboxed,
+  * **Modular**: `wasmer` can compile the WebAssembly modules with
+    different engines or compiler.
 
 [Wasmer]: https://github.com/wasmerio/wasmer
 
+## Quick Introduction
+
+The `wasmer` package brings the required API to execute WebAssembly
+modules. In a nutshell, `wasmer` compiles the WebAssembly module into
+compiled code, and then executes it. `wasmer` is designed to work in
+various environments and platforms: From nano single-board computers
+to large and powerful servers, including more exotic ones. To address
+those requirements, Wasmer provides 2 engines and 3 compilers.
+
+Succinctly, an _engine_ is responsible to drive the _compilation_ and
+the _execution_ of a WebAssembly module. By extension, a _headless_
+engine can only execute a WebAssembly module, i.e. a module that has
+previously been compiled, or compiled, serialized and deserialized. By
+default, the `wasmer` package comes with 2 headless engines:
+
+1. `wasmer.engine.JIT`, the compiled machine code lives in memory,
+2. `wasmer.engine.Native`, the compiled machine code lives in a shared
+   object file (`.so`, `.dylib`, or `.dll`), and is natively executed.
+
+Because `wasmer` does not embed compilers in its package, engines are
+headless, i.e. they can't compile WebAssembly module; they can only
+execute them. Compilers live in their own standalone packages. Let's
+briefly introduce them:
+
+| Compiler package | Description | PyPi |
+|-|-|-|
+| `wasmer_compiler_cranelift` | provides a compromise between compilation-time and resulting execution-time | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_cranelift)](https://pypi.org/project/wasmer_compiler_cranelift/) [![PyPI downloads](https://pepy.tech/badge/wasmer_compiler_cranelift)](https://pypi.org/project/wasmer_compiler_cranelift/) |
+| `wasmer_compiler_llvm` | provides longer compilation-time but a super fast resulting execution-time (close to native, sometimes faster) | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_llvm)](https://pypi.org/project/wasmer_compiler_llvm/) [![PyPI downloads](https://pepy.tech/badge/wasmer_compiler_llvm)](https://pypi.org/project/wasmer_compiler_llvm/)|
+| `wasmer_compiler_singlepass` | provides the shortest compilation-time and an acceptable resulting execution-time | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_singlepass)](https://pypi.org/project/wasmer_compiler_singlepass/) [![PyPI downloads](https://pepy.tech/badge/wasmer_compiler_singlepass)](https://pypi.org/project/wasmer_compiler_singlepass/)|
+
+We generally recommend `wasmer_compiler_cranelift` for development
+purposes and `wasmer_compiler_llvm` in production.
+
+[Learn more by reading the documentation of the `wasmer.engine`
+submodule](https://wasmerio.github.io/wasmer-python/api/engine.html).
+
 ## Install
 
-To install the `wasmer` Python library, just run this command in your
-shell:
+To install the `wasmer` Python package, and let's say the
+`wasmer_compiler_cranelift` compiler, just run those commands in your shell:
 
 ```sh
 $ pip install wasmer
+$ pip install wasmer_compiler_cranelift
 ```
 
-[View `wasmer` package on PyPI](https://pypi.org/project/wasmer/).
+And you're ready to get fun!
 
 ## Example
 
@@ -43,11 +82,19 @@ it](https://github.com/wasmerio/wasmer-python/raw/master/examples/simple.wasm)).
 Then, we can excecute it in Python:
 
 ```python
-from wasmer import Store, Module, Instance
+from wasmer import engine, Store, Module, Instance
+from wasmer_compiler_cranelift import Compiler
 
-store = Store()
+# Let's define the store, that holds the engine, that holds the compiler.
+store = Store(engine.JIT(Compiler))
+
+# Let's compile the module to be able to execute it!
 module = Module(store, open('simple.wasm', 'rb').read())
+
+# Now the module is compiled, we can instantiate it.
 instance = Instance(module)
+
+# Call the exported `sum` function.
 result = instance.exports.sum(5, 37)
 
 print(result) # 42!
@@ -64,7 +111,7 @@ $ python examples/simple.py
 Browse the documentation at
 https://wasmerio.github.io/wasmer-python/api/.
 
-Alternatively, run `just build` followed by `just doc` to generate the
+Alternatively, run `just build-all` followed by `just doc` to generate the
 documentation inside `docs/api/index.html`.
 
 # Development
@@ -86,6 +133,7 @@ the prelude of this project:
 
 ```sh
 $ cargo install just
+$ just --list # to learn about all the available recipes
 $ just prelude
 ```
 
@@ -96,7 +144,8 @@ Then, simply run:
 
 ```sh
 $ source .env/bin/activate
-$ just build
+$ just build api
+$ just build compiler-cranelift
 $ just python-run examples/simple.py
 ```
 
@@ -108,49 +157,18 @@ $ just python-run
 $ just python-run file/to/run.py
 ```
 
-Finally, to inspect the extension; run:
-
-```sh
-$ just inspect
-```
-
-
-## Use a particular Wasmer compiler
-
-Wasmer, the runtime, comes with several compilers addressing
-particular needs or contexts ([learn more][compilers]). To set the
-compiler to use, the `Cargo.toml` file exposes 3 features:
-
-* `default-singlepass`,
-* `default-cranelift` and
-* `default-llvm`.
-
-To enable those features with `just build`, use such syntax:
-
-```sh
-$ just --set build_features default-llvm build
-```
-
 ## Supported platforms
 
 We try to provide wheels for as many platforms and architectures as
-possible. [Wasmer, the runtime](https://github.com/wasmerio/wasmer),
-provides several compilers, which address different needs and contexts
-([learn more][compilers]). While it is possible to force one compiler
-for your own setup, the wheels come pre-packaged with a particular
-one. For the moment, here are the supported platforms and
+possible. For the moment, here are the supported platforms and
 architectures:
 
-| Platform | Architecture | Triple | Default compiler |
-|-|-|-|-|
-| Linux | `amd64` | `x86_64-unknown-linux-gnu` | Cranelift |
-| Linux | `aarch64` | `aarch64-unknown-linux-gnu` | Singlepass |
-| Darwin | `amd64` | `x86_64-apple-darwin` | Cranelift |
-| Windows | `amd64` | `x86_64-pc-windows-msvc` | Cranelift |
-
-Note: it's also possible to [build Wasmer in Python with a specific
-compiler](#use-a-particular-wasmer-compiler), for example using LLVM
-for extra speed.
+| Platform | Architecture | Triple |
+|-|-|-|
+| Linux | `amd64` | `x86_64-unknown-linux-gnu` |
+| Linux | `aarch64` | `aarch64-unknown-linux-gnu` |
+| Darwin | `amd64` | `x86_64-apple-darwin` |
+| Windows | `amd64` | `x86_64-pc-windows-msvc` |
 
 Wheels are all built for the following Python versions:
 
@@ -175,13 +193,12 @@ Distributions](https://www.python.org/dev/peps/pep-0425/)).
 
 </details>
 
+## Testing
 
-# Testing
-
-Once the extension is compiled and installed (with `just build`), run
-the following command:
+Build all the packages and run the tests:
 
 ```sh
+$ just build-all
 $ just test
 ```
 
@@ -212,8 +229,6 @@ The entire project is under the MIT License. Please read [the
 `LICENSE` file][license].
 
 
-[Pypi]: https://pypi.org/
-[`rust-cpython`]: https://github.com/dgrunwald/rust-cpython
 [`pyo3`]: https://github.com/PyO3/pyo3
 [`maturin`]: https://github.com/PyO3/maturin
 [`virtualenv`]: https://virtualenv.pypa.io/
