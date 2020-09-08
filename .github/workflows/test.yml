@@ -12,9 +12,9 @@ jobs:
         # The job runs on different OS.
         target: [
           # Linux, amd64
-          { id: 'linux-amd64', os: 'ubuntu-latest', rust-target: 'x86_64-unknown-linux-gnu', rust-toolchain: 'stable' },
+          #{ id: 'linux-amd64', os: 'ubuntu-latest', rust-target: 'x86_64-unknown-linux-gnu', rust-toolchain: 'stable' },
           # macOS, amd64
-          { id: 'darwin-amd64', os: 'macos-latest', rust-target: 'x86_64-apple-darwin', rust-toolchain: 'stable' },
+          #{ id: 'darwin-amd64', os: 'macos-latest', rust-target: 'x86_64-apple-darwin', rust-toolchain: 'stable' },
           # Windows, amd64
           { id: 'windows-amd64', os: 'windows-latest', rust-target: 'x86_64-pc-windows-msvc', rust-toolchain: 'stable' },
           # Windows, x86
@@ -23,7 +23,9 @@ jobs:
           #{ id: 'linux-aarch64', os: ['self-hosted', 'aarch64'], rust-target: 'aarch64-unknown-linux-gnu', rust-toolchain: 'stable' },
         ]
         # The job runs on different Python versions.
-        python: [3.5, 3.6, 3.7, 3.8]
+        python: [
+        #3.5, 3.6, 3.7,
+        3.8]
       # As soon as one job fails in the matrix, all the other
       # in-progress jobs are canceled.
       fail-fast: false
@@ -118,6 +120,7 @@ jobs:
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/LLVM-10.0.0-win64.exe -L -o llvm-installer.exe
           7z x llvm-installer.exe -oC:/llvm
+          ls C:/llvm
           echo ::add-path::C:/llvm/bin
           echo ::set-env name=LLVM_SYS_100_PREFIX::C:/llvm
           echo ::set-env name=LIBCLANG_PATH::C:/llvm/bin/libclang.dll
