@@ -116,9 +116,11 @@ jobs:
         if: startsWith(matrix.target.id, 'windows-')
         shell: bash
         run: |
-          choco install llvm
-          echo "::set-env name=LLVM_SYS_100_PREFIX::C:\Program Files\LLVM"
-
+          curl --proto '=https' --tlsv1.2 -sSf https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/LLVM-10.0.0-win64.exe -L -o llvm-installer.exe
+          7z x llvm-installer.exe -oC:/llvm
+          echo ::add-path::C:/llvm/bin
+          echo ::set-env name=LLVM_SYS_100_PREFIX::C:/llvm
+          echo ::set-env name=LIBCLANG_PATH::C:/llvm/bin/libclang.dll
       - name: Set up just
         shell: bash
         run: |
