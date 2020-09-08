@@ -1,4 +1,4 @@
-use crate::wasmer;
+use crate::{errors::to_py_err, wasmer};
 use pyo3::{exceptions::RuntimeError, prelude::*};
 use std::sync::Arc;
 
@@ -30,7 +30,7 @@ impl JIT {
 
                 let opaque_compiler_inner_ref: &OpaqueCompilerInner = unsafe {
                     opaque_compiler_inner_ptr.as_ref().ok_or_else(|| {
-                        RuntimeError::py_err(
+                        to_py_err::<RuntimeError, _>(
                             "Failed to transfer the opaque compiler from the compiler",
                         )
                     })?
@@ -112,7 +112,7 @@ impl Native {
 
                 let opaque_compiler_inner_ref: &OpaqueCompilerInner = unsafe {
                     opaque_compiler_inner_ptr.as_ref().ok_or_else(|| {
-                        RuntimeError::py_err(
+                        to_py_err::<RuntimeError, _>(
                             "Failed to transfer the opaque compiler from the compiler",
                         )
                     })?

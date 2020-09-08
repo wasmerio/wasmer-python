@@ -1,4 +1,4 @@
-use crate::{engines, wasmer};
+use crate::{engines, errors::to_py_err, wasmer};
 use pyo3::{exceptions::TypeError, prelude::*};
 
 /// The store represents all global state that can be manipulated by
@@ -77,7 +77,7 @@ impl Store {
                         native.compiler_name().cloned(),
                     )
                 } else {
-                    return Err(TypeError::py_err("Unknown engine"));
+                    return Err(to_py_err::<TypeError, _>("Unknown engine"));
                 }
             }
 
