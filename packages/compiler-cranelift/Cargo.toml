@@ -3,7 +3,7 @@ name = "wasmer-compiler-cranelift-python"
 version = "0.5.0"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
-description = "Python extension to run WebAssembly binaries"
+description = "The Cranelift compiler for the `wasmer` package (to compile WebAssembly module)"
 readme = "README.md"
 repository = "https://github.com/wasmerio/wasmer-python"
 keywords = ["python", "extension", "webassembly"]
@@ -28,6 +28,7 @@ project-url = [
 classifier = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.5",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
@@ -35,7 +36,6 @@ classifier = [
     "Programming Language :: Rust",
     "Topic :: Software Development",
     "Topic :: Software Development :: Compilers",
-    "Topic :: Software Development :: Interpreters",
     "Topic :: Software Development :: Interpreters",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",

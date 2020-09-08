@@ -33,6 +33,7 @@ project-url = [
 classifier = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.5",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
@@ -40,7 +41,6 @@ classifier = [
     "Programming Language :: Rust",
     "Topic :: Software Development",
     "Topic :: Software Development :: Compilers",
-    "Topic :: Software Development :: Interpreters",
     "Topic :: Software Development :: Interpreters",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
