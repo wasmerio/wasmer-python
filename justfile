@@ -17,38 +17,21 @@ prelude:
 	pwd
 	ls -l .env
 
-# Setup the environment to develop the extension.
-wakeup:
-	#!/usr/bin/env bash
-	if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-
-# Unset the development environment.
-sleep:
-	deactivate
-
 build_features := ""
 
-# Compile and install all the Python package.
+# Compile and install all the Python packages.
 build-all rust_target='':
 	just build api {{rust_target}}
 	just build compiler-cranelift {{rust_target}}
 	just build compiler-llvm {{rust_target}}
 	just build compiler-singlepass {{rust_target}}
 
-# Compile and install the Python package.
-# Run with `--set build_features` to compile with specific Cargo features.
+# Compile and install the Python package. Run with `--set build_features` to compile with specific Cargo features.
 build package='api' rust_target='':
         #!/usr/bin/env bash
         export PYTHON_SYS_EXECUTABLE=$(which python)
 
         build_features="{{build_features}}"
-
-        if test -z "${build_features}"; then
-                if test "{{arch()}}" = "aarch64"; then
-                        build_features="default-singlepass";
-                fi
-        fi
-
         build_args=""
 
         if test ! -z "${build_features}"; then
@@ -66,19 +49,12 @@ build package='api' rust_target='':
         cargo check ${build_args}
         maturin develop --binding-crate pyo3 --release --strip --cargo-extra-args="${build_args}"
 
-# Build the wheel.
+# Build the wheel of a specific package.
 build-wheel package python_version rust_target:
         #!/usr/bin/env bash
         export PYTHON_SYS_EXECUTABLE=$(which python)
 
         build_features="{{build_features}}"
-
-        if test -z "${build_features}"; then
-                if test "{{arch()}}" = "aarch64"; then
-                        build_features="default-singlepass";
-                fi
-        fi
-
         build_args=""
 
         if test ! -z "${build_features}"; then
@@ -91,8 +67,7 @@ build-wheel package python_version rust_target:
 
         maturin build --bindings pyo3 --release --target "{{ rust_target }}" --strip --cargo-extra-args="${build_args}" --interpreter "{{python_version}}"
 
-# Create a distribution of wasmer that can be installed
-# anywhere (it will fail on import)
+# Create a distribution of wasmer that can be installed anywhere (it will fail on import)
 build-any-wheel:
 	mkdir -p ./target/wheels/
 	cd packages/any/ && pip3 wheel . -w ../../target/wheels/
