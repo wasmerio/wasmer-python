@@ -117,6 +117,7 @@ jobs:
         shell: bash
         run: |
           choco install llvm
+          echo "::set-env name=LLVM_SYS_100_PREFIX::C:\Program Files\LLVM"
 
       - name: Set up just
         shell: bash
