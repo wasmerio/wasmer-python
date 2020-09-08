@@ -9,7 +9,7 @@ use pyo3::{exceptions::TypeError, prelude::*};
 /// The `Store` holds the engine (that is —amongst many things— used
 /// to compile the WebAssembly bytes into a valid module artifact), in
 /// addition to the `Tunables` (that are used to create the memories,
-/// tables and globals). The engine comes from the `wasmer.engines`
+/// tables and globals). The engine comes from the `wasmer.engine`
 /// module.
 ///
 /// Specification: https://webassembly.github.io/spec/core/exec/runtime.html#store
