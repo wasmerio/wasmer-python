@@ -91,7 +91,7 @@ doc:
 		wasmer_compiler_cranelift \
 		wasmer_compiler_llvm \
 		wasmer_compiler_singlepass
-	@ln -s -f wasmer.html docs/api/index.html
+	@ln -s -f wasmer/index.html docs/api/index.html
 
 publish:
 	twine upload --repository pypi target/wheels/wasmer-*.whl -u wasmer
