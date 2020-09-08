@@ -40,7 +40,7 @@ briefly introduce them:
 
 | Compiler package | Description | PyPi |
 |-|-|-|
-| `wasmer_compiler_singlepass` | Super fast compilation times, slower execution times. Not prone to JIT-bombs. *Ideal for blockchains* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_singlepass)](https://pypi.org/project/wasmer_compiler_singlepass/ |
+| `wasmer_compiler_singlepass` | Super fast compilation times, slower execution times. Not prone to JIT-bombs. *Ideal for blockchains* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_singlepass)](https://pypi.org/project/wasmer_compiler_singlepass/) |
 | `wasmer_compiler_cranelift` | Fast compilation times, fast execution times. *Ideal for development* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_cranelift)](https://pypi.org/project/wasmer_compiler_cranelift/) |
 | `wasmer_compiler_llvm` | Slow compilation times, very fast execution times (close to native, sometimes faster). *Ideal for Production* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_llvm)](https://pypi.org/project/wasmer_compiler_llvm/) |
 
