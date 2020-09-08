@@ -1234,7 +1234,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "wasmer-common-py"
+name = "wasmer-common-python"
 version = "0.5.0"
 dependencies = [
  "pyo3",
@@ -1277,11 +1277,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "wasmer-compiler-cranelift-py"
+name = "wasmer-compiler-cranelift-python"
 version = "0.5.0"
 dependencies = [
  "pyo3",
- "wasmer-common-py",
+ "wasmer-common-python",
  "wasmer-compiler-cranelift",
 ]
 
@@ -1309,11 +1309,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "wasmer-compiler-llvm-py"
+name = "wasmer-compiler-llvm-python"
 version = "0.5.0"
 dependencies = [
  "pyo3",
- "wasmer-common-py",
+ "wasmer-common-python",
  "wasmer-compiler-llvm",
 ]
 
@@ -1336,11 +1336,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "wasmer-compiler-singlepass-py"
+name = "wasmer-compiler-singlepass-python"
 version = "0.5.0"
 dependencies = [
  "pyo3",
- "wasmer-common-py",
+ "wasmer-common-python",
  "wasmer-compiler-singlepass",
 ]
 
@@ -1411,12 +1411,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "wasmer-py"
+name = "wasmer-python"
 version = "0.5.0"
 dependencies = [
  "cfg-if",
  "pyo3",
- "wasmer-common-py",
+ "wasmer-common-python",
  "wasmer-types",
  "wasmer-wasi",
  "wasmprinter",
