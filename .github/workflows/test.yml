@@ -141,10 +141,7 @@ jobs:
           maturin list-python
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
-          just build api "${{ matrix.target.rust-target }}"
-          just build compiler-cranelift "${{ matrix.target.rust-target }}"
-          just build compiler-llvm "${{ matrix.target.rust-target }}"
-          just build compiler-singlepass "${{ matrix.target.rust-target }}"
+          just build-all "${{ matrix.target.rust-target }}"
           just build-any-wheel
 
       - name: Run all the tests
