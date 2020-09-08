@@ -5,6 +5,7 @@ import wasmer_compiler_singlepass
 import itertools
 import os
 import platform
+import pytest
 
 here = os.path.dirname(os.path.realpath(__file__))
 TEST_BYTES = open(here + '/tests.wasm', 'rb').read()
@@ -12,9 +13,10 @@ TEST_BYTES = open(here + '/tests.wasm', 'rb').read()
 def test_store_defaults():
     store = Store()
 
-    assert store.engine_name == "jit"
-    assert store.compiler_name == "cranelift"
+    assert store.engine_name == 'jit'
+    assert store.compiler_name == 'cranelift'
 
+@pytest.mark.skipif(platform.platform() == 'Windows', reason='LLVM (master) is unstable for the moment')
 def test_store_with_various_engines_and_compilers():
     engines = [
         engine.JIT,
@@ -27,22 +29,17 @@ def test_store_with_various_engines_and_compilers():
         wasmer_compiler_singlepass.Compiler
     ]
     results = [
-        ("jit", None),
-        ("jit", "cranelift"),
-        ("jit", "llvm"),
-        ("jit", "singlepass"),
-        ("native", None),
-        ("native", "cranelift"),
-        ("native", "llvm"),
-        ("native", "singlepass"),
+        ('jit', None),
+        ('jit', 'cranelift'),
+        ('jit', 'llvm'),
+        ('jit', 'singlepass'),
+        ('native', None),
+        ('native', 'cranelift'),
+        ('native', 'llvm'),
+        ('native', 'singlepass'),
     ]
-    # TODO: Fix me.
-    is_windows = platform.platform() == 'Windows'
 
     for ((engine_, compiler), expected) in itertools.zip_longest(itertools.product(engines, compilers), results):
-        if is_windows and engine_ == engine.JIT and compiler == wasmer_compiler_llvm.Compiler:
-            continue
-        
         store = Store(engine_(compiler))
 
         assert store.engine_name == expected[0]
