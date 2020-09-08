@@ -1,3 +1,3 @@
-use crate::wasmer_inner::wasmer_common_py;
+use crate::wasmer_inner::wasmer_common_python;
 
-pub use wasmer_common_py::py::Store;
+pub use wasmer_common_python::py::Store;

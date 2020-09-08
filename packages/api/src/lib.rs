@@ -5,7 +5,7 @@ use pyo3::{
 };
 
 pub(crate) mod wasmer_inner {
-    pub use wasmer_common_py::{self, wasmer};
+    pub use wasmer_common_python::{self, wasmer};
     pub use wasmer_types;
     pub use wasmer_wasi;
 }

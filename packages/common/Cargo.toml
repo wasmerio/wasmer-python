@@ -1,5 +1,5 @@
 [package]
-name = "wasmer-common-py"
+name = "wasmer-common-python"
 version = "0.5.0"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
