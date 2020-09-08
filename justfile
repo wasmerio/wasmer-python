@@ -46,7 +46,6 @@ build package='api' rust_target='':
 
         cd packages/{{package}}/
 
-        cargo check ${build_args}
         maturin develop --binding-crate pyo3 --release --strip --cargo-extra-args="${build_args}"
 
 # Build the wheel of a specific package.
