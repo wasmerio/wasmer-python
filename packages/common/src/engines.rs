@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 /// JIT engine for Wasmer compilers.
 ///
-/// Given an option compiler, it generates the compiled machine code,
+/// Given an optional compiler, it generates the compiled machine code,
 /// and publishes it into memory so it can be used externally.
 ///
 /// If the compiler is absent, it will generate a headless engine.
@@ -84,7 +84,7 @@ impl JIT {
 
 /// Native engine for Wasmer compilers.
 ///
-/// Given an option compiler, it generates a shared object file
+/// Given an optional compiler, it generates a shared object file
 /// (`.so`, `.dylib` or `.dll` depending on the target), saves it
 /// temporarily to disk and uses it natively via `dlopen` and `dlsym`.
 /// and publishes it into memory so it can be used externally.
