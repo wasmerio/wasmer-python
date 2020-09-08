@@ -88,7 +88,7 @@ build-wheel package python_version rust_target:
 # anywhere (it will fail on import)
 build-any-wheel:
 	mkdir -p ./target/wheels/
-	cd wasmer-any && pip3 wheel . -w ../target/wheels/
+	cd packages/any/ && pip3 wheel . -w ../../target/wheels/
 
 # Run Python.
 python-run file='':
