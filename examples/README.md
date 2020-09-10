@@ -120,7 +120,7 @@ next example.
 
    </details>
 
-### Exports
+## Exports
    
 8. [**Exported function**][exported-function], explains how to get and
    how to call an exported function.
@@ -150,7 +150,7 @@ next example.
 
    </details>
 
-### Imports
+## Imports
 
 10. [**Imported function**][imported-function], aka _host function_,
     explains how to use a Python function inside a WebAssembly module.
@@ -166,7 +166,7 @@ next example.
 
     </details>
 
-### Integrations
+## Integrations
 
 11. [**WASI**][wasi], explains how to use the [WebAssembly System
     Interface][WASI] (WASI).
