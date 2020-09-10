@@ -2,6 +2,8 @@ from wasmer import engine, target, Store, Module
 from wasmer_compiler_cranelift import Compiler
 import itertools
 import os
+import platform
+import pytest
 
 def test_triple():
     triple = target.Triple('x86_64-apple-darwin')
@@ -41,6 +43,7 @@ def test_target_with_default_cpu_features():
     triple = target.Triple.host()
     target_ = target.Target(triple)
 
+@pytest.mark.skipif(platform.system() == 'Windows', reason='Cross-compilation on Windows requires more tooling that are not installed on the CI servers')
 def test_cross_compilation_roundtrip():
     triple = target.Triple('x86_64-linux-musl')
     cpu_features = target.CpuFeatures()
@@ -55,12 +58,12 @@ def test_cross_compilation_roundtrip():
         store,
         """
         (module
-        (type $sum_t (func (param i32 i32) (result i32)))
-        (func $sum_f (type $sum_t) (param $x i32) (param $y i32) (result i32)
+          (type $sum_t (func (param i32 i32) (result i32)))
+          (func $sum_f (type $sum_t) (param $x i32) (param $y i32) (result i32)
             local.get $x
             local.get $y
             i32.add)
-        (export "sum" (func $sum_f)))
+          (export "sum" (func $sum_f)))
         """
     )
 
