@@ -1,6 +1,6 @@
 use crate::errors::to_py_err;
 use enumset::EnumSet;
-use pyo3::{exceptions::ValueError, prelude::*};
+use pyo3::{class::basic::PyObjectProtocol, exceptions::ValueError, prelude::*};
 use std::str::FromStr;
 
 #[pyclass]
@@ -129,6 +129,13 @@ impl Triple {
                 wasmer_compiler::CallingConvention::WasmBasicCAbi => "wasm_basic_c_abi",
                 wasmer_compiler::CallingConvention::WindowsFastcall => "windows_fastcall",
             })
+    }
+}
+
+#[pyproto]
+impl PyObjectProtocol for Triple {
+    fn __str__(&self) -> PyResult<String> {
+        Ok(self.inner.to_string())
     }
 }
 
