@@ -1,1 +1,1 @@
-pub use wasmer_common_python::py::{CpuFeatures, Target, Triple};
+pub use wasmer_engines_python::{CpuFeatures, Target, Triple};

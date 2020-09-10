@@ -1,1 +1,1 @@
-pub use wasmer_common_python::py::{Native, JIT};
+pub use wasmer_engines_python::{Native, JIT};

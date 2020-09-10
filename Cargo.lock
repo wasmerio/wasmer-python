@@ -1234,16 +1234,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "wasmer-common-python"
-version = "0.5.0"
-dependencies = [
- "enumset",
- "pyo3",
- "wasmer",
- "wasmer-compiler",
-]
-
-[[package]]
 name = "wasmer-compiler"
 version = "1.0.0-alpha01.0"
 source = "git+https://github.com/wasmerio/wasmer#61a4fdd6d6176d6c794fa52982c6d8487da7bce2"
@@ -1282,8 +1272,8 @@ name = "wasmer-compiler-cranelift-python"
 version = "0.5.0"
 dependencies = [
  "pyo3",
- "wasmer-common-python",
  "wasmer-compiler-cranelift",
+ "wasmer-engines-python",
 ]
 
 [[package]]
@@ -1314,8 +1304,8 @@ name = "wasmer-compiler-llvm-python"
 version = "0.5.0"
 dependencies = [
  "pyo3",
- "wasmer-common-python",
  "wasmer-compiler-llvm",
+ "wasmer-engines-python",
 ]
 
 [[package]]
@@ -1341,8 +1331,8 @@ name = "wasmer-compiler-singlepass-python"
 version = "0.5.0"
 dependencies = [
  "pyo3",
- "wasmer-common-python",
  "wasmer-compiler-singlepass",
+ "wasmer-engines-python",
 ]
 
 [[package]]
@@ -1401,6 +1391,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "wasmer-engines-python"
+version = "0.5.0"
+dependencies = [
+ "enumset",
+ "pyo3",
+ "wasmer",
+ "wasmer-compiler",
+]
+
+[[package]]
 name = "wasmer-object"
 version = "1.0.0-alpha01.0"
 source = "git+https://github.com/wasmerio/wasmer#61a4fdd6d6176d6c794fa52982c6d8487da7bce2"
@@ -1417,7 +1417,8 @@ version = "0.5.0"
 dependencies = [
  "cfg-if",
  "pyo3",
- "wasmer-common-python",
+ "wasmer",
+ "wasmer-engines-python",
  "wasmer-types",
  "wasmer-wasi",
  "wasmprinter",

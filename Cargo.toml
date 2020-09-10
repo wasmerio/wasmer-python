@@ -1,10 +1,10 @@
 [workspace]
 members = [
     "packages/api",
-    "packages/common",
     "packages/compiler-cranelift",
     "packages/compiler-llvm",
     "packages/compiler-singlepass",
+    "packages/engines",
 ]
 exclude = [
     "packages/any",
