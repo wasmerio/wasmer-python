@@ -185,7 +185,7 @@ next example.
 [engine-jit]: ./engine_jit.py
 [engine-native]: ./engine_native.py
 [engine-headless]: ./engine_headless.py
-[engine-compilation]: ./engine_cross_compilation.py
+[engine-cross-compilation]: ./engine_cross_compilation.py
 [compiler-singlepass]: ./compiler_singlepass.py
 [compiler-cranelift]: ./compiler_cranelift.py
 [compiler-llvm]: ./compiler_llvm.py
