@@ -78,6 +78,10 @@ buffer protocol with <code><a title="wasmer.Buffer" href="#wasmer.Buffer">Buffer
 <dd>
 <div class="desc"><p>Wasmer Engines …</p></div>
 </dd>
+<dt><code class="name"><a title="target" href="../target/index.html">target</a></code></dt>
+<dd>
+<div class="desc"><p>Wasmer's compilation targets …</p></div>
+</dd>
 <dt><code class="name"><a title="wasi" href="../wasi/index.html">wasi</a></code></dt>
 <dd>
 <div class="desc"><p>Wasmer's <a href="https://github.com/WebAssembly/WASI">WASI</a>
@@ -1241,7 +1245,7 @@ have been allocated during the lifetime of the abstract machine.</p>
 <p>The <code><a title="wasmer.Store" href="#wasmer.Store">Store</a></code> holds the engine (that is —amongst many things— used
 to compile the WebAssembly bytes into a valid module artifact), in
 addition to the <code>Tunables</code> (that are used to create the memories,
-tables and globals). The engine comes from the <code>wasmer.engines</code>
+tables and globals). The engine comes from the <code>wasmer.engine</code>
 module.</p>
 <p>Specification: <a href="https://webassembly.github.io/spec/core/exec/runtime.html#store">https://webassembly.github.io/spec/core/exec/runtime.html#store</a></p>
 <p>Read the documentation of the <code><a title="engine" href="../engine/index.html">engine</a></code> submodule to learn more.</p>
@@ -1595,6 +1599,7 @@ value = Value.v128(42)
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
 <li><code><a title="engine" href="../engine/index.html">engine</a></code></li>
+<li><code><a title="target" href="../target/index.html">target</a></code></li>
 <li><code><a title="wasi" href="../wasi/index.html">wasi</a></code></li>
 </ul>
 </li>
