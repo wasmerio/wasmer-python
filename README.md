@@ -64,7 +64,7 @@ And you're ready to get fun!
 
 ## Example
 
-There is a toy program in `examples/simple.rs`, written in Rust (or
+There is a toy program in `examples/appendices/simple.rs`, written in Rust (or
 any other language that compiles to WebAssembly):
 
 ```rust
@@ -75,9 +75,9 @@ pub extern fn sum(x: i32, y: i32) -> i32 {
 ```
 
 After compilation to WebAssembly, the
-[`examples/simple.wasm`](https://github.com/wasmerio/wasmer-python/blob/master/examples/simple.wasm)
+[`examples/appendices/simple.wasm`](https://github.com/wasmerio/wasmer-python/blob/master/examples/appendices/simple.wasm)
 binary file is generated. ([Download
-it](https://github.com/wasmerio/wasmer-python/raw/master/examples/simple.wasm)).
+it](https://github.com/wasmerio/wasmer-python/raw/master/examples/appendices/simple.wasm)).
 
 Then, we can excecute it in Python:
 
@@ -103,7 +103,7 @@ print(result) # 42!
 And then, finally, enjoy by running:
 
 ```sh
-$ python examples/simple.py
+$ python examples/appendices/simple.py
 ```
 
 # Documentation
@@ -146,7 +146,7 @@ Then, simply run:
 $ source .env/bin/activate
 $ just build api
 $ just build compiler-cranelift
-$ just python-run examples/simple.py
+$ just python-run examples/appendices/simple.py
 ```
 
 If you need to interact with Python, or run a specific file, use the
