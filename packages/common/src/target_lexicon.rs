@@ -3,7 +3,25 @@ use enumset::EnumSet;
 use pyo3::{class::basic::PyObjectProtocol, exceptions::ValueError, prelude::*};
 use std::str::FromStr;
 
+/// Represents a `Triple` + `CpuFeatures` pair.
+///
+/// If the `CpuFeatures` is ommited, an empty set of CPU feature will
+/// be assumed.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import target
+///
+/// triple = target.Triple('x86_64-apple-darwin')
+///
+/// cpu_features = target.CpuFeatures()
+/// cpu_features.add('sse2')
+///
+/// target = target.Target(triple, cpu_features)
+/// ```
 #[pyclass]
+#[text_signature = "(triple, cpu_features)"]
 pub struct Target {
     inner: wasmer_compiler::Target,
 }
@@ -34,6 +52,24 @@ impl Target {
 ///
 /// Historically such things had three fields, though they have added
 /// additional fields over time.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import target
+///
+/// triple = target.Triple('x86_64-apple-darwin')
+///
+/// assert str(triple) == 'x86_64-apple-darwin'
+/// assert triple.architecture == 'x86_64'
+/// assert triple.vendor == 'apple'
+/// assert triple.operating_system == 'darwin'
+/// assert triple.binary_format == 'macho'
+/// assert triple.environment == 'unknown'
+/// assert triple.endianness == 'little'
+/// assert triple.pointer_width == 8
+/// assert triple.default_calling_convention == 'system_v'
+/// ```
 #[pyclass]
 #[text_signature = "(triple)"]
 pub struct Triple {
@@ -56,6 +92,14 @@ impl Triple {
     }
 
     /// Build the triple for the current host.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import target
+    ///
+    /// this_triple = target.Triple.host()
+    /// ```
     #[staticmethod]
     fn host() -> Self {
         Self {
@@ -96,6 +140,8 @@ impl Triple {
     }
 
     /// Returns the endianness of this target's architecture.
+    ///
+    /// Possible returned values are `little` or `big`.
     #[getter]
     fn endianness(&self) -> Option<&'static str> {
         self.inner
@@ -109,6 +155,10 @@ impl Triple {
 
     /// Returns the pointer width (in bytes) of this target's
     /// architecture.
+    ///
+    /// The width of a pointer (in the default address space) can be
+    /// of size `u16`, `u32` or `u64`, resp. 2, 4 or 8 bytes, which
+    /// are the possible returned values.
     #[getter]
     fn pointer_width(&self) -> Option<u8> {
         self.inner
@@ -119,6 +169,26 @@ impl Triple {
 
     /// Returns the default calling convention for the given target
     /// triple.
+    ///
+    /// The calling convention specifies things like which registers
+    /// are used for passing arguments, which registers are
+    /// callee-saved, and so on.
+    ///
+    /// Possible returned values are:
+    ///
+    /// * `system_v`, “System V” which is used on most Unix-like platfoms. Note
+    ///   that the specific conventions vary between hardware
+    ///   architectures; for example, x86-32's “System V” is entirely
+    ///   different from x86-64's “System V”.
+    /// * `wasm_basic_c_abi`, [The WebAssembly C
+    ///   ABI](https://github.com/WebAssembly/tool-conventions/blob/master/BasicCABI.md).
+    /// * `windows_fastcall`, “Windows Fastcall” which is used on
+    ///   Windows. Note that like “System V”, this varies between
+    ///   hardware architectures. On x86-32 it describes what Windows
+    ///   documentation calls “fastcall”, and on x86-64 it describes
+    ///   what Windows documentation often just calls the Windows x64
+    ///   calling convention (though the compiler still recognizes
+    ///   “fastcall” as an alias for it).
     #[getter]
     fn default_calling_convention(&self) -> Option<&'static str> {
         self.inner
@@ -140,6 +210,39 @@ impl PyObjectProtocol for Triple {
 }
 
 /// Represents a set of CPU features.
+///
+/// CPU features are identified by their stringified names. The
+/// reference is the GCC options:
+///
+/// * https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
+/// * https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html
+/// * https://gcc.gnu.org/onlinedocs/gcc/AArch64-Options.html
+///
+/// At the time of writing this documentation (it might be outdated in
+/// the future), the supported features are the following:
+///
+/// * `sse2`,
+/// * `sse3`,
+/// * `ssse3`,
+/// * `sse4.1`,
+/// * `sse4.2`,
+/// * `popcnt`,
+/// * `avx`,
+/// * `bmi`,
+/// * `bmi2`,
+/// * `avx2`,
+/// * `avx512dq`,
+/// * `avx512vl`,
+/// * `lzcnt`.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import target
+///
+/// cpu_features = target.CpuFeatures()
+/// cpu_features.add('sse2')
+/// ```
 #[pyclass]
 #[text_signature = "()"]
 pub struct CpuFeatures {
