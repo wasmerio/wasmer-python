@@ -1,6 +1,6 @@
 # <img height="48" src="https://wasmer.io/static/icons/favicon-96x96.png" alt="Wasmer logo" valign="middle"> Wasmer Python [![PyPI version](https://img.shields.io/pypi/v/wasmer)](https://badge.fury.io/py/wasmer) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-read-green)](https://wasmerio.github.io/wasmer-python/api/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer)](https://pypi.org/project/wasmer/) [![Wasmer Slack Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
 
-A complete and mature WebAssembly runtime for Python based on [Wasmer].
+A complete and mature WebAssembly runtime for Python based on [Wasmer](https://github.com/wasmerio/wasmer).
 
 Features:
 
@@ -12,7 +12,13 @@ Features:
   * **Modular**: `wasmer` can compile the WebAssembly modules with
     different engines or compiler.
 
-[Wasmer]: https://github.com/wasmerio/wasmer
+**Documentation**: [browse the detailed API
+documentation](https://wasmerio.github.io/wasmer-python/api/) full of
+examples.
+
+**Examples** as tutorials: [browse the `examples/`
+directory](./examples), it's the best place for a complete
+introduction!
 
 ## Quick Introduction
 
@@ -47,7 +53,7 @@ briefly introduce them:
 We generally recommend `wasmer_compiler_cranelift` for development
 purposes and `wasmer_compiler_llvm` in production.
 
-[Learn more by reading the documentation of the `wasmer.engine`
+Learn more by reading [the documentation of the `wasmer.engine`
 submodule](https://wasmerio.github.io/wasmer-python/api/engine.html).
 
 ## Install
@@ -64,8 +70,13 @@ And you're ready to get fun!
 
 ## Example
 
-There is a toy program in `examples/appendices/simple.rs`, written in Rust (or
-any other language that compiles to WebAssembly):
+We highly recommend to the read the [`examples/`](./examples/)
+directory, which contains a sequence of examples/tutorials. It's the
+best place to learn by reading examples.
+
+But for the most eager of you, and we know you're numerous you
+mischievous, there is a quick toy program in
+`examples/appendices/simple.rs`, written in Rust:
 
 ```rust
 #[no_mangle]
@@ -105,14 +116,6 @@ And then, finally, enjoy by running:
 ```sh
 $ python examples/appendices/simple.py
 ```
-
-# Documentation
-
-Browse the documentation at
-https://wasmerio.github.io/wasmer-python/api/.
-
-Alternatively, run `just build-all` followed by `just doc` to generate the
-documentation inside `docs/api/index.html`.
 
 # Development
 
