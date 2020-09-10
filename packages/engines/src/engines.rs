@@ -1,4 +1,4 @@
-use crate::{errors::to_py_err, target_lexicon::Target, wasmer};
+use crate::target_lexicon::Target;
 use pyo3::{exceptions::RuntimeError, prelude::*};
 use std::sync::Arc;
 
@@ -19,7 +19,7 @@ pub struct JIT {
 }
 
 impl JIT {
-    pub(crate) fn raw_new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<Self> {
+    pub fn raw_new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<Self> {
         let (inner, compiler_name) = match compiler {
             None => (wasmer::JIT::headless().engine(), None),
             Some(compiler) => {
@@ -33,7 +33,7 @@ impl JIT {
 
                 let opaque_compiler_inner_ref: &OpaqueCompilerInner = unsafe {
                     opaque_compiler_inner_ptr.as_ref().ok_or_else(|| {
-                        to_py_err::<RuntimeError, _>(
+                        RuntimeError::py_err(
                             "Failed to transfer the opaque compiler from the compiler",
                         )
                     })?
@@ -75,11 +75,11 @@ impl JIT {
         "jit"
     }
 
-    pub(crate) fn inner(&self) -> &wasmer::JITEngine {
+    pub fn inner(&self) -> &wasmer::JITEngine {
         &self.inner
     }
 
-    pub(crate) fn compiler_name(&self) -> Option<&String> {
+    pub fn compiler_name(&self) -> Option<&String> {
         self.compiler_name.as_ref()
     }
 }
@@ -111,7 +111,7 @@ pub struct Native {
 }
 
 impl Native {
-    pub(crate) fn raw_new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<Self> {
+    pub fn raw_new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<Self> {
         let (inner, compiler_name) = match compiler {
             None => (wasmer::Native::headless().engine(), None),
             Some(compiler) => {
@@ -125,7 +125,7 @@ impl Native {
 
                 let opaque_compiler_inner_ref: &OpaqueCompilerInner = unsafe {
                     opaque_compiler_inner_ptr.as_ref().ok_or_else(|| {
-                        to_py_err::<RuntimeError, _>(
+                        RuntimeError::py_err(
                             "Failed to transfer the opaque compiler from the compiler",
                         )
                     })?
@@ -181,11 +181,11 @@ impl Native {
         "native"
     }
 
-    pub(crate) fn inner(&self) -> &wasmer::NativeEngine {
+    pub fn inner(&self) -> &wasmer::NativeEngine {
         &self.inner
     }
 
-    pub(crate) fn compiler_name(&self) -> Option<&String> {
+    pub fn compiler_name(&self) -> Option<&String> {
         self.compiler_name.as_ref()
     }
 }

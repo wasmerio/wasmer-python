@@ -16,7 +16,8 @@ name = "wasmer"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer-common-python = { path = "../common/" }
+wasmer = { git = "https://github.com/wasmerio/wasmer", default-features = false, features = ["wat", "jit", "native", "compiler"], branch = "master" }
+wasmer-engines-python = { path = "../engines/" }
 wasmer-types = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
 wasmer-wasi = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
 pyo3 = { version = "0.11", features = ["extension-module"] }
