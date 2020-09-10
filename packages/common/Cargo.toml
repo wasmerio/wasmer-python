@@ -14,3 +14,4 @@ publish = false
 wasmer = { git = "https://github.com/wasmerio/wasmer", default-features = false, features = ["wat", "jit", "native", "compiler"], branch = "master" }
 wasmer-compiler = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
 pyo3 = { version = "0.11", features = ["extension-module"] }
+enumset = "1.0"

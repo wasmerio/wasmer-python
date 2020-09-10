@@ -19,6 +19,7 @@ mod instance;
 mod memory;
 mod module;
 mod store;
+mod target;
 mod types;
 mod values;
 mod wasi;
@@ -162,6 +163,7 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
 
     // Modules.
     module.add_wrapped(wrap_pymodule!(engine))?;
+    module.add_wrapped(wrap_pymodule!(target))?;
     module.add_wrapped(wrap_pymodule!(wasi))?;
 
     Ok(())
@@ -216,6 +218,17 @@ fn engine(_py: Python, module: &PyModule) -> PyResult<()> {
     // Classes.
     module.add_class::<engines::JIT>()?;
     module.add_class::<engines::Native>()?;
+
+    Ok(())
+}
+
+/// Targets.
+#[pymodule]
+fn target(_py: Python, module: &PyModule) -> PyResult<()> {
+    // Classes.
+    module.add_class::<target::Target>()?;
+    module.add_class::<target::Triple>()?;
+    module.add_class::<target::CpuFeatures>()?;
 
     Ok(())
 }

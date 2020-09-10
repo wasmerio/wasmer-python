@@ -95,7 +95,8 @@ impl Store {
                     .and_then(|compiler_module| compiler_module.get("Compiler"))
                     .ok();
 
-                let engine = engines::JIT::raw_new(compiler)?;
+                let target = None;
+                let engine = engines::JIT::raw_new(compiler, target)?;
 
                 (
                     wasmer::Store::new(engine.inner()),

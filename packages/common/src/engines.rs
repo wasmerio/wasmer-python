@@ -1,4 +1,4 @@
-use crate::{errors::to_py_err, wasmer};
+use crate::{errors::to_py_err, target_lexicon::Target, wasmer};
 use pyo3::{exceptions::RuntimeError, prelude::*};
 use std::sync::Arc;
 
@@ -8,15 +8,18 @@ use std::sync::Arc;
 /// and publishes it into memory so it can be used externally.
 ///
 /// If the compiler is absent, it will generate a headless engine.
+///
+/// It is possible to specify a `Target` to possibly cross-compile for
+/// a different target. It requires a compiler.
 #[pyclass(unsendable)]
-#[text_signature = "(/, compiler)"]
+#[text_signature = "(/, compiler, target)"]
 pub struct JIT {
     inner: wasmer::JITEngine,
     compiler_name: Option<String>,
 }
 
 impl JIT {
-    pub(crate) fn raw_new(compiler: Option<&PyAny>) -> PyResult<Self> {
+    pub(crate) fn raw_new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<Self> {
         let (inner, compiler_name) = match compiler {
             None => (wasmer::JIT::headless().engine(), None),
             Some(compiler) => {
@@ -43,8 +46,15 @@ impl JIT {
 
                 debug_assert_eq!(Arc::strong_count(&opaque_compiler_inner.compiler_config), 2);
 
+                let mut engine_builder =
+                    wasmer::JIT::new(opaque_compiler_inner.compiler_config.as_ref());
+
+                if let Some(target) = target {
+                    engine_builder = engine_builder.target(target.inner().clone());
+                }
+
                 (
-                    wasmer::JIT::new(opaque_compiler_inner.compiler_config.as_ref()).engine(),
+                    engine_builder.engine(),
                     Some(
                         opaque_compiler
                             .getattr("name")?
@@ -77,8 +87,8 @@ impl JIT {
 #[pymethods]
 impl JIT {
     #[new]
-    fn new(compiler: Option<&PyAny>) -> PyResult<Self> {
-        Self::raw_new(compiler)
+    fn new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<Self> {
+        Self::raw_new(compiler, target)
     }
 }
 
@@ -90,15 +100,18 @@ impl JIT {
 /// and publishes it into memory so it can be used externally.
 ///
 /// If the compiler is absent, it will generate a headless engine.
+///
+/// It is possible to specify a `Target` to possibly cross-compile for
+/// a different target. It requires a compiler.
 #[pyclass(unsendable)]
-#[text_signature = "(/, compiler)"]
+#[text_signature = "(/, compiler, target)"]
 pub struct Native {
     inner: wasmer::NativeEngine,
     compiler_name: Option<String>,
 }
 
 impl Native {
-    pub(crate) fn raw_new(compiler: Option<&PyAny>) -> PyResult<Self> {
+    pub(crate) fn raw_new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<Self> {
         let (inner, compiler_name) = match compiler {
             None => (wasmer::Native::headless().engine(), None),
             Some(compiler) => {
@@ -140,8 +153,14 @@ impl Native {
                 let compiler_config_ref: &mut dyn wasmer_compiler::CompilerConfig =
                     unsafe { &mut *compiler_config_ptr };
 
+                let mut engine_builder = wasmer::Native::new(compiler_config_ref);
+
+                if let Some(target) = target {
+                    engine_builder = engine_builder.target(target.inner().clone());
+                }
+
                 (
-                    wasmer::Native::new(compiler_config_ref).engine(),
+                    engine_builder.engine(),
                     Some(
                         opaque_compiler
                             .getattr("name")?
@@ -174,8 +193,8 @@ impl Native {
 #[pymethods]
 impl Native {
     #[new]
-    fn new(compiler: Option<&PyAny>) -> PyResult<Self> {
-        Self::raw_new(compiler)
+    fn new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<Self> {
+        Self::raw_new(compiler, target)
     }
 }
 
