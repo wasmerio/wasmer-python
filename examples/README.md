@@ -120,6 +120,22 @@ next example.
 
    </details>
 
+### Exports
+   
+8. [**Exported function**][exported-function], explains how to get and
+   how to call an exported function.
+   
+   _Keywords_: export, function, dynamic, static, native.
+
+   <details>
+   <summary><em>Execute the example</em></summary>
+
+   ```shell
+   $ python examples/exports_function.rs
+   ```
+
+   </details>
+
 [engine-jit]: ./engine_jit.py
 [engine-native]: ./engine_native.py
 [engine-headless]: ./engine_headless.py
@@ -127,3 +143,4 @@ next example.
 [compiler-singlepass]: ./compiler_singlepass.py
 [compiler-cranelift]: ./compiler_cranelift.py
 [compiler-llvm]: ./compiler_llvm.py
+[exported-function]: ./exports_function.rs
