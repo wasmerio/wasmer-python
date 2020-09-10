@@ -125,13 +125,27 @@ next example.
 8. [**Exported function**][exported-function], explains how to get and
    how to call an exported function.
    
-   _Keywords_: export, function, dynamic, static, native.
+   _Keywords_: export, function.
 
    <details>
    <summary><em>Execute the example</em></summary>
 
    ```shell
    $ python examples/exports_function.rs
+   ```
+
+   </details>
+   
+9. [**Exported memory**][exported-memory], explains how to read from
+   and write into an exported memory.
+
+   _Keywords_: export, function.
+
+   <details>
+   <summary><em>Execute the example</em></summary>
+
+   ```shell
+   $ python examples/exports_memory.rs
    ```
 
    </details>
