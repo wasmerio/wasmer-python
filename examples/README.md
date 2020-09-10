@@ -166,6 +166,22 @@ next example.
 
     </details>
 
+### Integrations
+
+11. [**WASI**][wasi], explains how to use the [WebAssembly System
+    Interface][WASI] (WASI).
+   
+    _Keywords_: wasi, system, interface
+
+    <details>
+    <summary><em>Execute the example</em></summary>
+
+    ```shell
+    $ python examples/wasi.py
+    ```
+
+    </details>
+
 [engine-jit]: ./engine_jit.py
 [engine-native]: ./engine_native.py
 [engine-headless]: ./engine_headless.py
@@ -175,3 +191,4 @@ next example.
 [compiler-llvm]: ./compiler_llvm.py
 [exported-function]: ./exports_function.py
 [imported-function]: ./imported_function.py
+[wasi]: ./wasi.py
