@@ -1,4 +1,3 @@
-use crate::errors::to_py_err;
 use enumset::EnumSet;
 use pyo3::{class::basic::PyObjectProtocol, exceptions::ValueError, prelude::*};
 use std::str::FromStr;
@@ -87,7 +86,8 @@ impl Triple {
     #[new]
     fn new(triple: &str) -> PyResult<Self> {
         Ok(Self {
-            inner: wasmer_compiler::Triple::from_str(triple).map_err(to_py_err::<ValueError, _>)?,
+            inner: wasmer_compiler::Triple::from_str(triple)
+                .map_err(|error| ValueError::py_err(error.to_string()))?,
         })
     }
 
@@ -268,7 +268,8 @@ impl CpuFeatures {
     #[text_signature = "($self, feature)"]
     fn add(&mut self, feature: &str) -> PyResult<()> {
         self.inner.insert(
-            wasmer_compiler::CpuFeature::from_str(feature).map_err(to_py_err::<ValueError, _>)?,
+            wasmer_compiler::CpuFeature::from_str(feature)
+                .map_err(|error| ValueError::py_err(error.to_string()))?,
         );
 
         Ok(())

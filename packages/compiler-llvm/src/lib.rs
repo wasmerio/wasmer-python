@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-use wasmer_common_python::py::OpaqueCompiler;
+use wasmer_engines_python::OpaqueCompiler;
 
 /// The LLVM compiler, designed for the `wasmer` Python package (a
 /// WebAssembly runtime).
