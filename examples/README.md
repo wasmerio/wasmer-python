@@ -150,6 +150,22 @@ next example.
 
    </details>
 
+### Imports
+
+10. [**Imported function**][imported-function], aka _host function_,
+    explains how to use a Python function inside a WebAssembly module.
+
+    _Keywords_: import, function.
+
+    <details>
+    <summary><em>Execute the example</em></summary>
+
+    ```shell
+    $ python examples/imports_function.rs
+    ```
+
+    </details>
+
 [engine-jit]: ./engine_jit.py
 [engine-native]: ./engine_native.py
 [engine-headless]: ./engine_headless.py
@@ -157,4 +173,5 @@ next example.
 [compiler-singlepass]: ./compiler_singlepass.py
 [compiler-cranelift]: ./compiler_cranelift.py
 [compiler-llvm]: ./compiler_llvm.py
-[exported-function]: ./exports_function.rs
+[exported-function]: ./exports_function.py
+[imported-function]: ./imported_function.py
