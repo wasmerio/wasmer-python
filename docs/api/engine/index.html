@@ -69,25 +69,29 @@ engine = engine.JIT(Compiler)
 <dl>
 <dt id="engine.JIT"><code class="flex name class">
 <span>class <span class="ident">JIT</span></span>
-<span>(</span><span>compiler, /)</span>
+<span>(</span><span>compiler, target, /)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>JIT engine for Wasmer compilers.</p>
-<p>Given an option compiler, it generates the compiled machine code,
+<p>Given an optional compiler, it generates the compiled machine code,
 and publishes it into memory so it can be used externally.</p>
-<p>If the compiler is absent, it will generate a headless engine.</p></div>
+<p>If the compiler is absent, it will generate a headless engine.</p>
+<p>It is possible to specify a <code>Target</code> to possibly cross-compile for
+a different target. It requires a compiler.</p></div>
 </dd>
 <dt id="engine.Native"><code class="flex name class">
 <span>class <span class="ident">Native</span></span>
-<span>(</span><span>compiler, /)</span>
+<span>(</span><span>compiler, target, /)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Native engine for Wasmer compilers.</p>
-<p>Given an option compiler, it generates a shared object file
+<p>Given an optional compiler, it generates a shared object file
 (<code>.so</code>, <code>.dylib</code> or <code>.dll</code> depending on the target), saves it
 temporarily to disk and uses it natively via <code>dlopen</code> and <code>dlsym</code>.
 and publishes it into memory so it can be used externally.</p>
-<p>If the compiler is absent, it will generate a headless engine.</p></div>
+<p>If the compiler is absent, it will generate a headless engine.</p>
+<p>It is possible to specify a <code>Target</code> to possibly cross-compile for
+a different target. It requires a compiler.</p></div>
 </dd>
 </dl>
 </section>

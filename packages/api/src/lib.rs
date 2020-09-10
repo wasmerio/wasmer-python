@@ -19,6 +19,7 @@ mod instance;
 mod memory;
 mod module;
 mod store;
+mod target;
 mod types;
 mod values;
 mod wasi;
@@ -162,6 +163,7 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
 
     // Modules.
     module.add_wrapped(wrap_pymodule!(engine))?;
+    module.add_wrapped(wrap_pymodule!(target))?;
     module.add_wrapped(wrap_pymodule!(wasi))?;
 
     Ok(())
@@ -216,6 +218,68 @@ fn engine(_py: Python, module: &PyModule) -> PyResult<()> {
     // Classes.
     module.add_class::<engines::JIT>()?;
     module.add_class::<engines::Native>()?;
+
+    Ok(())
+}
+
+/// Wasmer's compilation targets.
+///
+/// Wasmer has several compilers used by the engines (`wasmer.engine`)
+/// when a WebAssembly module needs to be compiled. The Wasmer's
+/// architecture allows to compile for any targets. It allows to
+/// cross-compile a WebAssembly module, i.e. to compile from another
+/// architecture than the host's.
+///
+/// This module provides the `Target` class that allows to define a
+/// target for the compiler. A `Target` is defined by a `Triple` and
+/// `CpuFeatures` (optional).
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import engine, target, Store, Module
+/// from wasmer_compiler_cranelift import Compiler
+///
+/// # Build a triple from a string.
+/// triple = target.Triple('x86_64-linux-musl')
+///
+/// # Build the CPU features (optional).
+/// cpu_features = target.CpuFeatures()
+/// cpu_features.add('sse2')
+///
+/// # Build the target.
+/// target = target.Target(triple, cpu_features)
+///
+/// # There we go. When creating the engine, pass the compiler _and_
+/// # the target.
+/// engine = engine.Native(Compiler, target)
+///
+/// # And finally, build the store with the engine.
+/// store = Store(engine)
+///
+/// # Now, let's compile the module for the defined target.
+/// module = Module(
+///     store,
+///     """
+///     (module
+///     (type $sum_t (func (param i32 i32) (result i32)))
+///     (func $sum_f (type $sum_t) (param $x i32) (param $y i32) (result i32)
+///         local.get $x
+///         local.get $y
+///         i32.add)
+///     (export "sum" (func $sum_f)))
+///     """
+/// )
+///
+/// # What's next? Serialize the module, and execute it on the
+/// # targeted host.
+/// ```
+#[pymodule]
+fn target(_py: Python, module: &PyModule) -> PyResult<()> {
+    // Classes.
+    module.add_class::<target::Target>()?;
+    module.add_class::<target::Triple>()?;
+    module.add_class::<target::CpuFeatures>()?;
 
     Ok(())
 }
