@@ -61,6 +61,22 @@ next example.
 
    </details>
 
+4. [**Cross-compilation**][cross-compilation], illustrates the power
+   of the abstraction over the engines and the compilers, such as it
+   is possible to cross-compile a Wasm module for a custom target.
+   
+   _Keywords_: engine, compiler, cross-compilation.
+
+   <details>
+   <summary><em>Execute the example</em></summary>
+
+   ```shell
+   $ python examples/engine_cross_compilation.py
+   ```
+
+   </details>
+
 [engine-jit]: ./engine_jit.py
 [engine-native]: ./engine_native.py
 [engine-headless]: ./engine_headless.py
+[engine-compilation]: ./engine_cross_compilation.py
