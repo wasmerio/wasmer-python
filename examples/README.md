@@ -191,5 +191,5 @@ next example.
 [compiler-llvm]: ./compiler_llvm.py
 [exported-function]: ./exports_function.py
 [exported-memory]: ./exports_memory.py
-[imported-function]: ./imported_function.py
+[imported-function]: ./imports_function.py
 [wasi]: ./wasi.py
