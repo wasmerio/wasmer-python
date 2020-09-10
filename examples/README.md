@@ -76,7 +76,54 @@ next example.
 
    </details>
 
+## Compilers
+
+5. [**Singlepass compiler**][compiler-singlepass], explains how to use
+   the `wasmer_compiler_singlepass` compiler.
+   
+   _Keywords_: compiler, singlepass.
+
+   <details>
+   <summary><em>Execute the example</em></summary>
+
+   ```shell
+   $ python examples/compiler_singlepass.py
+   ```
+
+   </details>
+
+6. [**Cranelift compiler**][compiler-cranelift], explains how to use
+   the `wasmer-compiler-cranelift` compiler.
+   
+   _Keywords_: compiler, cranelift.
+
+   <details>
+   <summary><em>Execute the example</em></summary>
+
+   ```shell
+   $ python examples/compiler_cranelift.py
+   ```
+
+   </details>
+
+7. [**LLVM compiler**][compiler-llvm], explains how to use the
+   `wasmer-compiler-llvm` compiler.
+   
+   _Keywords_: compiler, llvm.
+
+   <details>
+   <summary><em>Execute the example</em></summary>
+
+   ```shell
+   $ python examples/compiler_llvm.py
+   ```
+
+   </details>
+
 [engine-jit]: ./engine_jit.py
 [engine-native]: ./engine_native.py
 [engine-headless]: ./engine_headless.py
 [engine-compilation]: ./engine_cross_compilation.py
+[compiler-singlepass]: ./compiler_singlepass.py
+[compiler-cranelift]: ./compiler_cranelift.py
+[compiler-llvm]: ./compiler_llvm.py

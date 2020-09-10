@@ -13,7 +13,7 @@
 # You can run the example directly by executing in Wasmer root:
 #
 # ```shell
-# python examples/engine_cross_compilation.py
+# $ python examples/engine_cross_compilation.py
 # ```
 #
 # Ready?
