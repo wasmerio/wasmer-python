@@ -121,6 +121,7 @@ jobs:
           ls -laiR C:/llvm
           echo ::add-path::C:/llvm/bin
           echo ::set-env name=LLVM_SYS_100_PREFIX::C:/llvm
+
       - name: Set up just
         shell: bash
         run: |
