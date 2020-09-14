@@ -20,42 +20,6 @@ examples.
 directory](./examples), it's the best place for a complete
 introduction!
 
-## Quick Introduction
-
-The `wasmer` package brings the required API to execute WebAssembly
-modules. In a nutshell, `wasmer` compiles the WebAssembly module into
-compiled code, and then executes it. `wasmer` is designed to work in
-various environments and platforms: From nano single-board computers
-to large and powerful servers, including more exotic ones. To address
-those requirements, Wasmer provides 2 engines and 3 compilers.
-
-Succinctly, an _engine_ is responsible to drive the _compilation_ and
-the _execution_ of a WebAssembly module. By extension, a _headless_
-engine can only execute a WebAssembly module, i.e. a module that has
-previously been compiled, or compiled, serialized and deserialized. By
-default, the `wasmer` package comes with 2 headless engines:
-
-1. `wasmer.engine.JIT`, the compiled machine code lives in memory,
-2. `wasmer.engine.Native`, the compiled machine code lives in a shared
-   object file (`.so`, `.dylib`, or `.dll`), and is natively executed.
-
-Because `wasmer` does not embed compilers in its package, engines are
-headless, i.e. they can't compile WebAssembly module; they can only
-execute them. Compilers live in their own standalone packages. Let's
-briefly introduce them:
-
-| Compiler package | Description | PyPi |
-|-|-|-|
-| `wasmer_compiler_singlepass` | Super fast compilation times, slower execution times. Not prone to JIT-bombs. *Ideal for blockchains* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_singlepass)](https://pypi.org/project/wasmer_compiler_singlepass/) |
-| `wasmer_compiler_cranelift` | Fast compilation times, fast execution times. *Ideal for development* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_cranelift)](https://pypi.org/project/wasmer_compiler_cranelift/) |
-| `wasmer_compiler_llvm` | Slow compilation times, very fast execution times (close to native, sometimes faster). *Ideal for Production* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_llvm)](https://pypi.org/project/wasmer_compiler_llvm/) |
-
-We generally recommend `wasmer_compiler_cranelift` for development
-purposes and `wasmer_compiler_llvm` in production.
-
-Learn more by reading [the documentation of the `wasmer.engine`
-submodule](https://wasmerio.github.io/wasmer-python/api/engine/index.html).
-
 ## Install
 
 To install the `wasmer` Python package, and let's say the
@@ -65,6 +29,8 @@ To install the `wasmer` Python package, and let's say the
 $ pip install wasmer
 $ pip install wasmer_compiler_cranelift
 ```
+
+> Note: if no compilers are installed you can still use Wasmer [in headless mode](#engines--compilers).
 
 And you're ready to get fun!
 
@@ -159,6 +125,43 @@ following commands:
 $ just python-run
 $ just python-run file/to/run.py
 ```
+
+
+## Engines & Compilers
+
+The `wasmer` package brings the required API to execute WebAssembly
+modules. In a nutshell, `wasmer` compiles the WebAssembly module into
+compiled code, and then executes it. `wasmer` is designed to work in
+various environments and platforms: From nano single-board computers
+to large and powerful servers, including more exotic ones. To address
+those requirements, Wasmer provides 2 engines and 3 compilers.
+
+Succinctly, an _engine_ is responsible to drive the _compilation_ and
+the _execution_ of a WebAssembly module. By extension, a _headless_
+engine can only execute a WebAssembly module, i.e. a module that has
+previously been compiled, or compiled, serialized and deserialized. By
+default, the `wasmer` package comes with 2 headless engines:
+
+1. `wasmer.engine.JIT`, the compiled machine code lives in memory,
+2. `wasmer.engine.Native`, the compiled machine code lives in a shared
+   object file (`.so`, `.dylib`, or `.dll`), and is natively executed.
+
+Because `wasmer` does not embed compilers in its package, engines are
+headless, i.e. they can't compile WebAssembly module; they can only
+execute them. Compilers live in their own standalone packages. Let's
+briefly introduce them:
+
+| Compiler package | Description | PyPi |
+|-|-|-|
+| `wasmer_compiler_singlepass` | Super fast compilation times, slower execution times. Not prone to JIT-bombs. *Ideal for blockchains* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_singlepass)](https://pypi.org/project/wasmer_compiler_singlepass/) |
+| `wasmer_compiler_cranelift` | Fast compilation times, fast execution times. *Ideal for development* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_cranelift)](https://pypi.org/project/wasmer_compiler_cranelift/) |
+| `wasmer_compiler_llvm` | Slow compilation times, very fast execution times (close to native, sometimes faster). *Ideal for Production* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_llvm)](https://pypi.org/project/wasmer_compiler_llvm/) |
+
+We generally recommend `wasmer_compiler_cranelift` for development
+purposes and `wasmer_compiler_llvm` in production.
+
+Learn more by reading [the documentation of the `wasmer.engine`
+submodule](https://wasmerio.github.io/wasmer-python/api/engine/index.html).
 
 ## Supported platforms
 
