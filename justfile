@@ -48,6 +48,13 @@ build package='api' rust_target='':
 
         maturin develop --binding-crate pyo3 --release --strip --cargo-extra-args="${build_args}"
 
+# Build all the wheels.
+build-all-wheels python_version rust_target:
+	just build-wheel api {{python_version}} {{rust_target}}
+	just build-wheel compiler-cranelift {{python_version}} {{rust_target}}
+	just build-wheel compiler-llvm {{python_version}} {{rust_target}}
+	just build-wheel compiler-singlepass {{python_version}} {{rust_target}}
+
 # Build the wheel of a specific package.
 build-wheel package python_version rust_target:
         #!/usr/bin/env bash
@@ -92,7 +99,7 @@ doc:
 		wasmer_compiler_singlepass
 
 publish:
-	twine upload --repository pypi target/wheels/wasmer-*.whl -u wasmer
+	twine upload --repository pypi target/wheels/wasmer*.whl -u wasmer
 
 publish-any:
 	twine upload --repository pypi target/wheels/wasmer-*-py3-none-any.whl -u wasmer
