@@ -147,9 +147,10 @@ default, the `wasmer` package comes with 2 headless engines:
    object file (`.so`, `.dylib`, or `.dll`), and is natively executed.
 
 Because `wasmer` does not embed compilers in its package, engines are
-headless, i.e. they can't compile WebAssembly module; they can only
-execute them. Compilers live in their own standalone packages. Let's
-briefly introduce them:
+headless by default, i.e. they can't compile WebAssembly module; they
+can only execute them. Compilers live in their own standalone packages.
+
+Let's briefly introduce the compilers:
 
 | Compiler package | Description | PyPi |
 |-|-|-|
