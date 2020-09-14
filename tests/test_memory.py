@@ -1,10 +1,41 @@
-from wasmer import Instance, Memory, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array, Buffer
+from wasmer import Instance, Module, Store, Memory, MemoryType, Buffer, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array
 import inspect
 import os
 import pytest
 
 here = os.path.dirname(os.path.realpath(__file__))
 TEST_BYTES = open(here + '/tests.wasm', 'rb').read()
+
+def instance():
+    return Instance(Module(Store(), TEST_BYTES))
+
+def test_constructor():
+    store = Store()
+    memory_type = MemoryType(3, shared=False)
+    memory = Memory(store, memory_type)
+
+    assert memory.size == 3
+
+def test_export():
+    assert isinstance(instance().exports.memory, Memory)
+
+def test_type():
+    type = instance().exports.memory.type
+
+    assert isinstance(type, MemoryType)
+    assert type.minimum == 17
+    assert type.maximum == None
+    assert type.shared == False
+
+def test_size():
+    assert instance().exports.memory.size == 17
+
+def test_data_size():
+    assert instance().exports.memory.data_size == 1114112
+
+def test_memory_buffer():
+    memory = instance().exports.memory.buffer
+    assert isinstance(memory, Buffer)
 
 def test_is_a_class():
     assert inspect.isclass(Memory)
@@ -14,26 +45,29 @@ def test_is_a_class():
     assert inspect.isclass(Int16Array)
     assert inspect.isclass(Uint32Array)
     assert inspect.isclass(Int32Array)
+    assert inspect.isclass(Buffer)
 
 def test_bytes_per_element():
-    assert Instance(TEST_BYTES).memory.uint8_view().bytes_per_element ==  1
-    assert Instance(TEST_BYTES).memory.int8_view().bytes_per_element ==  1
-    assert Instance(TEST_BYTES).memory.uint16_view().bytes_per_element ==  2
-    assert Instance(TEST_BYTES).memory.int16_view().bytes_per_element ==  2
-    assert Instance(TEST_BYTES).memory.uint32_view().bytes_per_element ==  4
-    assert Instance(TEST_BYTES).memory.int32_view().bytes_per_element ==  4
+    memory = instance().exports.memory
+
+    assert memory.uint8_view().bytes_per_element ==  1
+    assert memory.int8_view().bytes_per_element ==  1
+    assert memory.uint16_view().bytes_per_element ==  2
+    assert memory.int16_view().bytes_per_element ==  2
+    assert memory.uint32_view().bytes_per_element ==  4
+    assert memory.int32_view().bytes_per_element ==  4
 
 @pytest.mark.xfail()
 def test_cannot_construct():
     assert isinstance(Uint8Array(0), Uint8Array)
 
 def test_length():
-    assert len(Instance(TEST_BYTES).memory.uint8_view()) == (
+    assert len(instance().exports.memory.uint8_view()) == (
         1114112
     )
 
 def test_get_index():
-    memory = Instance(TEST_BYTES).memory.uint8_view()
+    memory = instance().exports.memory.uint8_view()
     index = 7
     value = 42
     memory[index] = value
@@ -42,26 +76,26 @@ def test_get_index():
 
 def test_get_integer_out_of_range_too_large():
     with pytest.raises(IndexError) as context_manager:
-        memory = Instance(TEST_BYTES).memory.uint8_view()
+        memory = instance().exports.memory.uint8_view()
         memory[len(memory) + 1]
 
     exception = context_manager.value
     assert str(exception) == (
-        'Out of bound: Maximum index 1114113 is larger than the memory size 1114112.'
+        'Out of bound: Maximum index 1114113 is larger than the memory size 1114112'
     )
 
 def test_get_integer_out_of_range_negative():
     with pytest.raises(IndexError) as context_manager:
-        memory = Instance(TEST_BYTES).memory.uint8_view()
+        memory = instance().exports.memory.uint8_view()
         memory[-1]
 
     exception = context_manager.value
     assert str(exception) == (
-        'Out of bound: Index cannot be negative.'
+        'Out of bound: Index cannot be negative'
     )
 
 def test_get_slice():
-    memory = Instance(TEST_BYTES).memory.uint8_view()
+    memory = instance().exports.memory.uint8_view()
     index = 7
     memory[index    ] = 1
     memory[index + 1] = 2
@@ -71,79 +105,79 @@ def test_get_slice():
 
 def test_get_slice_out_of_range_empty():
     with pytest.raises(IndexError) as context_manager:
-        memory = Instance(TEST_BYTES).memory.uint8_view()
+        memory = instance().exports.memory.uint8_view()
         memory[2:1]
 
     exception = context_manager.value
     assert str(exception) == (
-        'Slice `2:1` cannot be empty.'
+        'Slice `2:1` cannot be empty'
     )
 
 def test_get_slice_out_of_range_invalid_step():
     with pytest.raises(IndexError) as context_manager:
-        memory = Instance(TEST_BYTES).memory.uint8_view()
+        memory = instance().exports.memory.uint8_view()
         memory[1:7:2]
 
     exception = context_manager.value
     assert str(exception) == (
-        'Slice must have a step of 1 for now; given 2.'
+        'Slice must have a step of 1 for now; given 2'
     )
 
 def test_get_invalid_index():
     with pytest.raises(ValueError) as context_manager:
-        memory = Instance(TEST_BYTES).memory.uint8_view()
+        memory = instance().exports.memory.uint8_view()
         memory['a']
 
     exception = context_manager.value
     assert str(exception) == (
-        'Only integers and slices are valid to represent an index.'
+        'Only integers and slices are valid to represent an index'
     )
 
 def test_set_single_value():
-    memory = Instance(TEST_BYTES).memory.uint8_view()
+    memory = instance().exports.memory.uint8_view()
 
     assert memory[7] == 0
     memory[7] = 42
     assert memory[7] == 42
 
 def test_set_list():
-    memory = Instance(TEST_BYTES).memory.uint8_view()
+    memory = instance().exports.memory.uint8_view()
 
     memory[7:12] = [1, 2, 3, 4, 5]
     assert memory[7:12] == [1, 2, 3, 4, 5]
 
 def test_set_bytes():
-    memory = Instance(TEST_BYTES).memory.uint8_view()
+    memory = instance().exports.memory.uint8_view()
 
     memory[7:12] = bytes(b'abcde')
     assert memory[7:12] == [97, 98, 99, 100, 101]
 
 def test_set_bytearray():
-    memory = Instance(TEST_BYTES).memory.uint8_view()
+    memory = instance().exports.memory.uint8_view()
 
     memory[7:12] = bytearray(b'abcde')
     assert memory[7:12] == [97, 98, 99, 100, 101]
 
 def test_set_values_with_slice_and_step():
-    memory = Instance(TEST_BYTES).memory.uint8_view()
+    memory = instance().exports.memory.uint8_view()
 
     memory[7:12:2] = [1, 2, 3, 4, 5]
     assert memory[7:12] == [1, 0, 2, 0, 3]
-    
+
 def test_set_out_of_range():
     with pytest.raises(IndexError) as context_manager:
-        memory = Instance(TEST_BYTES).memory.uint8_view()
+        memory = instance().exports.memory.uint8_view()
         memory[len(memory) + 1] = 42
 
     exception = context_manager.value
     assert str(exception) == (
-        'Out of bound: Absolute index 1114113 is larger than the memory size 1114112.'
+        'Out of bound: Absolute index 1114113 is larger than the memory size 1114112'
     )
 
 def test_hello_world():
-    instance = Instance(TEST_BYTES)
-    pointer = instance.exports.string()
-    memory = instance.memory.uint8_view(pointer)
+    exports = instance().exports
+    pointer = exports.string()
+    memory = exports.memory.uint8_view(pointer)
     nth = 0
     string = ''
 
@@ -151,36 +185,35 @@ def test_hello_world():
         string += chr(memory[nth])
         nth += 1
 
-    assert string, 'Hello, World!'
+    assert string == 'Hello, World!'
 
 def test_memory_views_share_the_same_buffer():
-    instance = Instance(TEST_BYTES)
-    int8 = instance.memory.int8_view()
-    int16 = instance.memory.int16_view()
-    int32 = instance.memory.int32_view()
+    memory = instance().exports.memory
+    int8 = memory.int8_view()
+    int16 = memory.int16_view()
+    int32 = memory.int32_view()
 
     int8[0] = 0b00000001
     int8[1] = 0b00000100
     int8[2] = 0b00010000
     int8[3] = 0b01000000
 
-    byte_array = bytearray(instance.memory.buffer)
+    byte_array = bytearray(memory.buffer)
 
     assert int8[0] == 0b00000001
     assert int8[1] == 0b00000100
     assert int8[2] == 0b00010000
     assert int8[3] == 0b01000000
-    assert int16[0] == 0b00000100_00000001
-    assert int16[1] == 0b01000000_00010000
-    assert int32[0] == 0b01000000_00010000_00000100_00000001
+    assert int16[0] == 0b0000010000000001
+    assert int16[1] == 0b0100000000010000
+    assert int32[0] == 0b01000000000100000000010000000001
     assert byte_array[0] == 0b00000001
     assert byte_array[1] == 0b00000100
     assert byte_array[2] == 0b00010000
     assert byte_array[3] == 0b01000000
 
 def test_memory_grow():
-    instance = Instance(TEST_BYTES)
-    memory = instance.memory
+    memory = instance().exports.memory
     int8 = memory.int8_view()
 
     old_memory_length = len(int8)
@@ -196,25 +229,15 @@ def test_memory_grow():
 
 def test_memory_grow_too_much():
     with pytest.raises(RuntimeError) as context_manager:
-        Instance(TEST_BYTES).memory.grow(100000)
+        instance().exports.memory.grow(100000)
 
     exception = context_manager.value
     assert str(exception) == (
-        'Failed to grow the memory: Grow Error: Failed to add pages because would exceed maximum number of pages. Left: 17, Right: 100000, Pages added: 100017.'
+        'The memory could not grow: current size 17 pages, requested increase: 100000 pages'
     )
 
-def test_memory_is_absent():
-    bytes = open(here + '/no_memory.wasm', 'rb').read()
-    instance = Instance(bytes)
-
-    assert instance.memory == None
-
-def test_memory_buffer():
-    memory = Instance(TEST_BYTES).memory.buffer
-    assert isinstance(memory, Buffer)
-
 def test_memory_buffer_memoryview():
-    memory = Instance(TEST_BYTES).memory
+    memory = instance().exports.memory
 
     int8 = memory.int8_view()
     int8[0] = 1
@@ -237,7 +260,7 @@ def test_memory_buffer_memoryview():
     assert memory_view[0:3].tolist() == [1, 2, 3]
 
 def test_memory_buffer_bytearray():
-    memory = Instance(TEST_BYTES).memory
+    memory = instance().exports.memory
 
     int8 = memory.int8_view()
     int8[0] = 1

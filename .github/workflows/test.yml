@@ -9,15 +9,26 @@ jobs:
 
     strategy:
       matrix:
-        # The job runs on 3 different OS.
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        # The job runs on 3 different Python versions.
-        python: ['3.6', '3.7', '3.8']
+        # The job runs on different OS.
+        target: [
+          # Linux, amd64
+          { id: 'linux-amd64', os: 'ubuntu-latest', rust-target: 'x86_64-unknown-linux-gnu', rust-toolchain: 'stable' },
+          # macOS, amd64
+          { id: 'darwin-amd64', os: 'macos-latest', rust-target: 'x86_64-apple-darwin', rust-toolchain: 'stable' },
+          # Windows, amd64
+          { id: 'windows-amd64', os: 'windows-latest', rust-target: 'x86_64-pc-windows-msvc', rust-toolchain: 'stable' },
+          # Windows, x86
+          #{ id: 'windows-x86', os: 'windows-latest', rust-target: 'i686-pc-windows-msvc' },
+          # Linux, aarch64
+          #{ id: 'linux-aarch64', os: ['self-hosted', 'aarch64'], rust-target: 'aarch64-unknown-linux-gnu', rust-toolchain: 'stable' },
+        ]
+        # The job runs on different Python versions.
+        python: [3.5, 3.6, 3.7, 3.8]
       # As soon as one job fails in the matrix, all the other
       # in-progress jobs are canceled.
-      fail-fast: true
+      fail-fast: false
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.target.os }}
 
     steps:
       - name: Check out code
@@ -26,55 +37,121 @@ jobs:
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
+          toolchain: ${{ matrix.target.rust-toolchain }}
           default: true
           override: true
+          target: ${{ matrix.target.rust-target }}
 
       - name: Cache Cargo registry
         uses: actions/cache@v1
         with:
           path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.target.rust-target }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache Cargo bin
         uses: actions/cache@v1
         with:
           path: ~/.cargo/bin
-          key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.target.rust-target }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache Cargo build
         uses: actions/cache@v1
         with:
           path: target
-          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.target.rust-target }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Set up Python ${{ matrix.python }}
+        if: matrix.target.id != 'linux-aarch64'
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python }}
+
+      - name: Fake `pyenv` installation
+        if: matrix.target.id != 'linux-aarch64'
+        shell: bash
+        run: |
+          echo "${{ matrix.python }}" > .python-version
+
+      - name: Cache Python version
+        if: matrix.target.id == 'linux-aarch64'
+        uses: actions/cache@v1
+        with:
+          path: ~/.pyenv/versions/
+          key: ${{ matrix.target.rust-target }}-pyenv-version-${{ matrix.python }}
+
+      - name: Set up Python ${{ matrix.python }}
+        if: matrix.target.id == 'linux-aarch64'
+        shell: bash
+        run: |
+          test -d $HOME/.pyenv || curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          eval "$(pyenv init -)"
+          eval "$(pyenv virtualenv-init -)"
+          pyenv install --list | grep '^  ${{ matrix.python }}' | tail -n 1 | tr -d '[:space:]' > .python-version
+          pyenv install --skip-existing "$(cat .python-version)"
+
+      - name: Set up LLVM (Linux)
+        if: startsWith(matrix.target.id, 'linux-')
+        shell: bash
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz -L -o llvm.tar.xz
+          mkdir -p /opt/llvm
+          tar xf llvm.tar.xz --strip-components=1 -C /opt/llvm
+          echo ::add-path::/opt/llvm/bin
+          echo ::set-env name=LLVM_SYS_100_PREFIX::/opt/llvm
+
+      - name: Set up LLVM (macOS)
+        if: startsWith(matrix.target.id, 'darwin-')
+        shell: bash
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-apple-darwin.tar.xz -L -o llvm.tar.xz
+          mkdir -p ${{ env.LLVM_DIR }}
+          tar xf llvm.tar.xz --strip-components=1 -C ${{ env.LLVM_DIR }}
+          echo "::add-path::${{ env.LLVM_DIR }}/bin"
+          echo "::set-env name=LLVM_SYS_100_PREFIX::${{ env.LLVM_DIR }}"
+        env:
+          LLVM_DIR: ${{ github.workspace }}/llvm
+
+      - name: Set up LLVM (Windows)
+        if: startsWith(matrix.target.id, 'windows-')
+        shell: bash
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://github.com/wasmerio/llvm-build/releases/download/10.x/Win64_Release.zip -L -o llvm.zip
+          7z x llvm.zip -oC:/llvm
+          ls -laiR C:/llvm
+          echo ::add-path::C:/llvm/bin
+          echo ::set-env name=LLVM_SYS_100_PREFIX::C:/llvm
 
       - name: Set up just
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           test -f $HOME/.cargo/bin/just || cargo install just
 
       - name: Prelude
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           just prelude
 
       - name: Compile the library
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          just build
-          just build-any
+          maturin list-python
+          PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
+          echo "Selected interpreter: ${PYTHON_INTERPRETER}"
+          just build-all "${{ matrix.target.rust-target }}"
+          just build-any-wheel
 
       - name: Run all the tests
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
           just test

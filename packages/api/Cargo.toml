@@ -1,0 +1,48 @@
+[package]
+name = "wasmer-python"
+version = "0.5.0"
+authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
+edition = "2018"
+description = "Python extension to run WebAssembly binaries"
+readme = "README.md"
+repository = "https://github.com/wasmerio/wasmer-python"
+keywords = ["python", "extension", "webassembly"]
+categories = ["wasm"]
+build = "build.rs"
+publish = false
+
+[lib]
+name = "wasmer"
+crate-type = ["cdylib"]
+
+[dependencies]
+wasmer = { git = "https://github.com/wasmerio/wasmer", default-features = false, features = ["wat", "jit", "native", "compiler"], branch = "master" }
+wasmer-engines-python = { path = "../engines/" }
+wasmer-types = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
+wasmer-wasi = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
+pyo3 = { version = "0.11", features = ["extension-module"] }
+wat = "1.0"
+wasmprinter = "0.2"
+cfg-if = "0.1"
+
+[package.metadata.maturin]
+project-url = [
+    "Source Code, https://github.com/wasmerio/wasmer-python/",
+    "Bug Tracker, https://github.com/wasmerio/wasmer-python/issues",
+    "Documentation, https://github.com/wasmerio/wasmer-python/",
+]
+classifier = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Rust",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Compilers",
+    "Topic :: Software Development :: Interpreters",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]

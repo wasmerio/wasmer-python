@@ -1,42 +1,11 @@
-[package]
-name = "wasmer"
-version = "0.4.1"
-authors = ["The Wasmer Engineering Team <engineering@wasmer.io>"]
-edition = "2018"
-description = "Python extension to run WebAssembly binaries"
-readme = "README.md"
-repository = "https://github.com/wasmerio/python-ext-wasm"
-keywords = ["python", "extension", "webassembly"]
-categories = ["wasm"]
-build = "build.rs"
-
-[lib]
-name = "wasmer"
-crate-type = ["cdylib"]
-
-[dependencies]
-wasmer-runtime = "0.17"
-wasmer-runtime-core = { version = "0.17", features = ["dynamicfunc-fat-closures"] }
-pyo3 = { version = "0.9", features = ["extension-module"] }
-
-[package.metadata.maturin]
-project-url = [
-    "Source Code: https://github.com/wasmerio/python-ext-wasm/",
-    "Bug Tracker, https://github.com/wasmerio/python-ext-wasm/issues",
-    "Documentation, https://github.com/wasmerio/python-ext-wasm/",
+[workspace]
+members = [
+    "packages/api",
+    "packages/compiler-cranelift",
+    "packages/compiler-llvm",
+    "packages/compiler-singlepass",
+    "packages/engines",
 ]
-classifier = [
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Rust",
-    "Topic :: Software Development",
-    "Topic :: Software Development :: Compilers",
-    "Topic :: Software Development :: Interpreters",
-    "Topic :: Software Development :: Interpreters",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+exclude = [
+    "packages/any",
 ]

@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 * Update Wasmer from 0.14.0 to 0.15.0
-  ([#139](https://github.com/wasmerio/python-ext-wasm/pull/139) by
+  ([#139](https://github.com/wasmerio/wasmer-python/pull/139) by
   [@Hywan])
 
 ## [0.4.1] - 2020-02-02
@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 * New `Buffer` class to read memory fast
-  ([#125](https://github.com/wasmerio/python-ext-wasm/pull/125) by
+  ([#125](https://github.com/wasmerio/wasmer-python/pull/125) by
   [@Hywan])
   
   To get the memory buffer, use the `Memory.buffer` getter. A `Buffer`
@@ -48,7 +48,7 @@ All notable changes to this project will be documented in this file.
   ```
 
 * Support exported globals through the `Instance.globals` API
-  ([#120](https://github.com/wasmerio/python-ext-wasm/pull/120) by
+  ([#120](https://github.com/wasmerio/wasmer-python/pull/120) by
   [@Hywan])
   
   ```python
@@ -64,7 +64,7 @@ All notable changes to this project will be documented in this file.
   ```
 
 * Implement a WebAssembly custom section query API
-  ([#118](https://github.com/wasmerio/python-ext-wasm/pull/118) by
+  ([#118](https://github.com/wasmerio/wasmer-python/pull/118) by
   [@Hywan])
   
   `Module.custom_section_names` is used to list all the custom section
@@ -80,7 +80,7 @@ All notable changes to this project will be documented in this file.
 
 * Add the `Module.imports` getter to list all imports, and introduce
   the `ImportKind` enum
-  ([#117](https://github.com/wasmerio/python-ext-wasm/pull/117) by
+  ([#117](https://github.com/wasmerio/wasmer-python/pull/117) by
   [@Hywan])
 
   ```python
@@ -125,8 +125,8 @@ All notable changes to this project will be documented in this file.
 
 * Add the `Module.exports` getter to list all exports, and introduce
   the `ExportKind` enum
-  ([#115](https://github.com/wasmerio/python-ext-wasm/pull/115) and
-  [#116](https://github.com/wasmerio/python-ext-wasm/pull/116) by
+  ([#115](https://github.com/wasmerio/wasmer-python/pull/115) and
+  [#116](https://github.com/wasmerio/wasmer-python/pull/116) by
   [@Hywan])
 
   ```python
@@ -151,7 +151,7 @@ All notable changes to this project will be documented in this file.
   ```
 
 * Support modules without an exported memory
-  ([#114](https://github.com/wasmerio/python-ext-wasm/pull/114) by
+  ([#114](https://github.com/wasmerio/wasmer-python/pull/114) by
   [@Hywan])
 
   ```python
@@ -162,7 +162,7 @@ All notable changes to this project will be documented in this file.
   ```
 
 * Add Rust trait to allow inspection of exported functions
-  ([#71](https://github.com/wasmerio/python-ext-wasm/pull/71) by
+  ([#71](https://github.com/wasmerio/wasmer-python/pull/71) by
   [@Mec-iS])
 
   ```python
@@ -172,7 +172,7 @@ All notable changes to this project will be documented in this file.
   ```
 
 * Memory views support slice assignment
-  ([#63](https://github.com/wasmerio/python-ext-wasm/pull/63) by
+  ([#63](https://github.com/wasmerio/wasmer-python/pull/63) by
   [@Hywan]).
 
   ```python
@@ -205,60 +205,60 @@ All notable changes to this project will be documented in this file.
   Read the pull request to learn more.
 
 * Make wasmer silently available anywhere with `wasmer-any`
-  ([#62](https://github.com/wasmerio/python-ext-wasm/pull/62) by
+  ([#62](https://github.com/wasmerio/wasmer-python/pull/62) by
   [@syrusakbary])
 
 ### Changed
 
 * Improve documentation of `Memory`
-  ([#127](https://github.com/wasmerio/python-ext-wasm/pull/127) by
+  ([#127](https://github.com/wasmerio/wasmer-python/pull/127) by
   [@Hywan])
 * Add a C to WebAssembly example in the documentation
-  ([#122](https://github.com/wasmerio/python-ext-wasm/pull/122/) by
+  ([#122](https://github.com/wasmerio/wasmer-python/pull/122/) by
   [@Hywan])
 * Explain new features
-  ([#119](https://github.com/wasmerio/python-ext-wasm/pull/119) by
+  ([#119](https://github.com/wasmerio/wasmer-python/pull/119) by
   [@Hywan])
 * Migrate to Github Actions for the CI
-  ([#97](https://github.com/wasmerio/python-ext-wasm/pull/97),
-  [#98](https://github.com/wasmerio/python-ext-wasm/pull/98)
-  [#99](https://github.com/wasmerio/python-ext-wasm/pull/99) and
-  [#101](https://github.com/wasmerio/python-ext-wasm/pull/101) by
+  ([#97](https://github.com/wasmerio/wasmer-python/pull/97),
+  [#98](https://github.com/wasmerio/wasmer-python/pull/98)
+  [#99](https://github.com/wasmerio/wasmer-python/pull/99) and
+  [#101](https://github.com/wasmerio/wasmer-python/pull/101) by
   [@Hywan])
 * Update Wasmer from 0.6.0 to 0.14
-  ([#70](https://github.com/wasmerio/python-ext-wasm/pull/70),
-  [#80](https://github.com/wasmerio/python-ext-wasm/pull/80),
-  [#88](https://github.com/wasmerio/python-ext-wasm/pull/88),
-  [#95](https://github.com/wasmerio/python-ext-wasm/pull/95),
-  [#113](https://github.com/wasmerio/python-ext-wasm/pull/113) and
-  [#132](https://github.com/wasmerio/python-ext-wasm/pull/132) by
+  ([#70](https://github.com/wasmerio/wasmer-python/pull/70),
+  [#80](https://github.com/wasmerio/wasmer-python/pull/80),
+  [#88](https://github.com/wasmerio/wasmer-python/pull/88),
+  [#95](https://github.com/wasmerio/wasmer-python/pull/95),
+  [#113](https://github.com/wasmerio/wasmer-python/pull/113) and
+  [#132](https://github.com/wasmerio/wasmer-python/pull/132) by
   [@Hywan])
 * Update Pyo3 from 0.8.2 to 0.8.4
-  ([#93](https://github.com/wasmerio/python-ext-wasm/pull/93),
-  [#96](https://github.com/wasmerio/python-ext-wasm/pull/96))
+  ([#93](https://github.com/wasmerio/wasmer-python/pull/93),
+  [#96](https://github.com/wasmerio/wasmer-python/pull/96))
 
 ### Security
 
 * Bump `spin` from 0.5.0 to 0.5.2
-  ([#72](https://github.com/wasmerio/python-ext-wasm/pull/72)]
+  ([#72](https://github.com/wasmerio/wasmer-python/pull/72)]
 
 ## [0.3.0] - 2019-07-16
 
 ### Added
 
 * Add the `Memory.grow` method
-  ([#56](https://github.com/wasmerio/python-ext-wasm/pull/56) by
+  ([#56](https://github.com/wasmerio/wasmer-python/pull/56) by
   [@Hywan])
 * Bound slice to the size of the memory view —allow to write
   `memory_view[0:]` with no error—
-  ([#54](https://github.com/wasmerio/python-ext-wasm/pull/54) by
+  ([#54](https://github.com/wasmerio/wasmer-python/pull/54) by
   [@Hywan])
 * Add `wasmer.__core_version__` to get the runtime [Wasmer] version
-  ([#51](https://github.com/wasmerio/python-ext-wasm/pull/51) by
+  ([#51](https://github.com/wasmerio/wasmer-python/pull/51) by
   [@Hywan])
 * Support module serialization with `Module.serialize` and
   `Module.deserialize`
-  ([#48](https://github.com/wasmerio/python-ext-wasm/pull/48) by
+  ([#48](https://github.com/wasmerio/wasmer-python/pull/48) by
   [@Hywan])
 
   ```python
@@ -285,7 +285,7 @@ All notable changes to this project will be documented in this file.
 
 * Introduce the `Module` class, with `Module.validate` and
   `Module.instantiate`
-  ([#47](https://github.com/wasmerio/python-ext-wasm/pull/47) by
+  ([#47](https://github.com/wasmerio/wasmer-python/pull/47) by
   [@Hywan])
 
   ```python
@@ -307,63 +307,63 @@ All notable changes to this project will be documented in this file.
   ```
 
 * Add `wasmer.__version__` to get the extension version
-  ([#27](https://github.com/wasmerio/python-ext-wasm/pull/27) by
+  ([#27](https://github.com/wasmerio/wasmer-python/pull/27) by
   [@Mec-iS])
 
 ### Changed
 
 * Handle exported functions that return nothing, aka void functions
-  ([#38](https://github.com/wasmerio/python-ext-wasm/pull/38) by
+  ([#38](https://github.com/wasmerio/wasmer-python/pull/38) by
   [@Hywan])
 * More Python idiomatic examples
-  ([#55](https://github.com/wasmerio/python-ext-wasm/pull/55) by
+  ([#55](https://github.com/wasmerio/wasmer-python/pull/55) by
   [@Hywan])
 * Add the `greet` example
-  ([#43](https://github.com/wasmerio/python-ext-wasm/pull/43) by
+  ([#43](https://github.com/wasmerio/wasmer-python/pull/43) by
   [@Hywan])
 * Improve code documentation
-  ([#36](https://github.com/wasmerio/python-ext-wasm/pull/36) by
+  ([#36](https://github.com/wasmerio/wasmer-python/pull/36) by
   [@Mec-iS])
 * Fix typos
-  ([#25](https://github.com/wasmerio/python-ext-wasm/pull/25) by
+  ([#25](https://github.com/wasmerio/wasmer-python/pull/25) by
   [@Hywan])
 * Fix comments in examples
-  ([#19](https://github.com/wasmerio/python-ext-wasm/pull/19) by
+  ([#19](https://github.com/wasmerio/wasmer-python/pull/19) by
   [@Hywan])
 * Setup Bors
-  ([#35](https://github.com/wasmerio/python-ext-wasm/pull/35) by
+  ([#35](https://github.com/wasmerio/wasmer-python/pull/35) by
   [@Hywan])
 * Add Github templates
-  ([#31](https://github.com/wasmerio/python-ext-wasm/pull/31) by
+  ([#31](https://github.com/wasmerio/wasmer-python/pull/31) by
   [@Hywan])
 * Rename `just rust` to `just build`
-  ([#30](https://github.com/wasmerio/python-ext-wasm/pull/30) by
+  ([#30](https://github.com/wasmerio/wasmer-python/pull/30) by
   [@Hywan])
 * Update Wasmer to 0.5.5
-  ([#59](https://github.com/wasmerio/python-ext-wasm/pull/59) by
+  ([#59](https://github.com/wasmerio/wasmer-python/pull/59) by
   [@Hywan])
 * Update Wasmer to 0.4.2
-  ([#42](https://github.com/wasmerio/python-ext-wasm/pull/42) by
+  ([#42](https://github.com/wasmerio/wasmer-python/pull/42) by
   [@Hywan])
 * Update Wasmer to 0.4.0
-  ([#26](https://github.com/wasmerio/python-ext-wasm/pull/26) by
+  ([#26](https://github.com/wasmerio/wasmer-python/pull/26) by
   [@Hywan])
 
 ### Fixes
 
 * Update smallvec
-  ([#52](https://github.com/wasmerio/python-ext-wasm/pull/52) by
+  ([#52](https://github.com/wasmerio/wasmer-python/pull/52) by
   [@Hywan])
 * Update pyo3
-  ([#46](https://github.com/wasmerio/python-ext-wasm/pull/46) by
+  ([#46](https://github.com/wasmerio/wasmer-python/pull/46) by
   [@Hywan])
 
 ## [0.2.0] - 2019-04-16
 
-[Unreleased]: https://github.com/wasmerio/python-ext-wasm/compare/0.4.0...HEAD
-[0.4.0]: https://github.com/wasmerio/python-ext-wasm/compare/0.3.0...0.4.0
-[0.3.0]: https://github.com/wasmerio/python-ext-wasm/compare/0.2.0...0.3.0
-[0.2.0]: https://github.com/wasmerio/python-ext-wasm/compare/0.1.0...0.2.0
+[Unreleased]: https://github.com/wasmerio/wasmer-python/compare/0.4.0...HEAD
+[0.4.0]: https://github.com/wasmerio/wasmer-python/compare/0.3.0...0.4.0
+[0.3.0]: https://github.com/wasmerio/wasmer-python/compare/0.2.0...0.3.0
+[0.2.0]: https://github.com/wasmerio/wasmer-python/compare/0.1.0...0.2.0
 [@Hywan]: https://github.com/Hywan
 [@Mec-iS]: https://github.com/Mec-iS
 [@syrusakbary]: https://github.com/syrusakbary
