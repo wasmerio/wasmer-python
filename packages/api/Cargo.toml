@@ -20,7 +20,7 @@ wasmer = { git = "https://github.com/wasmerio/wasmer", default-features = false,
 wasmer-engines-python = { path = "../engines/" }
 wasmer-types = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
 wasmer-wasi = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
-pyo3 = { version = "0.11", features = ["extension-module"] }
+pyo3 = { version = "0.12", features = ["extension-module"] }
 wat = "1.0"
 wasmprinter = "0.2"
 cfg-if = "0.1"
