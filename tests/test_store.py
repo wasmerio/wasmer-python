@@ -16,6 +16,7 @@ def test_store_defaults():
     assert store.engine_name == 'jit'
     assert store.compiler_name == 'cranelift'
 
+@pytest.mark.skipif(platform.system() == 'Windows', reason='Wasmer (`master`) has some troubles with JIT on Windows for the moment.')
 def test_store_with_various_engines_and_compilers():
     engines = [
         engine.JIT,
