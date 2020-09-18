@@ -122,37 +122,38 @@ jobs:
           pyenv install --list | grep '^  ${{ matrix.python }}' | tail -n 1 | tr -d '[:space:]' > .python-version
           pyenv install --skip-existing "$(cat .python-version)"
 
-      - name: Set up LLVM (Linux)
-        if: startsWith(matrix.target.id, 'linux-')
-        shell: bash
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz -L -o llvm.tar.xz
-          mkdir -p /opt/llvm
-          tar xf llvm.tar.xz --strip-components=1 -C /opt/llvm
-          echo ::add-path::/opt/llvm/bin
-          echo ::set-env name=LLVM_SYS_100_PREFIX::/opt/llvm
-
-      - name: Set up LLVM (macOS)
-        if: startsWith(matrix.target.id, 'darwin-')
-        shell: bash
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-apple-darwin.tar.xz -L -o llvm.tar.xz
-          mkdir -p ${{ env.LLVM_DIR }}
-          tar xf llvm.tar.xz --strip-components=1 -C ${{ env.LLVM_DIR }}
-          echo "::add-path::${{ env.LLVM_DIR }}/bin"
-          echo "::set-env name=LLVM_SYS_100_PREFIX::${{ env.LLVM_DIR }}"
-        env:
-          LLVM_DIR: ${{ github.workspace }}/llvm
-
-      - name: Set up LLVM (Windows)
-        if: startsWith(matrix.target.id, 'windows-')
-        shell: bash
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://github.com/wasmerio/llvm-build/releases/download/10.x/Win64_Release.zip -L -o llvm.zip
-          7z x llvm.zip -oC:/llvm
-          ls -laiR C:/llvm
-          echo ::add-path::C:/llvm/bin
-          echo ::set-env name=LLVM_SYS_100_PREFIX::C:/llvm
+#      - name: Set up LLVM for `wasmer_compiler_llvm` (Linux)
+#        if: startsWith(matrix.target.id, 'linux-')
+#        shell: bash
+#        run: |
+#          curl --proto '=https' --tlsv1.2 -sSf https://github.com/wasmerio/llvm-build/releases/download/10.x/Ubuntu1910_Release.zip -L -o llvm.zip
+#          mkdir -p ${{ env.LLVM_DIR }}
+#          7z x llvm.zip -o${{ env.LLVM_DIR }}
+#          echo "::add-path::${{ env.LLVM_DIR }}/bin"
+#          echo "::set-env name=LLVM_SYS_100_PREFIX::${{ env.LLVM_DIR }}"
+#        env:
+#          LLVM_DIR: ${{ github.workspace }}/llvm
+#
+#      - name: Set up LLVM for `wasmer_compiler_llvm` (macOS)
+#        if: startsWith(matrix.target.id, 'darwin-')
+#        shell: bash
+#        run: |
+#          curl --proto '=https' --tlsv1.2 -sSf https://github.com/wasmerio/llvm-build/releases/download/10.x/MacOS_Release.zip -L -o llvm.zip
+#          mkdir -p ${{ env.LLVM_DIR }}
+#          7z x llvm.zip -o${{ env.LLVM_DIR }}
+#          echo "::add-path::${{ env.LLVM_DIR }}/bin"
+#          echo "::set-env name=LLVM_SYS_100_PREFIX::${{ env.LLVM_DIR }}"
+#        env:
+#          LLVM_DIR: ${{ github.workspace }}/llvm
+#
+#      - name: Set up LLVM for `wasmer_compiler_llvm` (Windows)
+#        if: startsWith(matrix.target.id, 'windows-')
+#        shell: bash
+#        run: |
+#          curl --proto '=https' --tlsv1.2 -sSf https://github.com/wasmerio/llvm-build/releases/download/10.x/Win64_Release.zip -L -o llvm.zip
+#          7z x llvm.zip -oC:/llvm
+#          echo ::add-path::C:/llvm/bin
+#          echo ::set-env name=LLVM_SYS_100_PREFIX::C:/llvm
 
       - name: Set up just
         shell: bash
