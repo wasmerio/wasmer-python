@@ -99,10 +99,10 @@ doc:
 		wasmer_compiler_singlepass
 
 publish:
-	twine upload --repository pypi target/wheels/wasmer*.whl -u wasmer
+	twine upload --repository testpypi target/wheels/wasmer*.whl -u wasmer
 
 publish-any:
-	twine upload --repository pypi target/wheels/wasmer-*-py3-none-any.whl -u wasmer
+	twine upload --repository testpypi target/wheels/wasmer-*-py3-none-any.whl -u wasmer
 
 # Compile a Rust program to Wasm.
 compile-wasm FILE='examples/simple':

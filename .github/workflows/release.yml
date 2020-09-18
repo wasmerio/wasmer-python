@@ -206,16 +206,16 @@ jobs:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
           assets_from_file: ${{ steps.create_wheels.outputs.assets_file }}
 
-#      - name: Publish the wheel on Pypi
-#        if: matrix.target.id != 'linux-aarch64'
-#        shell: bash
-#        env:
-#          TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
-#        run: |
-#          export PATH="$HOME/.cargo/bin:$PATH"
-#          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
-#          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-#          just publish
+      - name: Publish the wheel on Pypi
+        if: matrix.target.id != 'linux-aarch64'
+        shell: bash
+        env:
+          TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          just publish
 
   release-any:
     name: Release any wheels
@@ -303,11 +303,11 @@ jobs:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
           assets_from_file: ${{ steps.create_wheels.outputs.assets_file }}
 
-#      - name: Publish the wheel on Pypi
-#        shell: bash
-#        env:
-#          TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
-#        run: |
-#          export PATH="$HOME/.cargo/bin:$PATH"
-#          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-#          just publish-any
+      - name: Publish the wheel on Pypi
+        shell: bash
+        env:
+          TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          just publish-any
