@@ -1,5 +1,5 @@
 [package]
-name = "wasmer-engines-python"
+name = "wasmer_engines"
 version = "1.0.0-alpha1"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"

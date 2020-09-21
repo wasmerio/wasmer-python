@@ -1,6 +1,6 @@
 use crate::{
     errors::to_py_err,
-    wasmer_inner::{wasmer, wasmer_engines_python as engines},
+    wasmer_inner::{wasmer, wasmer_engines as engines},
 };
 use pyo3::{exceptions::TypeError, prelude::*};
 

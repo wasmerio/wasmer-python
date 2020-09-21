@@ -1,5 +1,5 @@
 [package]
-name = "wasmer-compiler-cranelift-python"
+name = "wasmer_compiler_cranelift"
 version = "1.0.0-alpha1"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
@@ -15,7 +15,7 @@ name = "wasmer_compiler_cranelift"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer-engines-python = { path = "../engines/" }
+wasmer_engines = { path = "../engines/" }
 wasmer-compiler-cranelift = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
 pyo3 = { version = "0.11", features = ["extension-module"] }
 
