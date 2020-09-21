@@ -215,7 +215,7 @@ jobs:
           export PATH="$HOME/.cargo/bin:$PATH"
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          just publish
+          just publish $(cat ${{ steps.create_wheels.outputs.assets_file }} | cut -f 1)
 
   release-any:
     name: Release any wheels
