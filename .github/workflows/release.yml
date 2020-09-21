@@ -217,97 +217,97 @@ jobs:
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
           just publish
 
-#  release-any:
-#    name: Release any wheels
-#
-#    needs: [create_pre_release]
-#
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Check out code
-#        uses: actions/checkout@v2
-#
-#      - name: Set up Rust
-#        uses: actions-rs/toolchain@v1
-#        with:
-#          toolchain: stable
-#          default: true
-#          override: true
-#          target: ${{ matrix.target.rust-target }}
-#
-#      - name: Cache Cargo registry
-#        uses: actions/cache@v1
-#        with:
-#          path: ~/.cargo/registry
-#          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-#
-#      - name: Cache Cargo bin
-#        uses: actions/cache@v1
-#        with:
-#          path: ~/.cargo/bin
-#          key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
-#
-#      - name: Cache Cargo build
-#        uses: actions/cache@v1
-#        with:
-#          path: target
-#          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
-#
-#      - name: Set up Python 3.8
-#        uses: actions/setup-python@v1
-#        with:
-#          python-version: 3.8
-#
-#      - name: Set up just
-#        shell: bash
-#        run: |
-#          export PATH="$HOME/.cargo/bin:$PATH"
-#          test -f $HOME/.cargo/bin/just || cargo install just
-#
-#      - name: Prelude
-#        shell: bash
-#        run: |
-#          export PATH="$HOME/.cargo/bin:$PATH"
-#          just prelude
-#
-#      - name: Build the wheel
-#        id: create_wheels
-#        shell: bash
-#        run: |
-#          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-#          just build-any-wheel
-#          for wheel in $(ls target/wheels/wasmer*any.whl | tail -n 1); do \
-#              echo -e "${wheel}\t$(basename ${wheel})\tapplication/x-pywheel+zip"; \
-#          done >> assets
-#          cat assets
-#          echo ::set-output name=assets_file::assets
-#
-#      - name: Load the `release_url` from the temporary file
-#        uses: actions/download-artifact@v1
-#        with:
-#          name: release_url
-#
-#      - name: Read the `release_url` temporary file
-#        id: get_release_info
-#        shell: bash
-#        run: |
-#          value=$(cat release_url/release_url.txt)
-#          echo ::set-output name=upload_url::$value
-#
-#      - name: Upload the wheel as Github pre-release asset
-#        uses: Hywan/upload-release-asset@v2
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-#          assets_from_file: ${{ steps.create_wheels.outputs.assets_file }}
-#
-#      - name: Publish the wheel on Pypi
-#        shell: bash
-#        env:
-#          TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
-#        run: |
-#          export PATH="$HOME/.cargo/bin:$PATH"
-#          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-#          just publish-any
+  release-any:
+    name: Release any wheels
+
+    needs: [create_pre_release]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+          override: true
+          target: ${{ matrix.target.rust-target }}
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache Cargo bin
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/bin
+          key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache Cargo build
+        uses: actions/cache@v1
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Set up just
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          test -f $HOME/.cargo/bin/just || cargo install just
+
+      - name: Prelude
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          just prelude
+
+      - name: Build the wheel
+        id: create_wheels
+        shell: bash
+        run: |
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          just build-any-wheel
+          for wheel in $(ls target/wheels/wasmer*any.whl | tail -n 1); do \
+              echo -e "${wheel}\t$(basename ${wheel})\tapplication/x-pywheel+zip"; \
+          done >> assets
+          cat assets
+          echo ::set-output name=assets_file::assets
+
+      - name: Load the `release_url` from the temporary file
+        uses: actions/download-artifact@v1
+        with:
+          name: release_url
+
+      - name: Read the `release_url` temporary file
+        id: get_release_info
+        shell: bash
+        run: |
+          value=$(cat release_url/release_url.txt)
+          echo ::set-output name=upload_url::$value
+
+      - name: Upload the wheel as Github pre-release asset
+        uses: Hywan/upload-release-asset@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          assets_from_file: ${{ steps.create_wheels.outputs.assets_file }}
+
+      - name: Publish the wheel on Pypi
+        shell: bash
+        env:
+          TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          just publish-any

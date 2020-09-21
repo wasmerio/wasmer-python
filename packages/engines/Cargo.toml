@@ -1,6 +1,6 @@
 [package]
 name = "wasmer_engines"
-version = "1.0.0-alpha1"
+version = "1.0.0-alpha2"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
 description = "Engines and sibling types for the `wasmer-*-python` crates"

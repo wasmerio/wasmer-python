@@ -1216,7 +1216,7 @@ checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
 
 [[package]]
 name = "wasmer"
-version = "1.0.0-alpha1"
+version = "1.0.0-alpha2"
 dependencies = [
  "cfg-if",
  "pyo3",
@@ -1439,7 +1439,7 @@ dependencies = [
 
 [[package]]
 name = "wasmer_compiler_cranelift"
-version = "1.0.0-alpha1"
+version = "1.0.0-alpha2"
 dependencies = [
  "pyo3",
  "wasmer-compiler-cranelift",
@@ -1448,7 +1448,7 @@ dependencies = [
 
 [[package]]
 name = "wasmer_compiler_llvm"
-version = "1.0.0-alpha1"
+version = "1.0.0-alpha2"
 dependencies = [
  "pyo3",
  "wasmer-compiler-llvm",
@@ -1457,7 +1457,7 @@ dependencies = [
 
 [[package]]
 name = "wasmer_compiler_singlepass"
-version = "1.0.0-alpha1"
+version = "1.0.0-alpha2"
 dependencies = [
  "pyo3",
  "wasmer-compiler-singlepass",
@@ -1466,7 +1466,7 @@ dependencies = [
 
 [[package]]
 name = "wasmer_engines"
-version = "1.0.0-alpha1"
+version = "1.0.0-alpha2"
 dependencies = [
  "enumset",
  "pyo3",

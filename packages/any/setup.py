@@ -3,7 +3,7 @@ from setuptools.dist import Distribution
 
 setup(
     name='wasmer',
-    version='1.0.0-alpha1',
+    version='1.0.0-alpha2',
     author='The Wasmer Engineering Team',
     author_email='engineering@wasmer.io',
     license='MIT',
