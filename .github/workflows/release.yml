@@ -180,7 +180,7 @@ jobs:
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
           just build-all-wheels "${PYTHON_INTERPRETER}" "${{ matrix.target.rust-target }}"
-          for wheel in $(ls target/wheels/wasmer*python-*.whl | grep "cp$(cat .python-version | grep -o -e '^[^\.]+\.[^\.]+' | tr -d '.')"); do \
+          for wheel in $(ls target/wheels/wasmer*.whl | grep "cp$(cat .python-version | grep -o -e '^[^\.]+\.[^\.]+' | tr -d '.')"); do \
               echo -e "${wheel}\t$(basename ${wheel})\tapplication/x-pywheel+zip"; \
           done >> assets
           cat assets
