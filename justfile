@@ -76,7 +76,8 @@ build-wheel package python_version rust_target:
 # Create a distribution of wasmer that can be installed anywhere (it will fail on import)
 build-any-wheel:
 	mkdir -p ./target/wheels/
-	cd packages/any/ && pip3 wheel . -w ../../target/wheels/
+	cp packages/api/README.md packages/any/api_README.md
+	cd packages/any/ && pip3 wheel . --wheel-dir ../../target/wheels/
 
 # Run Python.
 python-run file='':
