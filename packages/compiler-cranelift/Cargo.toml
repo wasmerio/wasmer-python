@@ -1,6 +1,6 @@
 [package]
 name = "wasmer_compiler_cranelift"
-version = "1.0.0-alpha2"
+version = "1.0.0-alpha3"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
 description = "The Cranelift compiler for the `wasmer` package (to compile WebAssembly module)"

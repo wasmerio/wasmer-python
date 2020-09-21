@@ -10,7 +10,7 @@ with open(readme_path, encoding='utf-8') as readme:
 
 setup(
     name='wasmer',
-    version='1.0.0-alpha2',
+    version='1.0.0-alpha3',
     author='The Wasmer Engineering Team',
     author_email='engineering@wasmer.io',
     license='MIT',

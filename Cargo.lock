@@ -1162,9 +1162,9 @@ dependencies = [
 
 [[package]]
 name = "typetag"
-version = "0.1.5"
+version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9275125decb5d75fe57ebfe92debd119b15757aae27c56d7cb61ecab871960bc"
+checksum = "83b97b107d25d29de6879ac4f676ac5bfea92bdd01f206e995794493f1fc2e32"
 dependencies = [
  "erased-serde",
  "inventory",
@@ -1175,9 +1175,9 @@ dependencies = [
 
 [[package]]
 name = "typetag-impl"
-version = "0.1.5"
+version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc232cda3b1d82664153e6c95d1071809aa0f1011f306c3d6989f33d8c6ede17"
+checksum = "3f2466fc87b07b800a5060f89ba579d6882f7a03ac21363e4737764aaf9f99f9"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1216,20 +1216,6 @@ checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
 
 [[package]]
 name = "wasmer"
-version = "1.0.0-alpha2"
-dependencies = [
- "cfg-if",
- "pyo3",
- "wasmer 1.0.0-alpha3",
- "wasmer-types",
- "wasmer-wasi",
- "wasmer_engines",
- "wasmprinter",
- "wat",
-]
-
-[[package]]
-name = "wasmer"
 version = "1.0.0-alpha3"
 source = "git+https://github.com/wasmerio/wasmer#741f33672d1f8ca2c544a5419f930efe51c71421"
 dependencies = [
@@ -1246,6 +1232,20 @@ dependencies = [
  "wasmer-vm",
  "wat",
  "winapi",
+]
+
+[[package]]
+name = "wasmer"
+version = "1.0.0-alpha3"
+dependencies = [
+ "cfg-if",
+ "pyo3",
+ "wasmer 1.0.0-alpha3 (git+https://github.com/wasmerio/wasmer)",
+ "wasmer-types",
+ "wasmer-wasi",
+ "wasmer_engines",
+ "wasmprinter",
+ "wat",
 ]
 
 [[package]]
@@ -1433,13 +1433,13 @@ dependencies = [
  "time",
  "tracing",
  "typetag",
- "wasmer 1.0.0-alpha3",
+ "wasmer 1.0.0-alpha3 (git+https://github.com/wasmerio/wasmer)",
  "winapi",
 ]
 
 [[package]]
 name = "wasmer_compiler_cranelift"
-version = "1.0.0-alpha2"
+version = "1.0.0-alpha3"
 dependencies = [
  "pyo3",
  "wasmer-compiler-cranelift",
@@ -1448,7 +1448,7 @@ dependencies = [
 
 [[package]]
 name = "wasmer_compiler_llvm"
-version = "1.0.0-alpha2"
+version = "1.0.0-alpha3"
 dependencies = [
  "pyo3",
  "wasmer-compiler-llvm",
@@ -1457,7 +1457,7 @@ dependencies = [
 
 [[package]]
 name = "wasmer_compiler_singlepass"
-version = "1.0.0-alpha2"
+version = "1.0.0-alpha3"
 dependencies = [
  "pyo3",
  "wasmer-compiler-singlepass",
@@ -1466,11 +1466,11 @@ dependencies = [
 
 [[package]]
 name = "wasmer_engines"
-version = "1.0.0-alpha2"
+version = "1.0.0-alpha3"
 dependencies = [
  "enumset",
  "pyo3",
- "wasmer 1.0.0-alpha3",
+ "wasmer 1.0.0-alpha3 (git+https://github.com/wasmerio/wasmer)",
  "wasmer-compiler",
 ]
 
