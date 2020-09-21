@@ -23,7 +23,7 @@ build_features := ""
 build-all rust_target='':
 	just build api {{rust_target}}
 	just build compiler-cranelift {{rust_target}}
-	just build compiler-llvm {{rust_target}}
+	#just build compiler-llvm {{rust_target}}
 	just build compiler-singlepass {{rust_target}}
 
 # Compile and install the Python package. Run with `--set build_features` to compile with specific Cargo features.
@@ -47,6 +47,13 @@ build package='api' rust_target='':
         cd packages/{{package}}/
 
         maturin develop --binding-crate pyo3 --release --strip --cargo-extra-args="${build_args}"
+
+# Build all the wheels.
+build-all-wheels python_version rust_target:
+	just build-wheel api {{python_version}} {{rust_target}}
+	just build-wheel compiler-cranelift {{python_version}} {{rust_target}}
+	#just build-wheel compiler-llvm {{python_version}} {{rust_target}}
+	just build-wheel compiler-singlepass {{python_version}} {{rust_target}}
 
 # Build the wheel of a specific package.
 build-wheel package python_version rust_target:
@@ -88,11 +95,11 @@ doc:
 	@pdoc --html --output-dir docs/api --force \
 		wasmer \
 		wasmer_compiler_cranelift \
-		wasmer_compiler_llvm \
+		#wasmer_compiler_llvm \
 		wasmer_compiler_singlepass
 
 publish:
-	twine upload --repository pypi target/wheels/wasmer-*.whl -u wasmer
+	twine upload --repository pypi target/wheels/wasmer*.whl -u wasmer
 
 publish-any:
 	twine upload --repository pypi target/wheels/wasmer-*-py3-none-any.whl -u wasmer

@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-use wasmer_engines_python::OpaqueCompiler;
+use wasmer_engines::OpaqueCompiler;
 
 /// The Singlepass compiler, designed for the `wasmer` Python package
 /// (a WebAssembly runtime).
