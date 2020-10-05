@@ -1498,18 +1498,18 @@ dependencies = [
 
 [[package]]
 name = "wast"
-version = "24.0.0"
+version = "25.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ff1e3bd3ad0b2ee7784add89c30dc96b89a54b43e5d6d95d774eda1863b3500"
+checksum = "d8c67a4386e4efe10563552848d8c6a4b7f941e69924a935495645c3f52b32d0"
 dependencies = [
  "leb128",
 ]
 
 [[package]]
 name = "wat"
-version = "1.0.25"
+version = "1.0.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7c0bb2872ae453f98cec6ff1bf1a71cde1da6041fce8b0ac39d51eb033e9ec0"
+checksum = "4766d466249e23279e92c52033429eb91141c5efea1c4478138fa6f6ef4efe3e"
 dependencies = [
  "wast",
 ]
