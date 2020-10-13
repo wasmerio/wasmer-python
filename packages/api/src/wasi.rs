@@ -3,7 +3,7 @@ use crate::{
     store::Store, wasmer_inner::wasmer_wasi,
 };
 use pyo3::{
-    exceptions::{RuntimeError, TypeError, ValueError},
+    exceptions::{PyRuntimeError, PyTypeError, PyValueError},
     prelude::*,
     types::{PyDict, PyList},
 };
@@ -56,7 +56,7 @@ impl<'source> FromPyObject<'source> for Version {
             2 => Self::Snapshot0,
             3 => Self::Snapshot1,
             _ => {
-                return Err(to_py_err::<ValueError, _>(
+                return Err(to_py_err::<PyValueError, _>(
                     "Failed to extract `Version` from `PyAny`",
                 ))
             }
@@ -131,7 +131,7 @@ impl StateBuilder {
                     .iter()
                     .map(|any_item| PathBuf::from(any_item.to_string())),
             )
-            .map_err(to_py_err::<RuntimeError, _>)?;
+            .map_err(to_py_err::<PyRuntimeError, _>)?;
 
         Ok(())
     }
@@ -139,7 +139,7 @@ impl StateBuilder {
     pub fn self_preopen_directory(&mut self, preopen_directory: String) -> PyResult<()> {
         self.inner
             .preopen_dir(PathBuf::from(preopen_directory))
-            .map_err(to_py_err::<RuntimeError, _>)?;
+            .map_err(to_py_err::<PyRuntimeError, _>)?;
 
         Ok(())
     }
@@ -149,7 +149,7 @@ impl StateBuilder {
             .map_dirs(map_directories.iter().map(|(any_key, any_value)| {
                 (any_key.to_string(), PathBuf::from(any_value.to_string()))
             }))
-            .map_err(to_py_err::<RuntimeError, _>)?;
+            .map_err(to_py_err::<PyRuntimeError, _>)?;
 
         Ok(())
     }
@@ -157,7 +157,7 @@ impl StateBuilder {
     pub fn self_map_directory(&mut self, alias: String, directory: String) -> PyResult<()> {
         self.inner
             .map_dir(alias.as_str(), PathBuf::from(directory))
-            .map_err(to_py_err::<RuntimeError, _>)?;
+            .map_err(to_py_err::<PyRuntimeError, _>)?;
 
         Ok(())
     }
@@ -425,7 +425,7 @@ impl StateBuilder {
         Ok(Environment::raw_new(
             self.inner
                 .finalize()
-                .map_err(to_py_err::<RuntimeError, _>)?,
+                .map_err(to_py_err::<PyRuntimeError, _>)?,
         ))
     }
 }
@@ -488,7 +488,7 @@ impl Environment {
                 Ok(())
             }
 
-            _ => Err(to_py_err::<TypeError, _>(
+            _ => Err(to_py_err::<PyTypeError, _>(
                 "Can only set a `Memory` object to `Environment.memory`",
             )),
         }

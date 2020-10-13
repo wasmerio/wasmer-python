@@ -1,6 +1,6 @@
 use crate::{errors::to_py_err, store::Store, types, wasmer_inner::wasmer};
 use pyo3::{
-    exceptions::{RuntimeError, TypeError},
+    exceptions::{PyRuntimeError, PyTypeError},
     prelude::*,
     types::{PyAny, PyBytes, PyList, PyString},
 };
@@ -79,15 +79,15 @@ impl Module {
         let module = if let Ok(bytes) = bytes.downcast::<PyBytes>() {
             wasmer::Module::new(store, bytes.as_bytes())
         } else if let Ok(string) = bytes.downcast::<PyString>() {
-            wasmer::Module::new(store, string.to_string()?.as_bytes())
+            wasmer::Module::new(store, string.to_str()?.as_bytes())
         } else {
-            return Err(to_py_err::<TypeError, _>(
+            return Err(to_py_err::<PyTypeError, _>(
                 "`Module` accepts Wasm bytes or a WAT string",
             ));
         };
 
         Ok(Module {
-            inner: module.map_err(to_py_err::<RuntimeError, _>)?,
+            inner: module.map_err(to_py_err::<PyRuntimeError, _>)?,
         })
     }
 
@@ -209,7 +209,7 @@ impl Module {
             py,
             self.inner
                 .serialize()
-                .map_err(to_py_err::<RuntimeError, _>)?
+                .map_err(to_py_err::<PyRuntimeError, _>)?
                 .as_slice(),
         ))
     }
@@ -257,7 +257,7 @@ impl Module {
     #[staticmethod]
     fn deserialize(store: &Store, bytes: &PyBytes) -> PyResult<Self> {
         let module = unsafe { wasmer::Module::deserialize(store.inner(), bytes.as_bytes()) }
-            .map_err(to_py_err::<RuntimeError, _>)?;
+            .map_err(to_py_err::<PyRuntimeError, _>)?;
 
         Ok(Module { inner: module })
     }

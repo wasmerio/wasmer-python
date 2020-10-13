@@ -2,7 +2,7 @@ use crate::{
     errors::to_py_err, exports::Exports, import_object::ImportObject, module::Module,
     wasmer_inner::wasmer,
 };
-use pyo3::{exceptions::RuntimeError, prelude::*};
+use pyo3::{exceptions::PyRuntimeError, prelude::*};
 
 /// A WebAssembly instance is a stateful, executable instance of a
 /// WebAssembly `Module`.
@@ -131,7 +131,7 @@ impl Instance {
     #[new]
     fn new(py: Python, module: &Module, import_object: Option<&ImportObject>) -> PyResult<Self> {
         Instance::raw_new(py, &module, import_object).map_err(|error| match error {
-            InstanceError::InstantiationError(error) => to_py_err::<RuntimeError, _>(error),
+            InstanceError::InstantiationError(error) => to_py_err::<PyRuntimeError, _>(error),
             InstanceError::PyErr(error) => error,
         })
     }

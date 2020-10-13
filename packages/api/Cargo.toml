@@ -16,11 +16,11 @@ name = "wasmer"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer = { git = "https://github.com/wasmerio/wasmer", default-features = false, features = ["wat", "jit", "native", "compiler"], branch = "master" }
+wasmer = { version = "1.0.0-alpha4", default-features = false, features = ["wat", "jit", "native", "compiler"] }
 wasmer_engines = { path = "../engines/" }
-wasmer-types = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
-wasmer-wasi = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
-pyo3 = { version = "0.11", features = ["extension-module"] }
+wasmer-types = "1.0.0-alpha4"
+wasmer-wasi = "1.0.0-alpha4"
+pyo3 = { version = "0.12", features = ["extension-module"] }
 wat = "1.0"
 wasmprinter = "0.2"
 cfg-if = "0.1"

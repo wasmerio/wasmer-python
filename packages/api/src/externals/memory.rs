@@ -5,7 +5,7 @@ use crate::{
     types::MemoryType,
     wasmer_inner::wasmer,
 };
-use pyo3::{exceptions::RuntimeError, prelude::*};
+use pyo3::{exceptions::PyRuntimeError, prelude::*};
 
 /// A WebAssembly memory instance.
 ///
@@ -71,7 +71,7 @@ impl Memory {
     fn new(store: &Store, memory_type: &MemoryType) -> PyResult<Self> {
         Ok(Self::raw_new(
             wasmer::Memory::new(store.inner(), memory_type.into())
-                .map_err(to_py_err::<RuntimeError, _>)?,
+                .map_err(to_py_err::<PyRuntimeError, _>)?,
         ))
     }
 
@@ -133,7 +133,7 @@ impl Memory {
         self.inner
             .grow(number_of_pages)
             .map(|pages| pages.0)
-            .map_err(to_py_err::<RuntimeError, _>)
+            .map_err(to_py_err::<PyRuntimeError, _>)
     }
 
     /// Creates a Python buffer to read and write the memory data. See

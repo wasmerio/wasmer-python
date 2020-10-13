@@ -76,10 +76,10 @@ def test_imports():
         Store(),
         """
         (module
-        (import "ns" "function" (func))
-        (import "ns" "global" (global f32))
-        (import "ns" "table" (table 1 2 anyfunc))
-        (import "ns" "memory" (memory 3 4)))
+          (import "ns" "function" (func))
+          (import "ns" "global" (global f32))
+          (import "ns" "table" (table 1 2 anyfunc))
+          (import "ns" "memory" (memory 3 4)))
         """
     ).imports
 

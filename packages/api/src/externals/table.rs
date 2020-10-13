@@ -1,7 +1,7 @@
 use crate::{
     errors::to_py_err, store::Store, types::TableType, values::Value, wasmer_inner::wasmer,
 };
-use pyo3::{exceptions::RuntimeError, prelude::*};
+use pyo3::{exceptions::PyRuntimeError, prelude::*};
 
 /// A WebAssembly table instance.
 ///
@@ -38,7 +38,7 @@ impl Table {
                 table_type.into(),
                 initial_value.inner().clone(),
             )
-            .map_err(to_py_err::<RuntimeError, _>)?,
+            .map_err(to_py_err::<PyRuntimeError, _>)?,
         })
     }
 

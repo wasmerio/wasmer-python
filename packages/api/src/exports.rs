@@ -5,7 +5,7 @@ use crate::{
 };
 use pyo3::{
     class::{basic::PyObjectProtocol, sequence::PySequenceProtocol},
-    exceptions::LookupError,
+    exceptions::PyLookupError,
     prelude::*,
 };
 
@@ -70,7 +70,7 @@ impl PyObjectProtocol for Exports {
                 Py::new(py, Table::raw_new(table.clone()))?.to_object(py)
             }
             _ => {
-                return Err(to_py_err::<LookupError, _>(format!(
+                return Err(to_py_err::<PyLookupError, _>(format!(
                     "Export `{}` does not exist.",
                     key
                 )))

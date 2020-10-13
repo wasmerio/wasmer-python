@@ -4,7 +4,7 @@ use crate::{
     wasmer_inner::wasmer,
 };
 use pyo3::{
-    exceptions::TypeError,
+    exceptions::PyTypeError,
     prelude::*,
     types::{PyDict, PyString},
 };
@@ -195,10 +195,7 @@ impl ImportObject {
         let mut wasmer_namespace = wasmer::Exports::new();
 
         for (name, item) in namespace.into_iter() {
-            let name = name
-                .downcast::<PyString>()
-                .map_err(PyErr::from)?
-                .to_string()?;
+            let name = String::from(name.downcast::<PyString>().map_err(PyErr::from)?.to_str()?);
 
             if let Ok(function) = item.downcast::<PyCell<Function>>() {
                 let function = function.borrow();
@@ -217,7 +214,7 @@ impl ImportObject {
 
                 wasmer_namespace.insert(name, table.inner().clone());
             } else {
-                return Err(to_py_err::<TypeError, _>(format!(
+                return Err(to_py_err::<PyTypeError, _>(format!(
                     "`ImportObject` cannot register the given type `{}`",
                     item.get_type().name()
                 )));
