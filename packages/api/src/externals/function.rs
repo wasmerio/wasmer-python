@@ -6,7 +6,7 @@ use crate::{
     wasmer_inner::wasmer,
 };
 use pyo3::{
-    exceptions::{RuntimeError, ValueError},
+    exceptions::{PyRuntimeError, PyValueError},
     prelude::*,
     types::{PyDict, PyTuple},
 };
@@ -82,7 +82,7 @@ impl Function {
         function_type: Option<&FunctionType>,
     ) -> PyResult<Self> {
         if !py_function.is_callable() {
-            return Err(to_py_err::<ValueError, _>("Function must be a callable"));
+            return Err(to_py_err::<PyValueError, _>("Function must be a callable"));
         }
 
         let (argument_types, result_types) = match function_type {
@@ -97,7 +97,7 @@ impl Function {
 
             None => {
                 if !py_function.hasattr("__annotations__")? {
-                    return Err(to_py_err::<ValueError, _>(
+                    return Err(to_py_err::<PyValueError, _>(
                         "The function must have type annotations",
                     ));
                 }
@@ -117,7 +117,7 @@ impl Function {
                         "f32" | "F32" | "<class 'float'>" => wasmer::Type::F32,
                         "f64" | "F64" => wasmer::Type::F64,
                         ty => {
-                            return Err(to_py_err::<RuntimeError, _>(format!(
+                            return Err(to_py_err::<PyRuntimeError, _>(format!(
                                 "Type `{}` is not a supported type",
                                 ty,
                             )))
@@ -209,7 +209,7 @@ impl Function {
             .inner
             .call(&arguments)
             .map(<[_]>::into_vec)
-            .map_err(to_py_err::<RuntimeError, _>)?;
+            .map_err(to_py_err::<PyRuntimeError, _>)?;
 
         let to_py_object = to_py_object(py);
 

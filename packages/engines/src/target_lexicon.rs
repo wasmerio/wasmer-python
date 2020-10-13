@@ -1,5 +1,5 @@
 use enumset::EnumSet;
-use pyo3::{class::basic::PyObjectProtocol, exceptions::ValueError, prelude::*};
+use pyo3::{class::basic::PyObjectProtocol, exceptions::PyValueError, prelude::*};
 use std::str::FromStr;
 
 /// Represents a `Triple` + `CpuFeatures` pair.
@@ -87,7 +87,7 @@ impl Triple {
     fn new(triple: &str) -> PyResult<Self> {
         Ok(Self {
             inner: wasmer_compiler::Triple::from_str(triple)
-                .map_err(|error| ValueError::py_err(error.to_string()))?,
+                .map_err(|error| PyValueError::new_err(error.to_string()))?,
         })
     }
 
@@ -269,7 +269,7 @@ impl CpuFeatures {
     fn add(&mut self, feature: &str) -> PyResult<()> {
         self.inner.insert(
             wasmer_compiler::CpuFeature::from_str(feature)
-                .map_err(|error| ValueError::py_err(error.to_string()))?,
+                .map_err(|error| PyValueError::new_err(error.to_string()))?,
         );
 
         Ok(())

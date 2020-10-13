@@ -2,7 +2,7 @@ use crate::{
     errors::to_py_err,
     wasmer_inner::{wasmer, wasmer_engines as engines},
 };
-use pyo3::{exceptions::TypeError, prelude::*};
+use pyo3::{exceptions::PyTypeError, prelude::*};
 
 /// The store represents all global state that can be manipulated by
 /// WebAssembly programs. It consists of the runtime representation of
@@ -80,7 +80,7 @@ impl Store {
                         native.compiler_name().cloned(),
                     )
                 } else {
-                    return Err(to_py_err::<TypeError, _>("Unknown engine"));
+                    return Err(to_py_err::<PyTypeError, _>("Unknown engine"));
                 }
             }
 

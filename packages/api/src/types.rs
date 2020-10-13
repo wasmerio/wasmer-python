@@ -1,7 +1,7 @@
 use crate::{errors::to_py_err, wasmer_inner::wasmer};
 use pyo3::{
     conversion::{FromPyObject, IntoPy},
-    exceptions::ValueError,
+    exceptions::PyValueError,
     prelude::*,
 };
 use std::{convert::TryFrom, slice};
@@ -73,7 +73,7 @@ impl<'source> FromPyObject<'source> for Type {
             6 => Self::ExternRef,
             7 => Self::FuncRef,
             _ => {
-                return Err(to_py_err::<ValueError, _>(
+                return Err(to_py_err::<PyValueError, _>(
                     "Failed to extract `Type` from `PyAny`",
                 ))
             }

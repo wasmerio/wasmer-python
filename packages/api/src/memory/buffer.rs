@@ -1,7 +1,7 @@
 use crate::{errors::to_py_err, wasmer_inner::wasmer};
 use pyo3::{
     class::buffer::PyBufferProtocol,
-    exceptions::BufferError,
+    exceptions::PyBufferError,
     ffi::{PyBUF_FORMAT, PyBUF_ND, PyBUF_STRIDES, PyBUF_WRITABLE, Py_buffer},
     prelude::*,
     pycell::PyRefMut,
@@ -68,7 +68,7 @@ impl Buffer {
 impl PyBufferProtocol for Buffer {
     fn bf_getbuffer(slf: PyRefMut<Self>, view: *mut Py_buffer, flags: c_int) -> PyResult<()> {
         if view.is_null() {
-            return Err(to_py_err::<BufferError, _>(
+            return Err(to_py_err::<PyBufferError, _>(
                 "`Py_buffer` cannot be filled because it is null",
             ));
         }

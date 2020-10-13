@@ -1,7 +1,7 @@
 use crate::{errors::to_py_err, wasmer_inner::wasmer};
 use pyo3::{
     class::PyMappingProtocol,
-    exceptions::{IndexError, RuntimeError, ValueError},
+    exceptions::{PyIndexError, PyRuntimeError, PyValueError},
     prelude::*,
     types::{PyAny, PyInt, PyLong, PySequence, PySlice},
 };
@@ -75,12 +75,12 @@ macro_rules! memory_view {
                     let slice = slice.indices(view.len() as _)?;
 
                     if slice.start >= slice.stop {
-                        return Err(to_py_err::<IndexError, _>(format!(
+                        return Err(to_py_err::<PyIndexError, _>(format!(
                             "Slice `{}:{}` cannot be empty",
                             slice.start, slice.stop
                         )));
                     } else if slice.step > 1 {
-                        return Err(to_py_err::<IndexError, _>(format!(
+                        return Err(to_py_err::<PyIndexError, _>(format!(
                             "Slice must have a step of 1 for now; given {}",
                             slice.step
                         )));
@@ -89,7 +89,7 @@ macro_rules! memory_view {
                     (offset + slice.start as usize)..(min(offset + slice.stop as usize, view.len()))
                 } else if let Ok(index) = index.extract::<isize>() {
                     if index < 0 {
-                        return Err(to_py_err::<IndexError, _>(
+                        return Err(to_py_err::<PyIndexError, _>(
                             "Out of bound: Index cannot be negative",
                         ));
                     }
@@ -105,13 +105,13 @@ macro_rules! memory_view {
                         index..index + 1
                     }
                 } else {
-                    return Err(to_py_err::<ValueError, _>(
+                    return Err(to_py_err::<PyValueError, _>(
                         "Only integers and slices are valid to represent an index",
                     ));
                 };
 
                 if view.len() <= (range.end - 1) {
-                    return Err(to_py_err::<IndexError, _>(format!(
+                    return Err(to_py_err::<PyIndexError, _>(format!(
                         "Out of bound: Maximum index {} is larger than the memory size {}",
                         range.end - 1,
                         view.len()
@@ -150,12 +150,12 @@ macro_rules! memory_view {
                     let slice = slice.indices(view.len() as _)?;
 
                     if slice.start >= slice.stop {
-                        return Err(to_py_err::<IndexError, _>(format!(
+                        return Err(to_py_err::<PyIndexError, _>(format!(
                             "Slice `{}:{}` cannot be empty",
                             slice.start, slice.stop
                         )));
                     } else if slice.step < 1 {
-                        return Err(to_py_err::<IndexError, _>(format!(
+                        return Err(to_py_err::<PyIndexError, _>(format!(
                             "Slice must have a positive step; given {}",
                             slice.step
                         )));
@@ -170,7 +170,7 @@ macro_rules! memory_view {
                     // Normally unreachable since the slice is bound
                     // to the size of the memory view.
                     if iterator.len() > view.len() {
-                        return Err(to_py_err::<IndexError, _>(format!(
+                        return Err(to_py_err::<PyIndexError, _>(format!(
                             "Out of bound: The given key slice will write out of memory; memory length is {}, memory offset is {}, slice length is {}",
                             view.len(),
                             offset,
@@ -197,7 +197,7 @@ macro_rules! memory_view {
                         .and_then(|pyint| pyint.extract::<$wasm_type>()),
                 ) {
                     if index < 0 {
-                        return Err(to_py_err::<IndexError, _>(
+                        return Err(to_py_err::<PyIndexError, _>(
                             "Out of bound: Index cannot be negative",
                         ));
                     }
@@ -205,7 +205,7 @@ macro_rules! memory_view {
                     let index = index as usize;
 
                     if view.len() <= offset + index {
-                        Err(to_py_err::<IndexError, _>(format!(
+                        Err(to_py_err::<PyIndexError, _>(format!(
                             "Out of bound: Absolute index {} is larger than the memory size {}",
                             offset + index,
                             view.len()
@@ -216,7 +216,7 @@ macro_rules! memory_view {
                         Ok(())
                     }
                 } else {
-                    Err(to_py_err::<RuntimeError, _>("When setting data to the memory view, the index and the value can only have the following types: Either `int` and `int`, or `slice` and `sequence`"))
+                    Err(to_py_err::<PyRuntimeError, _>("When setting data to the memory view, the index and the value can only have the following types: Either `int` and `int`, or `slice` and `sequence`"))
                 }
             }
         }

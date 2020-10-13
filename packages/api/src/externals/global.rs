@@ -6,7 +6,7 @@ use crate::{
     wasmer_inner::wasmer,
 };
 use pyo3::{
-    exceptions::{RuntimeError, ValueError},
+    exceptions::{PyRuntimeError, PyValueError},
     prelude::*,
 };
 
@@ -114,14 +114,14 @@ impl Global {
         let ty = self.inner.ty();
 
         if !ty.mutability.is_mutable() {
-            return Err(to_py_err::<RuntimeError, _>(
+            return Err(to_py_err::<PyRuntimeError, _>(
                 "The global variable is not mutable, cannot set a new value",
             ));
         }
 
         self.inner
             .set(to_wasm_value((value, ty.ty))?)
-            .map_err(to_py_err::<ValueError, _>)?;
+            .map_err(to_py_err::<PyValueError, _>)?;
 
         Ok(())
     }
