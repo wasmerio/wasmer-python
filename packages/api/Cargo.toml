@@ -23,7 +23,7 @@ wasmer-wasi = "1.0.0-alpha4"
 pyo3 = { version = "0.12", features = ["extension-module"] }
 wat = "1.0"
 wasmprinter = "0.2"
-cfg-if = "0.1"
+cfg-if = "1.0"
 
 [package.metadata.maturin]
 project-url = [
