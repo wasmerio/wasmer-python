@@ -85,6 +85,9 @@ serialized_module = module.serialize()
 serialized_module_file = tempfile.TemporaryFile()
 serialized_module_file.write(serialized_module)
 
+# We seek to the initial position, so when we read it starts from the beginning
+serialized_module_file.seek(0, 0)
+
 
 # Second step, deserialize the compiled Wasm module, and execute it,
 # for example with Wasmer without a compiler.
@@ -102,7 +105,6 @@ store = Store(engine)
 #
 # Deserialize the compiled Wasm module. This code is unsafe because
 # Wasmer can't assert the bytes are valid, so be careful.
-serialized_module_file.seek(0, 0)
 module = Module.deserialize(store, serialized_module_file.read())
 
 # Congrats, the Wasm module has been deserialized! Now let's execute
