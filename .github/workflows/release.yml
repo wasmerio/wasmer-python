@@ -90,7 +90,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: target
-          key: ${{ matrix.target.rust-target }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.target.rust-target }}-${{ matrix.python }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Set up Python ${{ matrix.python }}
         if: matrix.target.id != 'linux-aarch64'
