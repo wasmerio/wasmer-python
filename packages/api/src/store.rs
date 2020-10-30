@@ -19,7 +19,7 @@ use pyo3::{exceptions::PyTypeError, prelude::*};
 ///
 /// Read the documentation of the `engine` submodule to learn more.
 ///
-/// ## Example
+/// ## Examples
 ///
 /// Use the JIT engine with no compiler (headless mode):
 ///
@@ -86,9 +86,9 @@ impl Store {
 
             // No engine?
             None => {
-                // This package embeds the `JIT` engine, we are
-                // going to use it. We want to load a
-                // compiler with it.
+                // This package embeds the `JIT` engine, we are going
+                // to use it. We may want to load a compiler with it,
+                // otherwise it's going to be a headless engine.
                 let compiler = py
                     // Which compiler is available?
                     .import("wasmer_compiler_cranelift")
