@@ -46,19 +46,19 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.cargo/registry
-          key: ${{ matrix.target.rust-target }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.target.id }}-${{ matrix.python }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache Cargo bin
         uses: actions/cache@v1
         with:
           path: ~/.cargo/bin
-          key: ${{ matrix.target.rust-target }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.target.id }}-${{ matrix.python }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache Cargo build
         uses: actions/cache@v1
         with:
           path: target
-          key: ${{ matrix.target.rust-target }}-${{ matrix.python }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.target.id }}-${{ matrix.python }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Set up Python ${{ matrix.python }}
         if: matrix.target.id != 'linux-aarch64'
@@ -77,7 +77,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.pyenv/versions/
-          key: ${{ matrix.target.rust-target }}-pyenv-version-${{ matrix.python }}
+          key: ${{ matrix.target.id }}-${{ matrix.python }}-pyenv-version
 
       - name: Set up Python ${{ matrix.python }}
         if: matrix.target.id == 'linux-aarch64'
