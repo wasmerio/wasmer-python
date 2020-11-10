@@ -1287,7 +1287,7 @@ dependencies = [
  "thiserror",
  "wasmer-types",
  "wasmer-vm",
- "wasmparser",
+ "wasmparser 0.65.0",
 ]
 
 [[package]]
@@ -1517,13 +1517,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "87cc2fe6350834b4e528ba0901e7aa405d78b89dc1fa3145359eb4de0e323fcf"
 
 [[package]]
-name = "wasmprinter"
-version = "0.2.12"
+name = "wasmparser"
+version = "0.66.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fe87e79ad307dc73cb7caca2b57d049d2905c7db1317a9c21171e69aa9f93d3"
+checksum = "c97fc0456d6d09ca7b64bc33c34f4e8f29d5ccfa8e5595ef7a8957818339e6f6"
+
+[[package]]
+name = "wasmprinter"
+version = "0.2.13"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b580bee9eb1f029fac6014620b31f82ea2afa22d0701b9bd7f879747e3f5242"
 dependencies = [
  "anyhow",
- "wasmparser",
+ "wasmparser 0.66.0",
 ]
 
 [[package]]
