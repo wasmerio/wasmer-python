@@ -9,3 +9,6 @@ members = [
 exclude = [
     "packages/any",
 ]
+
+[patch.crates-io]
+llvm-sys = { git = "https://gitlab.com/hywan/llvm-sys.rs", branch = "fix-llvm-config-windows-10.x" }
