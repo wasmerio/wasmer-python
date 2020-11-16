@@ -12,11 +12,14 @@ jobs:
         # The job runs on different OS.
         target: [
           # Linux, amd64
-          { id: 'linux-amd64', os: 'ubuntu-latest', rust-target: 'x86_64-unknown-linux-gnu', rust-toolchain: 'stable' },
+          { id: 'linux-amd64', os: 'ubuntu-latest', rust-target: 'x86_64-unknown-linux-gnu', rust-toolchain: 'stable',
+            llvm_archive_url: 'https://github.com/Hywan/llvm-custom-builds/releases/download/10.x/linux-amd64.tar.gz' },
           # macOS, amd64
-          { id: 'darwin-amd64', os: 'macos-latest', rust-target: 'x86_64-apple-darwin', rust-toolchain: 'stable' },
+          { id: 'darwin-amd64', os: 'macos-latest', rust-target: 'x86_64-apple-darwin', rust-toolchain: 'stable',
+            llvm_archive_url: 'https://github.com/Hywan/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz' },
           # Windows, amd64
-          { id: 'windows-amd64', os: 'windows-latest', rust-target: 'x86_64-pc-windows-msvc', rust-toolchain: 'stable' },
+          { id: 'windows-amd64', os: 'windows-latest', rust-target: 'x86_64-pc-windows-msvc', rust-toolchain: 'stable',
+            llvm_archive_url: 'https://github.com/Hywan/llvm-custom-builds/releases/download/10.x/windows-amd64.tar.gz' },
           # Windows, x86
           #{ id: 'windows-x86', os: 'windows-latest', rust-target: 'i686-pc-windows-msvc' },
           # Linux, aarch64
@@ -90,38 +93,17 @@ jobs:
           pyenv install --list | grep '^  ${{ matrix.python }}' | tail -n 1 | tr -d '[:space:]' > .python-version
           pyenv install --skip-existing "$(cat .python-version)"
 
-#      - name: Set up LLVM for `wasmer_compiler_llvm` (Linux)
-#        if: startsWith(matrix.target.id, 'linux-')
-#        shell: bash
-#        run: |
-#          curl --proto '=https' --tlsv1.2 -sSf https://github.com/wasmerio/llvm-build/releases/download/10.x/Ubuntu1910_Release.zip -L -o llvm.zip
-#          mkdir -p ${{ env.LLVM_DIR }}
-#          7z x llvm.zip -o${{ env.LLVM_DIR }}
-#          echo "::add-path::${{ env.LLVM_DIR }}/bin"
-#          echo "::set-env name=LLVM_SYS_100_PREFIX::${{ env.LLVM_DIR }}"
-#        env:
-#          LLVM_DIR: ${{ github.workspace }}/llvm
-#
-#      - name: Set up LLVM for `wasmer_compiler_llvm` (macOS)
-#        if: startsWith(matrix.target.id, 'darwin-')
-#        shell: bash
-#        run: |
-#          curl --proto '=https' --tlsv1.2 -sSf https://github.com/wasmerio/llvm-build/releases/download/10.x/MacOS_Release.zip -L -o llvm.zip
-#          mkdir -p ${{ env.LLVM_DIR }}
-#          7z x llvm.zip -o${{ env.LLVM_DIR }}
-#          echo "::add-path::${{ env.LLVM_DIR }}/bin"
-#          echo "::set-env name=LLVM_SYS_100_PREFIX::${{ env.LLVM_DIR }}"
-#        env:
-#          LLVM_DIR: ${{ github.workspace }}/llvm
-#
-#      - name: Set up LLVM for `wasmer_compiler_llvm` (Windows)
-#        if: startsWith(matrix.target.id, 'windows-')
-#        shell: bash
-#        run: |
-#          curl --proto '=https' --tlsv1.2 -sSf https://github.com/wasmerio/llvm-build/releases/download/10.x/Win64_Release.zip -L -o llvm.zip
-#          7z x llvm.zip -oC:/llvm
-#          echo ::add-path::C:/llvm/bin
-#          echo ::set-env name=LLVM_SYS_100_PREFIX::C:/llvm
+      - name: Set up LLVM for `wasmer_compiler_llvm`
+        shell: bash
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSfL ${{ matrix.target.llvm_archive_url }} -o llvm.tar.gz
+          mkdir -p ${{ env.LLVM_DIR }}
+          tar xzvf llvm.tar.gz -C ${{ env.LLVM_DIR }}
+          echo ${{ env.LLVM_DIR }}/bin >> $GITHUB_PATH
+          echo "LLVM_SYS_100_PREFIX=${{ env.LLVM_DIR }}" >> $GITHUB_ENV
+          echo "::set-env name=LLVM_SYS_100_PREFIX::${{ env.LLVM_DIR }}"
+        env:
+          LLVM_DIR: ${{ github.workspace }}/llvm
 
       - name: Set up just
         shell: bash

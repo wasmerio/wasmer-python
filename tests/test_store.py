@@ -1,6 +1,6 @@
 from wasmer import engine, Store, Module, Instance
 import wasmer_compiler_cranelift
-#import wasmer_compiler_llvm
+import wasmer_compiler_llvm
 import wasmer_compiler_singlepass
 import itertools
 import os
@@ -25,17 +25,17 @@ def test_store_with_various_engines_and_compilers():
     compilers = [
         None,
         wasmer_compiler_cranelift.Compiler,
-        #wasmer_compiler_llvm.Compiler,
+        wasmer_compiler_llvm.Compiler,
         wasmer_compiler_singlepass.Compiler
     ]
     results = [
         ('jit', None),
         ('jit', 'cranelift'),
-        #('jit', 'llvm'),
+        ('jit', 'llvm'),
         ('jit', 'singlepass'),
         ('native', None),
         ('native', 'cranelift'),
-        #('native', 'llvm'),
+        ('native', 'llvm'),
         ('native', 'singlepass'),
     ]
 
