@@ -10,21 +10,19 @@ jobs:
     strategy:
       matrix:
         # The job runs on different OS.
-        target: [
+        target:
           # Linux, amd64
-          { id: 'linux-amd64', os: 'ubuntu-latest', rust-target: 'x86_64-unknown-linux-gnu', rust-toolchain: 'stable',
-            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-amd64.tar.gz' },
+          - id: 'linux-amd64'
+            os: 'ubuntu-latest'
+            rust-target: 'x86_64-unknown-linux-gnu'
+            rust-toolchain: 'stable'
+            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-amd64.tar.gz'
           # macOS, amd64
-          { id: 'darwin-amd64', os: 'macos-latest', rust-target: 'x86_64-apple-darwin', rust-toolchain: 'stable',
-            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz' },
-          # Windows, amd64
-          { id: 'windows-amd64', os: 'windows-latest', rust-target: 'x86_64-pc-windows-msvc', rust-toolchain: 'stable',
-            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/windows-amd64.tar.gz' },
-          # Windows, x86
-          #{ id: 'windows-x86', os: 'windows-latest', rust-target: 'i686-pc-windows-msvc' },
-          # Linux, aarch64
-          #{ id: 'linux-aarch64', os: ['self-hosted', 'aarch64'], rust-target: 'aarch64-unknown-linux-gnu', rust-toolchain: 'stable' },
-        ]
+          - id: 'darwin-amd64'
+            os: 'macos-latest'
+            rust-target: 'x86_64-apple-darwin'
+            rust-toolchain: 'stable'
+            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz'
         # The job runs on different Python versions.
         python: [3.5, 3.6, 3.7, 3.8, 3.9]
       # As soon as one job fails in the matrix, all the other
@@ -64,34 +62,14 @@ jobs:
           key: ${{ matrix.target.rust-target }}-${{ matrix.python }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Set up Python ${{ matrix.python }}
-        if: matrix.target.id != 'linux-aarch64'
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python }}
 
       - name: Fake `pyenv` installation
-        if: matrix.target.id != 'linux-aarch64'
         shell: bash
         run: |
           echo "${{ matrix.python }}" > .python-version
-
-      - name: Cache Python version
-        if: matrix.target.id == 'linux-aarch64'
-        uses: actions/cache@v1
-        with:
-          path: ~/.pyenv/versions/
-          key: ${{ matrix.target.rust-target }}-pyenv-version-${{ matrix.python }}
-
-      - name: Set up Python ${{ matrix.python }}
-        if: matrix.target.id == 'linux-aarch64'
-        shell: bash
-        run: |
-          test -d $HOME/.pyenv || curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
-          export PATH="$HOME/.pyenv/bin:$PATH"
-          eval "$(pyenv init -)"
-          eval "$(pyenv virtualenv-init -)"
-          pyenv install --list | grep '^  ${{ matrix.python }}' | tail -n 1 | tr -d '[:space:]' > .python-version
-          pyenv install --skip-existing "$(cat .python-version)"
 
       - name: Set up LLVM for `wasmer_compiler_llvm`
         shell: bash
@@ -100,7 +78,6 @@ jobs:
           mkdir -p ${{ env.LLVM_DIR }}
           tar xzvf llvm.tar.gz -C ${{ env.LLVM_DIR }}
           echo ${{ env.LLVM_DIR }}/bin >> $GITHUB_PATH
-          echo "LLVM_SYS_100_PREFIX=${{ env.LLVM_DIR }}" >> $GITHUB_ENV
         env:
           LLVM_DIR: ${{ github.workspace }}/llvm
 
