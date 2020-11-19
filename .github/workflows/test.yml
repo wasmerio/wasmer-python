@@ -13,13 +13,13 @@ jobs:
         target: [
           # Linux, amd64
           { id: 'linux-amd64', os: 'ubuntu-latest', rust-target: 'x86_64-unknown-linux-gnu', rust-toolchain: 'stable',
-            llvm_archive_url: 'https://github.com/Hywan/llvm-custom-builds/releases/download/10.x/linux-amd64.tar.gz' },
+            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-amd64.tar.gz' },
           # macOS, amd64
           { id: 'darwin-amd64', os: 'macos-latest', rust-target: 'x86_64-apple-darwin', rust-toolchain: 'stable',
-            llvm_archive_url: 'https://github.com/Hywan/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz' },
+            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz' },
           # Windows, amd64
           { id: 'windows-amd64', os: 'windows-latest', rust-target: 'x86_64-pc-windows-msvc', rust-toolchain: 'stable',
-            llvm_archive_url: 'https://github.com/Hywan/llvm-custom-builds/releases/download/10.x/windows-amd64.tar.gz' },
+            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/windows-amd64.tar.gz' },
           # Windows, x86
           #{ id: 'windows-x86', os: 'windows-latest', rust-target: 'i686-pc-windows-msvc' },
           # Linux, aarch64
