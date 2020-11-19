@@ -101,7 +101,6 @@ jobs:
           tar xzvf llvm.tar.gz -C ${{ env.LLVM_DIR }}
           echo ${{ env.LLVM_DIR }}/bin >> $GITHUB_PATH
           echo "LLVM_SYS_100_PREFIX=${{ env.LLVM_DIR }}" >> $GITHUB_ENV
-          echo "::set-env name=LLVM_SYS_100_PREFIX::${{ env.LLVM_DIR }}"
         env:
           LLVM_DIR: ${{ github.workspace }}/llvm
 
