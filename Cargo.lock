@@ -1239,11 +1239,11 @@ checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
 
 [[package]]
 name = "wasmer"
-version = "1.0.0-alpha3"
+version = "1.0.0-alpha5"
 dependencies = [
  "cfg-if 1.0.0",
  "pyo3",
- "wasmer 1.0.0-alpha5",
+ "wasmer 1.0.0-alpha5 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasmer-types",
  "wasmer-wasi",
  "wasmer_engines",
@@ -1469,13 +1469,13 @@ dependencies = [
  "time",
  "tracing",
  "typetag",
- "wasmer 1.0.0-alpha5",
+ "wasmer 1.0.0-alpha5 (registry+https://github.com/rust-lang/crates.io-index)",
  "winapi",
 ]
 
 [[package]]
 name = "wasmer_compiler_cranelift"
-version = "1.0.0-alpha3"
+version = "1.0.0-alpha5"
 dependencies = [
  "pyo3",
  "wasmer-compiler-cranelift",
@@ -1484,7 +1484,7 @@ dependencies = [
 
 [[package]]
 name = "wasmer_compiler_llvm"
-version = "1.0.0-alpha3"
+version = "1.0.0-alpha5"
 dependencies = [
  "pyo3",
  "wasmer-compiler-llvm",
@@ -1493,7 +1493,7 @@ dependencies = [
 
 [[package]]
 name = "wasmer_compiler_singlepass"
-version = "1.0.0-alpha3"
+version = "1.0.0-alpha5"
 dependencies = [
  "pyo3",
  "wasmer-compiler-singlepass",
@@ -1502,11 +1502,11 @@ dependencies = [
 
 [[package]]
 name = "wasmer_engines"
-version = "1.0.0-alpha3"
+version = "1.0.0-alpha5"
 dependencies = [
  "enumset",
  "pyo3",
- "wasmer 1.0.0-alpha5",
+ "wasmer 1.0.0-alpha5 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasmer-compiler",
 ]
 

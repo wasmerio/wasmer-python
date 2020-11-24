@@ -1,6 +1,6 @@
 [package]
 name = "wasmer"
-version = "1.0.0-alpha3"
+version = "1.0.0-alpha5"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
 description = "Python extension to run WebAssembly binaries"
