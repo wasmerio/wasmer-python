@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.2.dev1+gad6a554" />
+<meta name="generator" content="pdoc 0.9.2.dev1+g57fd245" />
 <title>wasi API documentation</title>
 <meta name="description" content="Wasmer&#39;s [WASI](https://github.com/WebAssembly/WASI)
 implementation …" />
@@ -32,7 +32,7 @@ used to generate a valid <code><a title="wasmer.ImportObject" href="../wasmer/in
 be passed to <code><a title="wasmer.Instance" href="../wasmer/index.html#wasmer.Instance">Instance</a></code> to instantiate a <code><a title="wasmer.Module" href="../wasmer/index.html#wasmer.Module">Module</a></code>
 that needs WASI support.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import wasi, Store, Module, Instance
+<pre><code class="language-py">from wasmer import wasi, Store, Module, Instance
 
 store = Store()
 module = Module(store, open('tests/wasi.wasm', 'rb').read())
@@ -94,7 +94,7 @@ learn more.</p></div>
 <div class="desc"><p>Set a memory to the WASI. Usually, it is a <code><a title="wasmer.Memory" href="../wasmer/index.html#wasmer.Memory">Memory</a></code>
 object from <code>instance.exports.&lt;memory_name&gt;</code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import wasi, Store, Module, Instance
+<pre><code class="language-py">from wasmer import wasi, Store, Module, Instance
 
 store = Store()
 module = Module(store, open('tests/wasi.wasm', 'rb').read())
@@ -132,7 +132,7 @@ to the WASI version.</p>
 <p>Use the <code><a title="wasi.Version" href="#wasi.Version">Version</a></code> enum to use a specific WASI version, or use
 <code><a title="wasi.get_version" href="#wasi.get_version">get_version()</a></code> to read the WASI version from a <code><a title="wasmer.Module" href="../wasmer/index.html#wasmer.Module">Module</a></code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import wasi, Store
+<pre><code class="language-py">from wasmer import wasi, Store
 
 store = Store()
 wasi_env = wasi.StateBuilder('test-program').argument('--foo')
@@ -151,7 +151,7 @@ import_object = wasi_env.generate_import_object(store, wasi.Version.SNAPSHOT1)
 directories and map directories, or use the associated methods to
 build the state step-by-steps.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import wasi
+<pre><code class="language-py">from wasmer import wasi
 
 wasi_state_builder = wasi.StateBuilder('test-program')
 </code></pre></div>
@@ -165,7 +165,7 @@ wasi_state_builder = wasi.StateBuilder('test-program')
 <p>Arguments must not contain the nul (<code>0x0</code>) byte.</p>
 <p>This method returns <code>self</code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import wasi
+<pre><code class="language-py">from wasmer import wasi
 
 wasi_state_builder = \
     wasi.StateBuilder('test-program'). \
@@ -181,7 +181,7 @@ wasi_state_builder = \
 <p>Arguments must not contain the nul (<code>0x0</code>) byte.</p>
 <p>This method returns <code>self</code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import wasi
+<pre><code class="language-py">from wasmer import wasi
 
 wasi_state_builder = \
     wasi.StateBuilder('test-program'). \
@@ -197,7 +197,7 @@ wasi_state_builder = \
 <code>=</code> (<code>0x3d</code>) or null (<code>0x0</code>).</p>
 <p>This method returns <code>self</code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import wasi
+<pre><code class="language-py">from wasmer import wasi
 
 wasi_state_builder = \
     wasi.StateBuilder('test-program'). \
@@ -214,7 +214,7 @@ wasi_state_builder = \
 <code>=</code> (<code>0x3d</code>) or null (<code>0x0</code>).</p>
 <p>This method returns <code>self</code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import wasi
+<pre><code class="language-py">from wasmer import wasi
 
 wasi_state_builder = \
     wasi.StateBuilder('test-program'). \
@@ -227,7 +227,7 @@ wasi_state_builder = \
 <dd>
 <div class="desc"><p>Produces a WASI <code><a title="wasi.Environment" href="#wasi.Environment">Environment</a></code> based on this state builder.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import wasi
+<pre><code class="language-py">from wasmer import wasi
 
 wasi_env = \
     wasi.StateBuilder('test-program'). \
@@ -242,7 +242,7 @@ wasi_env = \
 <div class="desc"><p>Preopen directories with different names exposed to the WASI.</p>
 <p>This method returns <code>self</code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import wasi
+<pre><code class="language-py">from wasmer import wasi
 
 wasi_state_builder = \
     wasi.StateBuilder('test-program'). \
@@ -256,7 +256,7 @@ wasi_state_builder = \
 <div class="desc"><p>Preopen a directory with a different name exposed to the WASI.</p>
 <p>This method returns <code>self</code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import wasi
+<pre><code class="language-py">from wasmer import wasi
 
 wasi_state_builder = \
     wasi.StateBuilder('test-program'). \
@@ -273,7 +273,7 @@ allows the WASI module to read and write to the given
 directories.</p>
 <p>This method returns <code>self</code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import wasi
+<pre><code class="language-py">from wasmer import wasi
 
 wasi_state_builder = \
     wasi.StateBuilder('test-program'). \
@@ -290,7 +290,7 @@ allows the WASI module to read and write to the given
 directory.</p>
 <p>This method returns <code>self</code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="py">from wasmer import wasi
+<pre><code class="language-py">from wasmer import wasi
 
 wasi_state_builder = \
     wasi.StateBuilder('test-program'). \
@@ -386,7 +386,7 @@ wasi_state_builder = \
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2.dev1+gad6a554</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2.dev1+g57fd245</a>.</p>
 </footer>
 </body>
 </html>
