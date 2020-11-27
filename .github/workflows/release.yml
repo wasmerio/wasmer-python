@@ -6,58 +6,23 @@ on:
       - '**'
 
 jobs:
-  create_pre_release:
-    name: Create pre-release
-
-    runs-on: ubuntu-latest
-
-    steps:
-      # The pre-release must be created only once, hence the split
-      # into multiple jobs with different `strategy`.
-      - name: Create a Github pre-release
-        id: create_pre_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: false
-          prerelease: true
-
-      - name: Output `release_url` into a temporary file
-        run: echo "${{ steps.create_pre_release.outputs.upload_url }}" > release_url.txt
-
-      - name: Save the `release_url` temporary file
-        uses: actions/upload-artifact@v1
-        with:
-          name: release_url
-          path: release_url.txt
-
-  release:
-    name: Build and publish wheels
-
-    needs: [create_pre_release]
+  build:
+    name: Build
 
     strategy:
       matrix:
-        # The job runs on different OS.
-        target: [
-          # Linux, amd64
-          { id: 'linux-amd64', os: 'ubuntu-latest', rust-target: 'x86_64-unknown-linux-gnu', rust-toolchain: 'stable' },
-          # macOS, amd64
-          { id: 'darwin-amd64', os: 'macos-latest', rust-target: 'x86_64-apple-darwin', rust-toolchain: 'stable' },
-          # Windows, amd64
-          { id: 'windows-amd64', os: 'windows-latest', rust-target: 'x86_64-pc-windows-msvc', rust-toolchain: 'stable' },
-          # Windows, x86
-          #{ id: 'windows-x86', os: 'windows-latest', rust-target: 'i686-pc-windows-msvc' },
-          # Linux, aarch64
-          #{ id: 'linux-aarch64', os: ['self-hosted', 'aarch64'], rust-target: 'aarch64-unknown-linux-gnu', rust-toolchain: 'stable' },
-        ]
-        # The job runs on different Python versions.
-        python: [3.5, 3.6, 3.7, 3.8, 3.9]
-      # As soon as one job fails in the matrix, all the other
-      # in-progress jobs are canceled.
+        target:
+          - id: 'linux-amd64'
+            os: 'ubuntu-18.04'
+            rust-target: 'x86_64-unknown-linux-gnu'
+            rust-toolchain: 'stable'
+            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-amd64.tar.gz'
+          - id: 'darwin-amd64'
+            os: 'macos-latest'
+            rust-target: 'x86_64-apple-darwin'
+            rust-toolchain: 'stable'
+            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz'
+        python: [ 3.5, 3.6, 3.7, 3.8, 3.9 ]
       fail-fast: true
 
     runs-on: ${{ matrix.target.os }}
@@ -74,88 +39,27 @@ jobs:
           override: true
           target: ${{ matrix.target.rust-target }}
 
-      - name: Cache Cargo registry
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/registry
-          key: ${{ matrix.target.rust-target }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Cache Cargo bin
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/bin
-          key: ${{ matrix.target.rust-target }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Cache Cargo build
-        uses: actions/cache@v1
-        with:
-          path: target
-          key: ${{ matrix.target.rust-target }}-${{ matrix.python }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
-
       - name: Set up Python ${{ matrix.python }}
-        if: matrix.target.id != 'linux-aarch64'
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python }}
 
       - name: Fake `pyenv` installation
-        if: matrix.target.id != 'linux-aarch64'
         shell: bash
         run: |
           echo "${{ matrix.python }}" > .python-version
 
-      - name: Cache Python version
-        if: matrix.target.id == 'linux-aarch64'
-        uses: actions/cache@v1
-        with:
-          path: ~/.pyenv/versions/
-          key: ${{ matrix.target.rust-target }}-pyenv-version-${{ matrix.python }}
-
-      - name: Set up Python ${{ matrix.python }}
-        if: matrix.target.id == 'linux-aarch64'
+      - name: Set up LLVM for `wasmer_compiler_llvm`
         shell: bash
         run: |
-          test -d $HOME/.pyenv || curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
-          export PATH="$HOME/.pyenv/bin:$PATH"
-          eval "$(pyenv init -)"
-          eval "$(pyenv virtualenv-init -)"
-          pyenv install --list | grep '^  ${{ matrix.python }}' | tail -n 1 | tr -d '[:space:]' > .python-version
-          pyenv install --skip-existing "$(cat .python-version)"
+          curl --proto '=https' --tlsv1.2 -sSfL ${{ matrix.target.llvm_archive_url }} -o llvm.tar.gz
+          mkdir -p ${{ env.LLVM_DIR }}
+          tar xzvf llvm.tar.gz -C ${{ env.LLVM_DIR }}
+          echo ${{ env.LLVM_DIR }}/bin >> $GITHUB_PATH
+        env:
+          LLVM_DIR: ${{ github.workspace }}/llvm
 
-#      - name: Set up LLVM for `wasmer_compiler_llvm` (Linux)
-#        if: startsWith(matrix.target.id, 'linux-')
-#        shell: bash
-#        run: |
-#          curl --proto '=https' --tlsv1.2 -sSf https://github.com/wasmerio/llvm-build/releases/download/10.x/Ubuntu1910_Release.zip -L -o llvm.zip
-#          mkdir -p ${{ env.LLVM_DIR }}
-#          7z x llvm.zip -o${{ env.LLVM_DIR }}
-#          echo "::add-path::${{ env.LLVM_DIR }}/bin"
-#          echo "::set-env name=LLVM_SYS_100_PREFIX::${{ env.LLVM_DIR }}"
-#        env:
-#          LLVM_DIR: ${{ github.workspace }}/llvm
-#
-#      - name: Set up LLVM for `wasmer_compiler_llvm` (macOS)
-#        if: startsWith(matrix.target.id, 'darwin-')
-#        shell: bash
-#        run: |
-#          curl --proto '=https' --tlsv1.2 -sSf https://github.com/wasmerio/llvm-build/releases/download/10.x/MacOS_Release.zip -L -o llvm.zip
-#          mkdir -p ${{ env.LLVM_DIR }}
-#          7z x llvm.zip -o${{ env.LLVM_DIR }}
-#          echo "::add-path::${{ env.LLVM_DIR }}/bin"
-#          echo "::set-env name=LLVM_SYS_100_PREFIX::${{ env.LLVM_DIR }}"
-#        env:
-#          LLVM_DIR: ${{ github.workspace }}/llvm
-#
-#      - name: Set up LLVM for `wasmer_compiler_llvm` (Windows)
-#        if: startsWith(matrix.target.id, 'windows-')
-#        shell: bash
-#        run: |
-#          curl --proto '=https' --tlsv1.2 -sSf https://github.com/wasmerio/llvm-build/releases/download/10.x/Win64_Release.zip -L -o llvm.zip
-#          7z x llvm.zip -oC:/llvm
-#          echo ::add-path::C:/llvm/bin
-#          echo ::set-env name=LLVM_SYS_100_PREFIX::C:/llvm
-
-      - name: Set up just
+      - name: Set up utilities
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
@@ -169,8 +73,19 @@ jobs:
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           just prelude
 
+      - name: Compile the library
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          maturin list-python
+          PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
+          echo "Selected interpreter: ${PYTHON_INTERPRETER}"
+          just build-all "${{ matrix.target.rust-target }}"
+          just build-any-wheel
+
       - name: Build the wheels
-        id: create_wheels
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
@@ -180,134 +95,102 @@ jobs:
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
           just build-all-wheels "${PYTHON_INTERPRETER}" "${{ matrix.target.rust-target }}"
-          for wheel in $(ls target/wheels/wasmer*.whl | grep "cp$(cat .python-version | grep -o -e '^[^\.]+\.[^\.]+' | tr -d '.')"); do \
-              echo -e "${wheel}\t$(basename ${wheel})\tapplication/x-pywheel+zip"; \
-          done >> assets
-          cat assets
-          echo ::set-output name=assets_file::assets
 
-      - name: Load the `release_url` from the temporary file
-        uses: actions/download-artifact@v1
-        with:
-          name: release_url
-
-      - name: Read the `release_url` temporary file
-        id: get_release_info
+      - name: Inspect wheels
         shell: bash
         run: |
-          value=$(cat release_url/release_url.txt)
-          echo ::set-output name=upload_url::$value
+          ls -lhaGiR target/wheels/*.whl
 
-      - name: Upload the wheel as Github pre-release asset
-        uses: Hywan/upload-release-asset@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
         with:
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          assets_from_file: ${{ steps.create_wheels.outputs.assets_file }}
+          name: wheels-${{ matrix.python }}-${{ matrix.target.id }}
+          path: target/wheels
+          if-no-files-found: error
 
-      - name: Publish the wheel on Pypi
-        if: matrix.target.id != 'linux-aarch64'
-        shell: bash
-        env:
-          TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
-        run: |
-          export PATH="$HOME/.cargo/bin:$PATH"
-          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
-          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          just publish $(cat ${{ steps.create_wheels.outputs.assets_file }} | cut -f 1)
+  release:
+    name: Release
 
-  release-any:
-    name: Release any wheels
+    runs-on: ubuntu-18.04
 
-    needs: [create_pre_release]
-
-    runs-on: ubuntu-latest
+    needs: [build]
 
     steps:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+      - name: Download the Artifacts
+        uses: actions/download-artifact@v2
         with:
-          toolchain: stable
-          default: true
-          override: true
-          target: ${{ matrix.target.rust-target }}
+          path: artifacts
 
-      - name: Cache Cargo registry
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      - name: Inspect artifacts
+        id: inspect_artifacts
+        shell: bash
+        run: |
+          ls -lhaGiR artifacts/*
 
-      - name: Cache Cargo bin
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/bin
-          key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Cache Cargo build
-        uses: actions/cache@v1
-        with:
-          path: target
-          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          for wheel in $(ls artifacts/wheels-*/*.whl)
+          do
+              echo -e "${wheel}\t$(basename ${wheel})\tapplication/x-pywheel+zip"
+          done | tee wheels
+          echo ::set-output name=wheels::wheels
 
       - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
           python-version: 3.9
 
+      - name: Fake `pyenv` installation
+        shell: bash
+        run: |
+          echo "3.9" > .python-version
+
       - name: Set up just
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/3.9/bin:$PATH"
           test -f $HOME/.cargo/bin/just || cargo install just
 
       - name: Prelude
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/3.9/bin:$PATH"
           just prelude
 
-      - name: Build the wheel
-        id: create_wheels
-        shell: bash
-        run: |
-          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          just build-any-wheel
-          for wheel in $(ls target/wheels/wasmer*any.whl | tail -n 1); do \
-              echo -e "${wheel}\t$(basename ${wheel})\tapplication/x-pywheel+zip"; \
-          done >> assets
-          cat assets
-          echo ::set-output name=assets_file::assets
-
-      - name: Load the `release_url` from the temporary file
-        uses: actions/download-artifact@v1
-        with:
-          name: release_url
-
-      - name: Read the `release_url` temporary file
-        id: get_release_info
-        shell: bash
-        run: |
-          value=$(cat release_url/release_url.txt)
-          echo ::set-output name=upload_url::$value
-
-      - name: Upload the wheel as Github pre-release asset
-        uses: Hywan/upload-release-asset@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          assets_from_file: ${{ steps.create_wheels.outputs.assets_file }}
-
-      - name: Publish the wheel on Pypi
+      - name: Publish the wheels on PyPI
         shell: bash
         env:
           TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
         run: |
-          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/3.9/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          just publish-any
+          just publish pypi artifacts/wheels-*/*.whl
+
+      - name: Create the release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: false
+          body: |
+            Python Packages:
+            - [`wasmer`](https://pypi.org/project/wasmer/)
+            - [`wasmer-compiler-cranelift`](https://pypi.org/project/wasmer-compiler-cranelift/)
+            - [`wasmer-compiler-llvm`](https://pypi.org/project/wasmer-compiler-llvm/)
+            - [`wasmer-compiler-singlepass`](https://pypi.org/project/wasmer-compiler-singlepass/)
+
+      - name: Upload the wheels as Github release assets
+        uses: Hywan/upload-release-asset@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          assets_from_file: ${{ steps.inspect_artifacts.outputs.wheels }}
