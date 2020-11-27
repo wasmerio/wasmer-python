@@ -136,19 +136,21 @@ impl Function {
 
         struct Environment {
             py_function: PyObject,
+            result_types: Vec<wasmer::Type>,
         }
 
         let environment = Environment {
             py_function: py_function.to_object(py),
+            result_types: result_types.clone(),
         };
 
         let host_function = wasmer::Function::new_with_env(
             store.inner(),
-            &wasmer::FunctionType::new(argument_types, result_types.clone()),
+            &wasmer::FunctionType::new(argument_types, result_types),
             environment,
-            move |environment,
-                  arguments: &[wasmer::Value]|
-                  -> Result<Vec<wasmer::Value>, wasmer::RuntimeError> {
+            |environment,
+             arguments: &[wasmer::Value]|
+             -> Result<Vec<wasmer::Value>, wasmer::RuntimeError> {
                 let gil = Python::acquire_gil();
                 let py = gil.python();
 
@@ -162,7 +164,8 @@ impl Function {
                         wasmer::RuntimeError::new(io::Error::from(error).to_string())
                     })?;
 
-                let result_types = result_types.clone();
+                let result_types = environment.result_types.clone();
+                let has_result_types = !result_types.is_empty();
 
                 Ok(if let Ok(results) = results.cast_as::<PyTuple>(py) {
                     results
@@ -173,7 +176,7 @@ impl Function {
                         .map_err(|error| {
                             wasmer::RuntimeError::new(io::Error::from(error).to_string())
                         })?
-                } else if !results.is_none(py) && !result_types.is_empty() {
+                } else if !results.is_none(py) && has_result_types {
                     vec![to_wasm_value((
                         results
                             .cast_as::<PyAny>(py)
