@@ -39,6 +39,8 @@ jobs:
           override: true
           target: ${{ matrix.target.rust-target }}
 
+      - uses: Swatinem/rust-cache@v1
+
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v1
         with:
@@ -145,6 +147,8 @@ jobs:
         shell: bash
         run: |
           echo "3.9" > .python-version
+
+      - uses: Swatinem/rust-cache@v1
 
       - name: Set up just
         shell: bash
