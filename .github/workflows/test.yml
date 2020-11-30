@@ -1,33 +1,34 @@
 name: Build and Test
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+      - staging
+      - trying
+  pull_request:
+    branches:
+      - '**'
 
 jobs:
-  # The `test` job.
   test:
-    name: Test
+    name: Build and Test
 
     strategy:
       matrix:
-        # The job runs on different OS.
         target:
-          # Linux, amd64
           - id: 'linux-amd64'
-            os: 'ubuntu-latest'
+            os: 'ubuntu-18.04'
             rust-target: 'x86_64-unknown-linux-gnu'
             rust-toolchain: 'stable'
             llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-amd64.tar.gz'
-          # macOS, amd64
           - id: 'darwin-amd64'
             os: 'macos-latest'
             rust-target: 'x86_64-apple-darwin'
             rust-toolchain: 'stable'
             llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz'
-        # The job runs on different Python versions.
         python: [3.5, 3.6, 3.7, 3.8, 3.9]
-      # As soon as one job fails in the matrix, all the other
-      # in-progress jobs are canceled.
-      fail-fast: false
+      fail-fast: true
 
     runs-on: ${{ matrix.target.os }}
 
@@ -43,23 +44,7 @@ jobs:
           override: true
           target: ${{ matrix.target.rust-target }}
 
-      - name: Cache Cargo registry
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/registry
-          key: ${{ matrix.target.rust-target }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Cache Cargo bin
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/bin
-          key: ${{ matrix.target.rust-target }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Cache Cargo build
-        uses: actions/cache@v1
-        with:
-          path: target
-          key: ${{ matrix.target.rust-target }}-${{ matrix.python }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+      - uses: Swatinem/rust-cache@v1
 
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v1
@@ -81,12 +66,25 @@ jobs:
         env:
           LLVM_DIR: ${{ github.workspace }}/llvm
 
-      - name: Set up just
+      - name: Set up utilities
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           test -f $HOME/.cargo/bin/just || cargo install just
+          test -f $HOME/.cargo/bin/fd || cargo install fd-find
+
+      - name: Set up utilities  (macOS)
+        if: matrix.target.id == 'darwin-amd64'
+        shell: bash
+        run: |
+          brew install gnu-sed
+
+      - name: Set build number
+        if: startsWith(github.ref, 'refs/heads/prepare-')
+        shell: bash
+        run: |
+          scripts/update-version.sh "$(scripts/update-version.sh --get)-${{ github.run_id }}"
 
       - name: Prelude
         shell: bash
@@ -105,6 +103,17 @@ jobs:
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
           just build-all "${{ matrix.target.rust-target }}"
+
+      - name: Compile the library (any wheel)
+        if: matrix.target.id == 'linux-amd64' && matrix.python == '3.9'
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          maturin list-python
+          PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
+          echo "Selected interpreter: ${PYTHON_INTERPRETER}"
           just build-any-wheel
 
       - name: Run all the tests
@@ -114,3 +123,85 @@ jobs:
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
           just test
+
+      - name: Build the wheels
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          maturin list-python
+          PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
+          echo "Selected interpreter: ${PYTHON_INTERPRETER}"
+          just build-all-wheels "${PYTHON_INTERPRETER}" "${{ matrix.target.rust-target }}"
+
+      - name: Inspect wheels
+        shell: bash
+        run: |
+          ls -lhaGiR target/wheels/*.whl
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels-${{ matrix.python }}-${{ matrix.target.id }}
+          path: target/wheels
+          if-no-files-found: error
+          retention-days: 1
+
+  prerelease:
+    name: Pre-Release
+
+    runs-on: ubuntu-18.04
+    if: startsWith(github.ref, 'refs/heads/prepare-')
+
+    needs: [test]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Download the Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+
+      - name: Inspect artifacts
+        shell: bash
+        run: |
+          ls -lhaGiR artifacts/*
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+
+      - name: Fake `pyenv` installation
+        shell: bash
+        run: |
+          echo "3.9" > .python-version
+
+      - uses: Swatinem/rust-cache@v1
+
+      - name: Set up just
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/3.9/bin:$PATH"
+          test -f $HOME/.cargo/bin/just || cargo install just
+
+      - name: Prelude
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/3.9/bin:$PATH"
+          just prelude
+
+      - name: Publish the wheels on TestPyPI
+        shell: bash
+        env:
+          TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
+        run: |
+          export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/3.9/bin:$PATH"
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          just publish testpypi artifacts/wheels-*/*.whl
