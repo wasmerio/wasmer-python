@@ -28,6 +28,11 @@ jobs:
             rust-target: 'x86_64-apple-darwin'
             rust-toolchain: 'stable'
             llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz'
+          - id: 'windows-amd64'
+            os: 'windows-latest'
+            rust-target: 'x86_64-pc-windows-msvc'
+            rust-toolchain: 'stable'
+            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/windows-amd64.tar.gz'
         python: [3.5, 3.6, 3.7, 3.8, 3.9]
       fail-fast: true
 
@@ -59,10 +64,25 @@ jobs:
 
       - name: Set up LLVM for `wasmer_compiler_llvm`
         shell: bash
+        if: matrix.target.id != 'windows-amd64'
         run: |
           curl --proto '=https' --tlsv1.2 -sSfL ${{ matrix.target.llvm_archive_url }} -o llvm.tar.gz
           mkdir -p ${{ env.LLVM_DIR }}
           tar xzvf llvm.tar.gz -C ${{ env.LLVM_DIR }}
+          echo ${{ env.LLVM_DIR }}/bin >> $GITHUB_PATH
+        env:
+          LLVM_DIR: ${{ github.workspace }}/llvm
+
+      - name: Set up LLVM for `wasmer_compiler_llvm` (Windows)
+        shell: powershell
+        if: matrix.target.id == 'windows-amd64'
+        run: |
+          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+          Invoke-WebRequest -Uri ${{ matrix.target.llvm_archive_url }} -OutFile llvm.tar.gz
+          mkdir -p ${{ env.LLVM_DIR }}
+          7z.exe x -tgzip llvm.tar.gz
+          cd ${{ env.LLVM_DIR }}
+          7z x -ttar -w ../llvm.tar
           echo ${{ env.LLVM_DIR }}/bin >> $GITHUB_PATH
         env:
           LLVM_DIR: ${{ github.workspace }}/llvm
@@ -104,6 +124,9 @@ jobs:
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
           just build-all "${{ matrix.target.rust-target }}"
+        env:
+          LLVM_SYS_100_PREFIX: ${{ github.workspace }}/llvm
+          RUST_BACKTRACE: 1
 
       - name: Compile the library (any wheel)
         if: matrix.target.id == 'linux-amd64' && matrix.python == '3.9'
