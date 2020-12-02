@@ -1,6 +1,6 @@
 [package]
 name = "wasmer_compiler_singlepass"
-version = "1.0.0-alpha5"
+version = "1.0.0-beta1"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
 description = "Python extension to run WebAssembly binaries"
@@ -16,7 +16,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasmer_engines = { path = "../engines/" }
-wasmer-compiler-singlepass = "1.0.0-alpha5"
+wasmer-compiler-singlepass = "1.0.0-beta1"
 pyo3 = { version = "0.12", features = ["extension-module"] }
 
 [package.metadata.maturin]
