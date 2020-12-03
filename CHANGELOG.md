@@ -4,12 +4,37 @@ All notable changes to this project will be documented in this file.
 
 ## Table of Contents
 
-* [Unreleased](#unreleased)
+* [1.0.0-beta1](#100-beta1---2020-12-03)
 * [0.4.1](#041---2020-02-02)
 * [0.3.0](#030---2019-07-16)
 * [0.2.0](#020---2019-04-16)
 
-## [Unreleased]
+## [1.0.0-beta1] - 2020-12-03
+
+* The whole API changed to better match Wasmer and Wasm C API
+
+  ```python
+  from wasmer import engine, wat2wasm, ImportObject, Module, Store, Instance
+  from wasmer_compiler_cranelift import Compiler
+  
+  # Create an Engine
+  jit = engine.JIT(Compiler)
+  
+  # Create a store.
+  store = Store(jit)
+  
+  # Let's compile the Wasm module.
+  module = Module(store, wasm_bytes)
+  
+  # Create an empty import object.
+  import_object = ImportObject()
+  
+  # Let's instantiate the Wasm module.
+  instance = Instance(module, import_object)
+  ```
+
+  Please refer to the [examples](examples) and 
+  [documentation](https://docs.wasmer.io/integrations/python) to learn more about the changes.
 
 ### Changed
 
