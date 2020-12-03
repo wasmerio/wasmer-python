@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0-beta1] - 2020-12-03
 
+### Changed
+
 * The whole API changed to better match Wasmer and Wasm C API
 
   ```python
@@ -35,12 +37,6 @@ All notable changes to this project will be documented in this file.
 
   Please refer to the [examples](examples) and 
   [documentation](https://docs.wasmer.io/integrations/python) to learn more about the changes.
-
-### Changed
-
-* Update Wasmer from 0.14.0 to 0.15.0
-  ([#139](https://github.com/wasmerio/wasmer-python/pull/139) by
-  [@Hywan])
 
 ## [0.4.1] - 2020-02-02
 
