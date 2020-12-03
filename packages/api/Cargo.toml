@@ -1,6 +1,6 @@
 [package]
 name = "wasmer"
-version = "1.0.0-alpha5"
+version = "1.0.0-beta1"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
 description = "Python extension to run WebAssembly binaries"
@@ -16,10 +16,10 @@ name = "wasmer"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer = { version = "1.0.0-alpha5", default-features = false, features = ["wat", "jit", "native", "compiler"] }
+wasmer = { version = "1.0.0-beta1", default-features = false, features = ["wat", "jit", "native", "compiler"] }
 wasmer_engines = { path = "../engines/" }
-wasmer-types = "1.0.0-alpha5"
-wasmer-wasi = "1.0.0-alpha5"
+wasmer-types = "1.0.0-beta1"
+wasmer-wasi = "1.0.0-beta1"
 pyo3 = { version = "0.12", features = ["extension-module"] }
 wat = "1.0"
 wasmprinter = "0.2"

@@ -1,9 +1,9 @@
 use crate::{
-    errors::to_py_err, externals::Memory, import_object::ImportObject, module::Module,
+    errors::to_py_err, import_object::ImportObject, module::Module,
     store::Store, wasmer_inner::wasmer_wasi,
 };
 use pyo3::{
-    exceptions::{PyRuntimeError, PyTypeError, PyValueError},
+    exceptions::{PyRuntimeError, PyValueError},
     prelude::*,
     types::{PyDict, PyList},
 };
@@ -447,53 +447,6 @@ impl Environment {
 
 #[pymethods]
 impl Environment {
-    /// Set a memory to the WASI. Usually, it is a `wasmer.Memory`
-    /// object from `instance.exports.<memory_name>`.
-    ///
-    /// ## Example
-    ///
-    /// ```py
-    /// from wasmer import wasi, Store, Module, Instance
-    ///
-    /// store = Store()
-    /// module = Module(store, open('tests/wasi.wasm', 'rb').read())
-    ///
-    /// # Get the WASI version.
-    /// wasi_version = wasi.get_version(module, strict=True)
-    ///
-    /// # Build a WASI environment for the imports.
-    /// wasi_env = wasi.StateBuilder('test-program').argument('--foo').finalize()
-    ///
-    /// # Generate an `ImportObject` from the WASI environment.
-    /// import_object = wasi_env.generate_import_object(store, wasi_version)
-    ///
-    /// # Now we are ready to instantiate the module.
-    /// instance = Instance(module, import_object)
-    ///
-    /// # … But (!) WASI needs an access to the memory of the
-    /// # module. Simple, pass it.
-    /// wasi_env.memory = instance.exports.memory
-    ///
-    /// # Here we go, let's start the program.
-    /// instance.exports._start()
-    /// ```
-    #[setter]
-    fn memory(&mut self, memory: &PyAny) -> PyResult<()> {
-        match memory.downcast::<PyCell<Memory>>() {
-            Ok(memory) => {
-                let memory = memory.borrow();
-
-                self.inner.set_memory(memory.inner().clone());
-
-                Ok(())
-            }
-
-            _ => Err(to_py_err::<PyTypeError, _>(
-                "Can only set a `Memory` object to `Environment.memory`",
-            )),
-        }
-    }
-
     /// Create an `wasmer.ImportObject` with an existing
     /// `Environment`. The import object will be different according
     /// to the WASI version.

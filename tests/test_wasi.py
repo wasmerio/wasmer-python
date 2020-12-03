@@ -42,8 +42,6 @@ def test_wasi_env_memory():
 
     instance = Instance(Module(store, TEST_BYTES), import_object)
 
-    wasi_env.memory = instance.exports.memory
-
 def test_wasi():
     python = sys.executable
     result = subprocess.check_output(
@@ -57,7 +55,6 @@ def test_wasi():
             wasi_env = wasi.StateBuilder("test-program").argument("--foo").environments({"ABC": "DEF", "X": "YZ"}).map_directory("the_host_current_dir", ".").finalize(); \
             import_object = wasi_env.generate_import_object(store, wasi_version); \
             instance = Instance(module, import_object); \
-            wasi_env.memory = instance.exports.memory; \
             instance.exports._start()'
         ]
     )

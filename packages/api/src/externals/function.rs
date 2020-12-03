@@ -134,6 +134,7 @@ impl Function {
             }
         };
 
+        #[derive(wasmer::WasmerEnv)]
         struct Environment {
             py_function: PyObject,
             result_types: Vec<wasmer::Type>,
