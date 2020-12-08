@@ -85,6 +85,17 @@ jobs:
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
           just build-all "${{ matrix.target.rust-target }}"
+
+      - name: Compile the library (any wheel)
+        if: matrix.target.id == 'linux-amd64' && matrix.python == '3.9'
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          maturin list-python
+          PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
+          echo "Selected interpreter: ${PYTHON_INTERPRETER}"
           just build-any-wheel
 
       - name: Build the wheels
