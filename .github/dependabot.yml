@@ -10,3 +10,53 @@ updates:
       interval: "weekly"
       day: "sunday"
     versioning-strategy: "auto"
+
+  - package-ecosystem: "cargo"
+    directory: "/packages/api"
+    allow:
+      - dependency-type: "all"
+    rebase-strategy: "auto"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    versioning-strategy: "auto"
+
+  - package-ecosystem: "cargo"
+    directory: "/packages/compiler-cranelift"
+    allow:
+      - dependency-type: "all"
+    rebase-strategy: "auto"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    versioning-strategy: "auto"
+
+  - package-ecosystem: "cargo"
+    directory: "/packages/compiler-llvm"
+    allow:
+      - dependency-type: "all"
+    rebase-strategy: "auto"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    versioning-strategy: "auto"
+
+  - package-ecosystem: "cargo"
+    directory: "/packages/compiler-singlepass"
+    allow:
+      - dependency-type: "all"
+    rebase-strategy: "auto"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    versioning-strategy: "auto"
+
+  - package-ecosystem: "cargo"
+    directory: "/packages/engines"
+    allow:
+      - dependency-type: "all"
+    rebase-strategy: "auto"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    versioning-strategy: "auto"
