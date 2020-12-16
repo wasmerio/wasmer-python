@@ -16,10 +16,10 @@ name = "wasmer"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer = { version = "1.0.0-beta1", default-features = false, features = ["wat", "jit", "native", "compiler"] }
+wasmer = { version = "1.0.0-beta2", default-features = false, features = ["wat", "jit", "native", "compiler"] }
 wasmer_engines = { path = "../engines/" }
-wasmer-types = "1.0.0-beta1"
-wasmer-wasi = "1.0.0-beta1"
+wasmer-types = "1.0.0-beta2"
+wasmer-wasi = "1.0.0-beta2"
 pyo3 = { version = "0.12", features = ["extension-module"] }
 wat = "1.0"
 wasmprinter = "0.2"
