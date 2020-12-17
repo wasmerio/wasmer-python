@@ -10,7 +10,7 @@ use pyo3::{
     prelude::*,
     types::{PyDict, PyTuple},
 };
-use std::io;
+use std::{io, sync::Arc};
 
 /// Represents a WebAssembly function instance.
 ///
@@ -134,14 +134,14 @@ impl Function {
             }
         };
 
-        #[derive(wasmer::WasmerEnv)]
+        #[derive(wasmer::WasmerEnv, Clone)]
         struct Environment {
-            py_function: PyObject,
+            py_function: Arc<PyObject>,
             result_types: Vec<wasmer::Type>,
         }
 
         let environment = Environment {
-            py_function: py_function.to_object(py),
+            py_function: Arc::new(py_function.to_object(py)),
             result_types: result_types.clone(),
         };
 

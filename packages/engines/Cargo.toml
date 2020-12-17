@@ -12,6 +12,6 @@ publish = false
 
 [dependencies]
 wasmer = { version = "1.0.0-beta1", default-features = false, features = ["wat", "jit", "native", "compiler"] }
-wasmer-compiler = "1.0.0-beta1"
+wasmer-compiler = "1.0.0-beta2"
 pyo3 = { version = "0.12", features = ["extension-module"] }
 enumset = "1.0"
