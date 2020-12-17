@@ -1,6 +1,6 @@
 use crate::target_lexicon::Target;
 use pyo3::{exceptions::PyRuntimeError, prelude::*};
-use std::sync::Arc;
+use std::mem::ManuallyDrop;
 
 /// JIT engine for Wasmer compilers.
 ///
@@ -28,26 +28,24 @@ impl JIT {
                     .call_method0("__inner_as_ptr")?
                     .extract::<usize>()?;
 
-                let opaque_compiler_inner_ptr: *const OpaqueCompilerInner =
-                    opaque_compiler_inner_ptr as _;
+                let opaque_compiler_inner_ptr: *mut OpaqueCompilerInner =
+                    opaque_compiler_inner_ptr as *const OpaqueCompilerInner as *mut _;
 
-                let opaque_compiler_inner_ref: &OpaqueCompilerInner = unsafe {
-                    opaque_compiler_inner_ptr.as_ref().ok_or_else(|| {
+                let opaque_compiler_inner_ref: &mut OpaqueCompilerInner = unsafe {
+                    opaque_compiler_inner_ptr.as_mut().ok_or_else(|| {
                         PyRuntimeError::new_err(
                             "Failed to transfer the opaque compiler from the compiler",
                         )
                     })?
                 };
 
-                // Let's clone the `OpaqueCompilerInner` so that
-                // whatever happens to its parent `compiler`
-                // Python object, we own a reference to it.
-                let opaque_compiler_inner: OpaqueCompilerInner = opaque_compiler_inner_ref.clone();
+                // SAFETY: `ManuallyDrop::take` semantically moves out the contained value. The
+                // danger here is when the container is used by someone else. It doesn't happen in
+                // this codebase.
+                let compiler_config = unsafe {
+                    ManuallyDrop::take(&mut opaque_compiler_inner_ref.compiler_config) };
 
-                debug_assert_eq!(Arc::strong_count(&opaque_compiler_inner.compiler_config), 2);
-
-                let mut engine_builder =
-                    wasmer::JIT::new(opaque_compiler_inner.compiler_config.as_ref());
+                let mut engine_builder = wasmer::JIT::new(compiler_config);
 
                 if let Some(target) = target {
                     engine_builder = engine_builder.target(target.inner().clone());
@@ -120,40 +118,25 @@ impl Native {
                     .call_method0("__inner_as_ptr")?
                     .extract::<usize>()?;
 
-                let opaque_compiler_inner_ptr: *const OpaqueCompilerInner =
-                    opaque_compiler_inner_ptr as _;
+                let opaque_compiler_inner_ptr: *mut OpaqueCompilerInner =
+                    opaque_compiler_inner_ptr as *const OpaqueCompilerInner as *mut _;
 
-                let opaque_compiler_inner_ref: &OpaqueCompilerInner = unsafe {
-                    opaque_compiler_inner_ptr.as_ref().ok_or_else(|| {
+                let opaque_compiler_inner_ref: &mut OpaqueCompilerInner = unsafe {
+                    opaque_compiler_inner_ptr.as_mut().ok_or_else(|| {
                         PyRuntimeError::new_err(
                             "Failed to transfer the opaque compiler from the compiler",
                         )
                     })?
                 };
 
-                // Let's clone the `OpaqueCompilerInner` so that
-                // whatever happens to its parent `compiler`
-                // Python object, we own a reference to it.
-                let opaque_compiler_inner: OpaqueCompilerInner = opaque_compiler_inner_ref.clone();
+                // SAFETY: `ManuallyDrop::take` semantically moves out the contained value. The
+                // danger here is when the container is used by someone else. It doesn't happen in
+                // this codebase.
+                let compiler_config = unsafe {
+                    ManuallyDrop::take(&mut opaque_compiler_inner_ref.compiler_config) };
 
-                debug_assert_eq!(Arc::strong_count(&opaque_compiler_inner.compiler_config), 2);
-
-                // Since we've cloned the `OpaqueCompilerInner`
-                // previously, its strong count is equal to
-                // 2. Consequently, we can't get a mutable version
-                // of it, and we need one.
-                //
-                // However, we are ensure the original value won't
-                // be used, since the value exists only in this
-                // block of code. Thus, we believe it is safe to
-                // cast the pointer to a mutable refeference.
-
-                let compiler_config_ptr: *mut dyn wasmer_compiler::CompilerConfig =
-                    Arc::as_ptr(&opaque_compiler_inner.compiler_config) as *mut _;
-                let compiler_config_ref: &mut dyn wasmer_compiler::CompilerConfig =
-                    unsafe { &mut *compiler_config_ptr };
-
-                let mut engine_builder = wasmer::Native::new(compiler_config_ref);
+                let mut engine_builder =
+                    wasmer::Native::new(compiler_config);
 
                 if let Some(target) = target {
                     engine_builder = engine_builder.target(target.inner().clone());
@@ -198,15 +181,14 @@ impl Native {
     }
 }
 
-#[derive(Clone)]
 struct OpaqueCompilerInner {
-    compiler_config: Arc<dyn wasmer_compiler::CompilerConfig + Send + Sync>,
+    compiler_config: ManuallyDrop<Box<dyn wasmer_compiler::CompilerConfig>>,
 }
 
 /// Opaque compiler.
 ///
 /// Internal use only.
-#[pyclass]
+#[pyclass(unsendable)]
 pub struct OpaqueCompiler {
     inner: OpaqueCompilerInner,
     compiler_name: String,
@@ -219,7 +201,7 @@ impl OpaqueCompiler {
     {
         Self {
             inner: OpaqueCompilerInner {
-                compiler_config: Arc::new(compiler_config),
+                compiler_config: ManuallyDrop::new(Box::new(compiler_config)),
             },
             compiler_name,
         }
