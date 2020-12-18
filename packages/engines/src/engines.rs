@@ -42,8 +42,8 @@ impl JIT {
                 // SAFETY: `ManuallyDrop::take` semantically moves out the contained value. The
                 // danger here is when the container is used by someone else. It doesn't happen in
                 // this codebase.
-                let compiler_config = unsafe {
-                    ManuallyDrop::take(&mut opaque_compiler_inner_ref.compiler_config) };
+                let compiler_config =
+                    unsafe { ManuallyDrop::take(&mut opaque_compiler_inner_ref.compiler_config) };
 
                 let mut engine_builder = wasmer::JIT::new(compiler_config);
 
@@ -132,11 +132,10 @@ impl Native {
                 // SAFETY: `ManuallyDrop::take` semantically moves out the contained value. The
                 // danger here is when the container is used by someone else. It doesn't happen in
                 // this codebase.
-                let compiler_config = unsafe {
-                    ManuallyDrop::take(&mut opaque_compiler_inner_ref.compiler_config) };
+                let compiler_config =
+                    unsafe { ManuallyDrop::take(&mut opaque_compiler_inner_ref.compiler_config) };
 
-                let mut engine_builder =
-                    wasmer::Native::new(compiler_config);
+                let mut engine_builder = wasmer::Native::new(compiler_config);
 
                 if let Some(target) = target {
                     engine_builder = engine_builder.target(target.inner().clone());
