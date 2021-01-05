@@ -28,6 +28,11 @@ jobs:
             rust-target: 'x86_64-apple-darwin'
             rust-toolchain: 'stable'
             llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz'
+          - id: 'windows-amd64'
+            os: 'windows-latest'
+            rust-target: 'x86_64-pc-windows-msvc'
+            rust-toolchain: 'stable'
+            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/windows-amd64.tar.gz'
         python: [3.5, 3.6, 3.7, 3.8, 3.9]
       fail-fast: true
 
@@ -58,6 +63,7 @@ jobs:
           echo "${{ matrix.python }}" > .python-version
 
       - name: Set up LLVM for `wasmer_compiler_llvm`
+        if: matrix.target.id != 'windows-amd64'
         shell: bash
         run: |
           curl --proto '=https' --tlsv1.2 -sSfL ${{ matrix.target.llvm_archive_url }} -o llvm.tar.gz
@@ -95,6 +101,7 @@ jobs:
           just prelude
 
       - name: Compile the library
+        if: matrix.target.id != 'windows-amd64'
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
@@ -104,6 +111,20 @@ jobs:
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
           just build-all "${{ matrix.target.rust-target }}"
+
+      - name: Compile the library (Windows)
+        if: matrix.target.id == 'windows-amd64'
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          maturin list-python
+          PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
+          echo "Selected interpreter: ${PYTHON_INTERPRETER}"
+          just build api "${{ matrix.target.rust-target }}"
+          just build compiler-cranelift "${{ matrix.target.rust-target }}"
+          just build compiler-singlepass "${{ matrix.target.rust-target }}"
 
       - name: Compile the library (any wheel)
         if: matrix.target.id == 'linux-amd64' && matrix.python == '3.9'
@@ -126,6 +147,7 @@ jobs:
           just test
 
       - name: Build the wheels
+        if: matrix.target.id != 'windows-amd64'
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
@@ -135,6 +157,20 @@ jobs:
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
           just build-all-wheels "${PYTHON_INTERPRETER}" "${{ matrix.target.rust-target }}"
+
+      - name: Build the wheels (Windows)
+        if: matrix.target.id == 'windows-amd64'
+        shell: bash
+        run: |
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
+          if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
+          maturin list-python
+          PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
+          echo "Selected interpreter: ${PYTHON_INTERPRETER}"
+          just build-wheel api "${PYTHON_INTERPRETER}" "${{ matrix.target.rust-target }}"
+          just build-wheel compiler-cranelift "${PYTHON_INTERPRETER}" "${{ matrix.target.rust-target }}"
+          just build-wheel compiler-singlepass "${PYTHON_INTERPRETER}" "${{ matrix.target.rust-target }}"
 
       - name: Inspect wheels
         shell: bash

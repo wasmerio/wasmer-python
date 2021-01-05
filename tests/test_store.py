@@ -1,6 +1,5 @@
 from wasmer import engine, Store, Module, Instance
 import wasmer_compiler_cranelift
-import wasmer_compiler_llvm
 import wasmer_compiler_singlepass
 import itertools
 import os
@@ -18,6 +17,8 @@ def test_store_defaults():
 
 @pytest.mark.skipif(platform.system() == 'Windows', reason='Wasmer (`master`) has some troubles with JIT on Windows for the moment.')
 def test_store_with_various_engines_and_compilers():
+    import wasmer_compiler_llvm
+
     engines = [
         engine.JIT,
         engine.Native
