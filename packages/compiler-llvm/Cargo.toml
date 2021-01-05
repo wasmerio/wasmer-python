@@ -1,6 +1,6 @@
 [package]
 name = "wasmer_compiler_llvm"
-version = "1.0.0-beta1"
+version = "1.0.0-beta2"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
 description = "Python extension to run WebAssembly binaries"
@@ -16,7 +16,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasmer_engines = { path = "../engines/" }
-wasmer-compiler-llvm = "1.0.0-beta2"
+wasmer-compiler-llvm = "1.0.0"
 pyo3 = { version = "0.12", features = ["extension-module"] }
 
 [package.metadata.maturin]
