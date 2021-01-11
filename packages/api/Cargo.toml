@@ -26,11 +26,6 @@ wasmprinter = "0.2"
 cfg-if = "1.0"
 
 [package.metadata.maturin]
-project-url = [
-    "Source Code, https://github.com/wasmerio/wasmer-python/",
-    "Bug Tracker, https://github.com/wasmerio/wasmer-python/issues",
-    "Documentation, https://github.com/wasmerio/wasmer-python/",
-]
 classifier = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
@@ -47,3 +42,8 @@ classifier = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+
+[package.metadata.maturin.project-url]
+"Source Code" = "https://github.com/wasmerio/wasmer-python/"
+"Bug Tracker" = "https://github.com/wasmerio/wasmer-python/issues"
+"Documentation" = "https://github.com/wasmerio/wasmer-python/"
