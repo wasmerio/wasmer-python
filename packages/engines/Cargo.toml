@@ -11,7 +11,8 @@ categories = ["wasm"]
 publish = false
 
 [dependencies]
-wasmer = { version = "1.0.0", default-features = false, features = ["wat", "jit", "native", "compiler"] }
-wasmer-compiler = "1.0.0"
-pyo3 = { version = "0.12", features = ["extension-module"] }
-enumset = "1.0"
+wasmer = { git = "https://github.com/wasmerio/wasmer", branch = "master", default-features = false, features = ["wat", "jit", "native", "compiler"] }
+wasmer-compiler = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
+#pyo3 = { version = "0.13", features = ["extension-module"] }
+pyo3 = { git = "https://github.com/Hywan/pyo3", branch = "fix-cross-compil", features = ["extension-module"] }
+wasmer_enumset = "1.0"

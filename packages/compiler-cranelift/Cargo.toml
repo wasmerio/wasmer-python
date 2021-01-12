@@ -16,8 +16,9 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasmer_engines = { path = "../engines/" }
-wasmer-compiler-cranelift = "1.0.0"
-pyo3 = { version = "0.12", features = ["extension-module"] }
+wasmer-compiler-cranelift = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
+#pyo3 = { version = "0.13", features = ["extension-module"] }
+pyo3 = { git = "https://github.com/Hywan/pyo3", branch = "fix-cross-compil", features = ["extension-module"] }
 
 [package.metadata.maturin]
 classifier = [
