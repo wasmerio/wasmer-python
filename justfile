@@ -16,6 +16,7 @@ prelude:
 	python-config --abiflags || true
 	echo "HOST='${HOST}'"
 	echo "TARGET='${TARGET}'"
+	uname -a
 	rustc +nightly -Z unstable-options --print target-spec-json
 	pwd
 	ls -l .env
