@@ -21,30 +21,34 @@ jobs:
         target:
           - id: 'linux-amd64'
             os: 'ubuntu-18.04'
-            rust-target: 'x86_64-unknown-linux-gnu'
+            target-name: 'x86_64-unknown-linux-gnu'
             rust-toolchain: 'stable'
-            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-amd64.tar.gz'
+            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-amd64.tar.gz'
 
           - id: 'linux-aarch64'
             os: 'ubuntu-18.04'
-            rust-target: 'aarch64-unknown-linux-gnu'
+            target-name: 'aarch64-unknown-linux-gnu'
             rust-toolchain: 'stable'
-            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-aarch64.tar.gz'
+            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-aarch64.tar.gz'
 
           - id: 'darwin-amd64'
             os: 'macos-latest'
-            rust-target: 'x86_64-apple-darwin'
+            target-name: 'x86_64-apple-darwin'
             rust-toolchain: 'stable'
-            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz'
+            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz'
 
           - id: 'windows-amd64'
             os: 'windows-latest'
-            rust-target: 'x86_64-pc-windows-msvc'
+            target-name: 'x86_64-pc-windows-msvc'
             rust-toolchain: 'stable'
-            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/windows-amd64.tar.gz'
+            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/windows-amd64.tar.gz'
       fail-fast: true
 
     runs-on: ${{ matrix.target.os }}
+
+    env:
+      HOST: ${{ matrix.target.target-name }}
+      TARGET: ${{ matrix.target.target-name }}
 
     steps:
       - name: Check out code
@@ -56,7 +60,7 @@ jobs:
           toolchain: ${{ matrix.target.rust-toolchain }}
           default: true
           override: true
-          target: ${{ matrix.target.rust-target }}
+          target: ${{ matrix.target.target-name }}
 
       - uses: Swatinem/rust-cache@v1
 
@@ -74,7 +78,7 @@ jobs:
         if: matrix.target.id != 'windows-amd64'
         shell: bash
         run: |
-          curl --proto '=https' --tlsv1.2 -sSfL ${{ matrix.target.llvm_archive_url }} -o llvm.tar.gz
+          curl --proto '=https' --tlsv1.2 -sSfL ${{ matrix.target.llvm-archive-url }} -o llvm.tar.gz
           mkdir -p ${{ env.LLVM_DIR }}
           tar xzvf llvm.tar.gz -C ${{ env.LLVM_DIR }}
           echo ${{ env.LLVM_DIR }}/bin >> $GITHUB_PATH
@@ -117,7 +121,7 @@ jobs:
           maturin list-python
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
-          just build-all "${{ matrix.target.rust-target }}"
+          just build-all "${{ matrix.target.target-name }}"
 
       - name: Run all the tests
         shell: bash
@@ -136,7 +140,7 @@ jobs:
           maturin list-python
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
-          just build-all-wheels "${PYTHON_INTERPRETER}" "${{ matrix.target.rust-target }}"
+          just build-all-wheels "${PYTHON_INTERPRETER}" "${{ matrix.target.target-name }}"
           just build-any-wheel
 
       - name: Inspect wheels
