@@ -56,6 +56,7 @@ jobs:
           toolchain: ${{ matrix.target.rust-toolchain }}
           default: true
           override: true
+          profile: minimal
           target: ${{ matrix.target.target-name }}
 
       - uses: Swatinem/rust-cache@v1
