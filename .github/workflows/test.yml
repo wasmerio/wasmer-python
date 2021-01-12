@@ -17,28 +17,31 @@ jobs:
 
     strategy:
       matrix:
+        python: [3.6, 3.7, 3.8, 3.9]
         target:
           - id: 'linux-amd64'
             os: 'ubuntu-18.04'
             rust-target: 'x86_64-unknown-linux-gnu'
             rust-toolchain: 'stable'
             llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-amd64.tar.gz'
+
           - id: 'linux-aarch64'
             os: 'ubuntu-18.04'
             rust-target: 'aarch64-unknown-linux-gnu'
             rust-toolchain: 'stable'
             llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-aarch64.tar.gz'
+
           - id: 'darwin-amd64'
             os: 'macos-latest'
             rust-target: 'x86_64-apple-darwin'
             rust-toolchain: 'stable'
             llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz'
+
           - id: 'windows-amd64'
             os: 'windows-latest'
             rust-target: 'x86_64-pc-windows-msvc'
             rust-toolchain: 'stable'
             llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/windows-amd64.tar.gz'
-        python: [3.5, 3.6, 3.7, 3.8, 3.9]
       fail-fast: true
 
     runs-on: ${{ matrix.target.os }}
