@@ -14,8 +14,8 @@ prelude:
 	python --version
 	which python-config
 	python-config --abiflags || true
-	echo $HOST
-	echo $TARGET
+	echo "HOST='${HOST}'"
+	echo "TARGET='${TARGET}'"
 	pwd
 	ls -l .env
 
