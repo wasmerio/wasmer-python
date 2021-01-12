@@ -59,15 +59,28 @@ jobs:
 
       - uses: Swatinem/rust-cache@v1
 
-      - name: Set up Python ${{ matrix.python }}
+      - name: Set up Python ${{ matrix.python }} (amd64)
+        if: matrix.target.id != 'linux-aarch64'
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Fake `pyenv` installation
+      - name: Simulate `pyenv` installation (amd64)
+        if: matrix.target.id != 'linux-aarch64'
         shell: bash
         run: |
           echo "${{ matrix.python }}" > .python-version
+
+      - name: Set up Python ${{ matrix.python }} (aarch64)
+        if: matrix.target.id == 'linux-aarch64'
+        shell: bash
+        run: |
+          test -d $HOME/.pyenv || curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          eval "$(pyenv init -)"
+          eval "$(pyenv virtualenv-init -)"
+          pyenv install --list | grep '^  ${{ matrix.python }}' | tail -n 1 | tr -d '[:space:]' > .python-version
+          pyenv install --skip-existing "$(cat .python-version)"
 
       - name: Set up LLVM for `wasmer_compiler_llvm`
         if: matrix.target.id != 'windows-amd64'
@@ -100,7 +113,7 @@ jobs:
         run: |
           scripts/update-version.sh "$(scripts/update-version.sh --get)-${{ github.run_id }}"
 
-      - name: Prelude
+      - name: Install the prelude
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
