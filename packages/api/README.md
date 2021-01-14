@@ -63,15 +63,15 @@ To install the `wasmer` Python package, and let's say the
 `wasmer_compiler_cranelift` compiler, just run those commands in your shell:
 
 ```sh
-$ pip install wasmer==1.0.0a3
-$ pip install wasmer_compiler_cranelift==1.0.0a3
+$ pip install wasmer==1.0.0b2
+$ pip install wasmer_compiler_cranelift==1.0.0b2
 ```
 
 And you're ready to get fun!
 
 ## Example
 
-We highly recommend to the read the
+We highly recommend to read the
 [`examples/`](https://github.com/wasmerio/wasmer-python/tree/master/examples)
 directory, which contains a sequence of examples/tutorials. It's the
 best place to learn by reading examples.
@@ -151,15 +151,7 @@ Then, simply run:
 $ source .env/bin/activate
 $ just build api
 $ just build compiler-cranelift
-$ just python-run examples/appendices/simple.py
-```
-
-If you need to interact with Python, or run a specific file, use the
-following commands:
-
-```sh
-$ just python-run
-$ just python-run file/to/run.py
+$ python examples/appendices/simple.py
 ```
 
 ## Supported platforms

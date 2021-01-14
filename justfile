@@ -116,10 +116,6 @@ build-any-wheel:
 	cp packages/api/README.md packages/any/api_README.md
 	cd packages/any/ && pip3 wheel . --wheel-dir ../../target/wheels/
 
-# Run Python.
-python-run file='':
-	@python {{file}}
-
 # Run the tests.
 test files='tests':
 	@py.test -v -s {{files}}
