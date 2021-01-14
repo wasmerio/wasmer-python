@@ -60,17 +60,16 @@ jobs:
 
       - uses: Swatinem/rust-cache@v1
 
+      - name: Set current Python version
+        shell: bash
+        run: |
+          echo "${{ matrix.python }}" > .python-version
+
       - name: Set up Python ${{ matrix.python }} (amd64)
         if: matrix.target.id != 'linux-aarch64'
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python }}
-
-      - name: Simulate `pyenv` installation (amd64)
-        if: matrix.target.id != 'linux-aarch64'
-        shell: bash
-        run: |
-          echo "${{ matrix.python }}" > .python-version
 
       - name: Set up Python ${{ matrix.python }} (aarch64)
         if: matrix.target.id == 'linux-aarch64'
@@ -84,7 +83,7 @@ jobs:
           pyenv install --skip-existing "$(cat .python-version)"
 
       - name: Set up LLVM for `wasmer_compiler_llvm`
-        if: matrix.target.id != 'windows-amd64'
+        if: matrix.target.id != 'windows-amd64' # This is disabled in the `just` file, skip it to save data.
         shell: bash
         run: |
           curl --proto '=https' --tlsv1.2 -sSfL ${{ matrix.target.llvm-archive-url }} -o llvm.tar.gz
@@ -102,13 +101,13 @@ jobs:
           test -f $HOME/.cargo/bin/just || cargo install just
           test -f $HOME/.cargo/bin/fd || cargo install fd-find
 
-      - name: Set up utilities  (macOS)
+      - name: Set up extra utilities for macOS
         if: matrix.target.id == 'darwin-amd64'
         shell: bash
         run: |
           brew install gnu-sed
 
-      - name: Set build number
+      - name: Set build number when automatically pre-releasing
         if: startsWith(github.ref, 'refs/heads/prepare-')
         shell: bash
         run: |
@@ -187,15 +186,27 @@ jobs:
         run: |
           ls -lhaGiR artifacts/*
 
-      - name: Set up Python 3.9
+      - name: Set current Python version
+        shell: bash
+        run: |
+          echo "3.9" > .python-version
+
+      - name: Set up Python ${{ matrix.python }} (amd64)
+        if: matrix.target.id != 'linux-aarch64'
         uses: actions/setup-python@v1
         with:
           python-version: 3.9
 
-      - name: Fake `pyenv` installation
+      - name: Set up Python ${{ matrix.python }} (aarch64)
+        if: matrix.target.id == 'linux-aarch64'
         shell: bash
         run: |
-          echo "3.9" > .python-version
+          test -d $HOME/.pyenv || curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          eval "$(pyenv init -)"
+          eval "$(pyenv virtualenv-init -)"
+          pyenv install --list | grep '^  3.9' | tail -n 1 | tr -d '[:space:]' > .python-version
+          pyenv install --skip-existing "$(cat .python-version)"
 
       - uses: Swatinem/rust-cache@v1
 
@@ -203,14 +214,14 @@ jobs:
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          export PATH="$HOME/.pyenv/versions/3.9/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           test -f $HOME/.cargo/bin/just || cargo install just
 
       - name: Prelude
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          export PATH="$HOME/.pyenv/versions/3.9/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           just prelude
 
       - name: Publish the wheels on TestPyPI
@@ -219,6 +230,6 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
         run: |
           export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
-          export PATH="$HOME/.pyenv/versions/3.9/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
           just publish testpypi artifacts/wheels-*/*.whl
