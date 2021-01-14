@@ -11,18 +11,31 @@ jobs:
 
     strategy:
       matrix:
+        python: [3.6, 3.7, 3.8, 3.9]
         target:
           - id: 'linux-amd64'
             os: 'ubuntu-18.04'
-            rust-target: 'x86_64-unknown-linux-gnu'
+            target-name: 'x86_64-unknown-linux-gnu'
             rust-toolchain: 'stable'
-            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-amd64.tar.gz'
+            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-amd64.tar.gz'
+
+          - id: 'linux-aarch64'
+            os: ['self-hosted', 'linux', 'ARM64', 'python']
+            target-name: 'aarch64-unknown-linux-gnu'
+            rust-toolchain: 'stable'
+            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/linux-aarch64.tar.gz'
+
           - id: 'darwin-amd64'
             os: 'macos-latest'
-            rust-target: 'x86_64-apple-darwin'
+            target-name: 'x86_64-apple-darwin'
             rust-toolchain: 'stable'
-            llvm_archive_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz'
-        python: [ 3.5, 3.6, 3.7, 3.8, 3.9 ]
+            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/darwin-amd64.tar.gz'
+
+          - id: 'windows-amd64'
+            os: 'windows-latest'
+            target-name: 'x86_64-pc-windows-msvc'
+            rust-toolchain: 'stable'
+            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/10.x/windows-amd64.tar.gz'
       fail-fast: true
 
     runs-on: ${{ matrix.target.os }}
@@ -37,24 +50,37 @@ jobs:
           toolchain: ${{ matrix.target.rust-toolchain }}
           default: true
           override: true
-          target: ${{ matrix.target.rust-target }}
+          target: ${{ matrix.target.target-name }}
 
       - uses: Swatinem/rust-cache@v1
 
-      - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python }}
-
-      - name: Fake `pyenv` installation
+      - name: Set current Python version
         shell: bash
         run: |
           echo "${{ matrix.python }}" > .python-version
 
-      - name: Set up LLVM for `wasmer_compiler_llvm`
+      - name: Set up Python ${{ matrix.python }} (amd64)
+        if: matrix.target.id != 'linux-aarch64'
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Set up Python ${{ matrix.python }} (aarch64)
+        if: matrix.target.id == 'linux-aarch64'
         shell: bash
         run: |
-          curl --proto '=https' --tlsv1.2 -sSfL ${{ matrix.target.llvm_archive_url }} -o llvm.tar.gz
+          test -d $HOME/.pyenv || curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          eval "$(pyenv init -)"
+          eval "$(pyenv virtualenv-init -)"
+          pyenv install --list | grep '^  ${{ matrix.python }}' | tail -n 1 | tr -d '[:space:]' > .python-version
+          pyenv install --skip-existing "$(cat .python-version)"
+
+      - name: Set up LLVM for `wasmer_compiler_llvm`
+        if: matrix.target.id != 'windows-amd64' # This is disabled in the `just` file, skip it to save data.
+        shell: bash
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSfL ${{ matrix.target.llvm-archive-url }} -o llvm.tar.gz
           mkdir -p ${{ env.LLVM_DIR }}
           tar xzvf llvm.tar.gz -C ${{ env.LLVM_DIR }}
           echo ${{ env.LLVM_DIR }}/bin >> $GITHUB_PATH
@@ -67,8 +93,21 @@ jobs:
           export PATH="$HOME/.cargo/bin:$PATH"
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           test -f $HOME/.cargo/bin/just || cargo install just
+          test -f $HOME/.cargo/bin/fd || cargo install fd-find
 
-      - name: Prelude
+      - name: Set up extra utilities for macOS
+        if: matrix.target.id == 'darwin-amd64'
+        shell: bash
+        run: |
+          brew install gnu-sed
+
+      - name: Set build number when automatically pre-releasing
+        if: startsWith(github.ref, 'refs/heads/prepare-')
+        shell: bash
+        run: |
+          scripts/update-version.sh "$(scripts/update-version.sh --get)-${{ github.run_id }}"
+
+      - name: Install the prelude
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
@@ -84,19 +123,15 @@ jobs:
           maturin list-python
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
-          just build-all "${{ matrix.target.rust-target }}"
+          just build-all "${{ matrix.target.target-name }}"
 
-      - name: Compile the library (any wheel)
-        if: matrix.target.id == 'linux-amd64' && matrix.python == '3.9'
+      - name: Run all the tests
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          maturin list-python
-          PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
-          echo "Selected interpreter: ${PYTHON_INTERPRETER}"
-          just build-any-wheel
+          just test
 
       - name: Build the wheels
         shell: bash
@@ -107,7 +142,8 @@ jobs:
           maturin list-python
           PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
-          just build-all-wheels "${PYTHON_INTERPRETER}" "${{ matrix.target.rust-target }}"
+          just build-all-wheels "${PYTHON_INTERPRETER}" "${{ matrix.target.target-name }}"
+          just build-any-wheel
 
       - name: Inspect wheels
         shell: bash
@@ -120,6 +156,7 @@ jobs:
           name: wheels-${{ matrix.python }}-${{ matrix.target.id }}
           path: target/wheels
           if-no-files-found: error
+          retention-days: 1
 
   release:
     name: Release
@@ -149,15 +186,27 @@ jobs:
           done | tee wheels
           echo ::set-output name=wheels::wheels
 
-      - name: Set up Python 3.9
+      - name: Set current Python version
+        shell: bash
+        run: |
+          echo "3.9" > .python-version
+
+      - name: Set up Python ${{ matrix.python }} (amd64)
+        if: matrix.target.id != 'linux-aarch64'
         uses: actions/setup-python@v1
         with:
           python-version: 3.9
 
-      - name: Fake `pyenv` installation
+      - name: Set up Python ${{ matrix.python }} (aarch64)
+        if: matrix.target.id == 'linux-aarch64'
         shell: bash
         run: |
-          echo "3.9" > .python-version
+          test -d $HOME/.pyenv || curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          eval "$(pyenv init -)"
+          eval "$(pyenv virtualenv-init -)"
+          pyenv install --list | grep '^  3.9' | tail -n 1 | tr -d '[:space:]' > .python-version
+          pyenv install --skip-existing "$(cat .python-version)"
 
       - uses: Swatinem/rust-cache@v1
 
@@ -165,14 +214,14 @@ jobs:
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          export PATH="$HOME/.pyenv/versions/3.9/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           test -f $HOME/.cargo/bin/just || cargo install just
 
       - name: Prelude
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          export PATH="$HOME/.pyenv/versions/3.9/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           just prelude
 
       - name: Publish the wheels on PyPI
@@ -181,7 +230,7 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.MATURIN_PASSWORD }}
         run: |
           export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
-          export PATH="$HOME/.pyenv/versions/3.9/bin:$PATH"
+          export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
           just publish pypi artifacts/wheels-*/*.whl
 
