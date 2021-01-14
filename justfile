@@ -124,10 +124,6 @@ python-run file='':
 test files='tests':
 	@py.test -v -s {{files}}
 
-# Run one or more benchmarks.
-benchmark benchmark-filename='':
-	@py.test benchmarks/{{benchmark-filename}}
-
 # Generate the documentation.
 doc:
 	@pdoc --html --output-dir docs/api --force \
