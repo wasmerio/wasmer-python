@@ -16,15 +16,13 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasmer_engines = { path = "../engines/" }
-wasmer-compiler-singlepass = { git = "https://github.com/wasmerio/wasmer", branch = "master" }
-#pyo3 = { version = "0.13", features = ["extension-module"] }
-pyo3 = { git = "https://github.com/Hywan/pyo3", branch = "fix-cross-compil", features = ["extension-module"] }
+wasmer-compiler-singlepass = "1.0.1"
+pyo3 = { version = "0.13", features = ["extension-module"] }
 
 [package.metadata.maturin]
 classifier = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.5",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
