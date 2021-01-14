@@ -66,11 +66,6 @@ import_object = wasi_env.generate_import_object(store, wasi_version)
 # Now we can instantiate the module.
 instance = Instance(module, import_object)
 
-# One last thing. This WASI module expects a memory! But it has no
-# memory “instance”. So let's bind the WASI memory and the instance
-# exported memory together.
-wasi_env.memory = instance.exports.memory
-
 # The entry point for a WASI WebAssembly module is a function named
 # `_start`. Let's call it and see what happens!
 instance.exports._start()
