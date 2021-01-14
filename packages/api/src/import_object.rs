@@ -215,7 +215,7 @@ impl ImportObject {
                 wasmer_namespace.insert(name, table.inner().clone());
             } else {
                 return Err(to_py_err::<PyTypeError, _>(format!(
-                    "`ImportObject` cannot register the given type `{}`",
+                    "`ImportObject` cannot register the given type `{:?}`",
                     item.get_type().name()
                 )));
             }

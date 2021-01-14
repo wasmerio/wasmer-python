@@ -2,7 +2,6 @@
 /.benchmarks
 /.env
 /.pytest_cache/
-/benchmarks/__pycache__/
 /packages/any/api_README.md
 /packages/any/build
 /packages/any/dist

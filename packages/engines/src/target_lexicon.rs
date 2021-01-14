@@ -1,6 +1,6 @@
-use enumset::EnumSet;
 use pyo3::{class::basic::PyObjectProtocol, exceptions::PyValueError, prelude::*};
 use std::str::FromStr;
+use wasmer_enumset::EnumSet;
 
 /// Represents a `Triple` + `CpuFeatures` pair.
 ///

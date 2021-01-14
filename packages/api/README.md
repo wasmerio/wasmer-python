@@ -1,4 +1,4 @@
-# <img height="48" src="https://wasmer.io/images/logo.svg" alt="Wasmer logo" valign="middle"> Wasmer Python [![PyPI version](https://img.shields.io/pypi/v/wasmer)](https://badge.fury.io/py/wasmer) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-read-green)](https://wasmerio.github.io/wasmer-python/api/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer)](https://pypi.org/project/wasmer/) [![Wasmer Slack Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
+# <img height="48" src="https://wasmer.io/images/logo.svg" alt="Wasmer logo" valign="middle"> Wasmer Python [![PyPI version](https://img.shields.io/pypi/v/wasmer)](https://badge.fury.io/py/wasmer) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-read-green)](https://wasmerio.github.io/wasmer-python/api/wasmer/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer)](https://pypi.org/project/wasmer/) [![Wasmer Slack Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
 
 A complete and mature WebAssembly runtime for Python based on
 [Wasmer](https://github.com/wasmerio/wasmer).
@@ -47,9 +47,9 @@ briefly introduce them:
 
 | Compiler package | Description | PyPi |
 |-|-|-|
-| `wasmer_compiler_singlepass` | Super fast compilation times, slower execution times. Not prone to JIT-bombs. *Ideal for blockchains* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_singlepass)](https://pypi.org/project/wasmer_compiler_singlepass/) |
-| `wasmer_compiler_cranelift` | Fast compilation times, fast execution times. *Ideal for development* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_cranelift)](https://pypi.org/project/wasmer_compiler_cranelift/) |
-| `wasmer_compiler_llvm` | Slow compilation times, very fast execution times (close to native, sometimes faster). *Ideal for Production* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_llvm)](https://pypi.org/project/wasmer_compiler_llvm/) |
+| `wasmer_compiler_singlepass` | Super fast compilation times, slower execution times. Not prone to JIT-bombs. *Ideal for blockchains* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_singlepass)](https://pypi.org/project/wasmer_compiler_singlepass/) [![Downloads](https://pepy.tech/badge/wasmer_compiler_singlepass)](https://pypi.org/project/wasmer_compiler_singlepass/) |
+| `wasmer_compiler_cranelift` | Fast compilation times, fast execution times. *Ideal for development* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_cranelift)](https://pypi.org/project/wasmer_compiler_cranelift/) [![Downloads](https://pepy.tech/badge/wasmer_compiler_cranelift)](https://pypi.org/project/wasmer_compiler_cranelift/) |
+| `wasmer_compiler_llvm` | Slow compilation times, very fast execution times (close to native, sometimes faster). *Ideal for Production* | [![On PyPi](https://img.shields.io/pypi/v/wasmer_compiler_llvm)](https://pypi.org/project/wasmer_compiler_llvm/) [![Downloads](https://pepy.tech/badge/wasmer_compiler_llvm)](https://pypi.org/project/wasmer_compiler_llvm/) |
 
 We generally recommend `wasmer_compiler_cranelift` for development
 purposes and `wasmer_compiler_llvm` in production.
@@ -63,15 +63,15 @@ To install the `wasmer` Python package, and let's say the
 `wasmer_compiler_cranelift` compiler, just run those commands in your shell:
 
 ```sh
-$ pip install wasmer==1.0.0a3
-$ pip install wasmer_compiler_cranelift==1.0.0a3
+$ pip install wasmer==1.0.0b2
+$ pip install wasmer_compiler_cranelift==1.0.0b2
 ```
 
 And you're ready to get fun!
 
 ## Example
 
-We highly recommend to the read the
+We highly recommend to read the
 [`examples/`](https://github.com/wasmerio/wasmer-python/tree/master/examples)
 directory, which contains a sequence of examples/tutorials. It's the
 best place to learn by reading examples.
@@ -151,15 +151,7 @@ Then, simply run:
 $ source .env/bin/activate
 $ just build api
 $ just build compiler-cranelift
-$ just python-run examples/appendices/simple.py
-```
-
-If you need to interact with Python, or run a specific file, use the
-following commands:
-
-```sh
-$ just python-run
-$ just python-run file/to/run.py
+$ python examples/appendices/simple.py
 ```
 
 ## Supported platforms
@@ -168,16 +160,107 @@ We try to provide wheels for as many platforms and architectures as
 possible. For the moment, here are the supported platforms and
 architectures:
 
-| Platform | Architecture | Triple |
-|-|-|-|
-| Linux | `amd64` | `x86_64-unknown-linux-gnu` |
-| Linux | `aarch64` | `aarch64-unknown-linux-gnu` |
-| Darwin | `amd64` | `x86_64-apple-darwin` |
-| Windows | `amd64` | `x86_64-pc-windows-msvc` |
+<table>
+  <thead>
+    <tr>
+      <th>Platform</th>
+      <th>Architecture</th>
+      <th>Triple</th>
+      <th colspan="2">Packages</th>
+    </tr>
+  </thead>
+  <tboby>
+    <tr>
+      <td rowspan="8">Linux</td>
+      <td rowspan="4"><code>amd64</td>
+      <td rowspan="4"><code>x86_64-unknown-linux-gnu</td>
+      <td><code>wasmer</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_singlepass</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_cranelift</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_llvm</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td rowspan="4"><code>aarch64</td>
+      <td rowspan="4"><code>aarch64-unknown-linux-gnu</td>
+      <td><code>wasmer</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_singlepass</code></td>
+      <td>❌ <sup><a href="#wheels-note-1">1</a></sup></td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_cranelift</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_llvm</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td rowspan="4">Darwin</td>
+      <td rowspan="4"><code>amd64</td>
+      <td rowspan="4"><code>x86_64-apple-darwin</td>
+      <td><code>wasmer</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_singlepass</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_cranelift</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_llvm</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td rowspan="4">Windows</td>
+      <td rowspan="4"><code>amd64</td>
+      <td rowspan="4"><code>x86_64-pc-windows-msvc</td>
+      <td><code>wasmer</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_singlepass</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_cranelift</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_llvm</code></td>
+      <td>❌ <sup><a href="#wheels-note-2">2</a></sup></td>
+    </tr>
+  </tbody>
+</table>
+
+Notes:
+
+<ul>
+  <li id="wheels-note-1"><sup>1</sup>
+  <code>wasmer_compiler_singlepass</code> does not support
+  <code>aarch64</code> for the moment</li>
+  <li id="wheels-note-2"><sup>2</sup>
+  <code>wasmer_compiler_llvm</code> is not packaging properly on
+  Windows for the moment</li>
+</ul>
 
 Wheels are all built for the following Python versions:
 
-* Python 3.5,
 * Python 3.6,
 * Python 3.7,
 * Python 3.8.

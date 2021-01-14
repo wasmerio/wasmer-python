@@ -1,4 +1,4 @@
-# <img height="48" src="https://wasmer.io/static/icons/favicon-96x96.png" alt="Wasmer logo" valign="middle"> Wasmer Python [![PyPI version](https://img.shields.io/pypi/v/wasmer)](https://badge.fury.io/py/wasmer) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-read-green)](https://wasmerio.github.io/wasmer-python/api/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer)](https://pypi.org/project/wasmer/) [![Wasmer Slack Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
+# <img height="48" src="https://wasmer.io/images/logo.svg" alt="Wasmer logo" valign="middle"> Wasmer Python, the Singlepass compiler [![PyPI version](https://img.shields.io/pypi/v/wasmer_compiler_singlepass)](https://pypi.org/project/wasmer_compiler_singlepass/) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-read-green)](https://wasmerio.github.io/wasmer-python/api/wasmer_compiler_singlepass/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer_compiler_singlepass)](https://pypi.org/project/wasmer_compiler_singlepass/) [![Wasmer Slack Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
 
 `wasmer` is a complete and mature WebAssembly runtime for
 Python. `wasmer_compiler_singlepass` provides the Singlepass compiler
@@ -49,7 +49,7 @@ print(instance.exports.sum(1, 2))
 # Documentation
 
 Browse the documentation at
-https://wasmerio.github.io/wasmer-python/api/.
+https://wasmerio.github.io/wasmer-python/api/wasmer_compiler_singlepass/.
 
 Alternatively, run `just build compiler-singlepass` followed by `just
 doc` to generate the documentation inside

@@ -1,6 +1,6 @@
 [package]
 name = "wasmer"
-version = "1.0.0-beta1"
+version = "1.0.0-beta2"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
 description = "Python extension to run WebAssembly binaries"
@@ -16,25 +16,19 @@ name = "wasmer"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer = { version = "1.0.0-beta1", default-features = false, features = ["wat", "jit", "native", "compiler"] }
+wasmer = { version = "1.0.1", default-features = false, features = ["wat", "jit", "native", "compiler"] }
 wasmer_engines = { path = "../engines/" }
-wasmer-types = "1.0.0-beta2"
-wasmer-wasi = "1.0.0-beta2"
-pyo3 = { version = "0.12", features = ["extension-module"] }
+wasmer-types = "1.0.1"
+wasmer-wasi = "1.0.1"
+pyo3 = { version = "0.13", features = ["extension-module"] }
 wat = "1.0"
 wasmprinter = "0.2"
 cfg-if = "1.0"
 
 [package.metadata.maturin]
-project-url = [
-    "Source Code, https://github.com/wasmerio/wasmer-python/",
-    "Bug Tracker, https://github.com/wasmerio/wasmer-python/issues",
-    "Documentation, https://github.com/wasmerio/wasmer-python/",
-]
 classifier = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.5",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
@@ -47,3 +41,8 @@ classifier = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+
+[package.metadata.maturin.project-url]
+"Source Code" = "https://github.com/wasmerio/wasmer-python/"
+"Bug Tracker" = "https://github.com/wasmerio/wasmer-python/issues"
+"Documentation" = "https://github.com/wasmerio/wasmer-python/"

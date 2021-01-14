@@ -14,6 +14,7 @@ prelude:
 	python --version
 	which python-config
 	python-config --abiflags || true
+	uname -a
 	pwd
 	ls -l .env
 
@@ -30,6 +31,24 @@ build-all rust_target='':
 build package='api' rust_target='':
         #!/usr/bin/env bash
         export PYTHON_SYS_EXECUTABLE=$(which python)
+
+        # The `compiler-singlepass` package has specific rules.
+        if test "{{ package }}" = "compiler-singlepass"; then
+                # `compiler-singlepass` only works on x86_64 for the moment.
+                if [[ "{{ rust_target }}" != x86_64* ]]; then
+                        echo "Skip, target '{{ rust_target }}' not supported for package '{{ package }}'"
+                        exit 0
+                fi
+        fi
+
+        # The `compiler-llvm` package has specific rules.
+        if test "{{ package }}" = "compiler-llvm"; then
+                # `compiler-llvm` does not work on Windows for the moment.
+                if [[ "{{ rust_target }}" == *windows* ]]; then
+                        echo "Skip, target '{{ rust_target }}' not supported for package '{{ package }}'"
+                        exit 0
+                fi
+        fi
 
         build_features="{{build_features}}"
         build_args=""
@@ -60,6 +79,24 @@ build-wheel package python_version rust_target:
         #!/usr/bin/env bash
         export PYTHON_SYS_EXECUTABLE=$(which python)
 
+        # The `compiler-singlepass` package has specific rules.
+        if test "{{ package }}" = "compiler-singlepass"; then
+                # `compiler-singlepass` only works on x86_64 for the moment.
+                if [[ "{{ rust_target }}" != x86_64* ]]; then
+                        echo "Skip, target '{{ rust_target }}' not supported for package '{{ package }}'"
+                        exit 0
+                fi
+        fi
+
+        # The `compiler-llvm` package has specific rules.
+        if test "{{ package }}" = "compiler-llvm"; then
+                # `compiler-llvm` does not work on Windows for the moment.
+                if [[ "{{ rust_target }}" == *windows* ]]; then
+                        echo "Skip, target '{{ rust_target }}' not supported for package '{{ package }}'"
+                        exit 0
+                fi
+        fi
+
         build_features="{{build_features}}"
         build_args=""
 
@@ -79,17 +116,9 @@ build-any-wheel:
 	cp packages/api/README.md packages/any/api_README.md
 	cd packages/any/ && pip3 wheel . --wheel-dir ../../target/wheels/
 
-# Run Python.
-python-run file='':
-	@python {{file}}
-
 # Run the tests.
 test files='tests':
 	@py.test -v -s {{files}}
-
-# Run one or more benchmarks.
-benchmark benchmark-filename='':
-	@py.test benchmarks/{{benchmark-filename}}
 
 # Generate the documentation.
 doc:
