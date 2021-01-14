@@ -39,11 +39,11 @@ echo "New version: $NEW_VERSION"
 echo "Using \`fd\`: $FD"
 echo "Using \`sed\`: $SED"
 
-${FD} Cargo.toml --exec ${SED} -i '' -e "s/version = \"$CURRENT_VERSION\"$/version = \"$NEW_VERSION\"/"
+${FD} Cargo.toml --exec ${SED} -i '{}' -e "s/version = \"$CURRENT_VERSION\"$/version = \"$NEW_VERSION\"/"
 echo "manually check changes to \`Cargo.toml\`"
 
-${FD} setup.py --exec ${SED} -i '' -e "s/version='$CURRENT_VERSION',\?$/version='$NEW_VERSION',/"
+${FD} setup.py --exec ${SED} -i '{}' -e "s/version='$CURRENT_VERSION',\?$/version='$NEW_VERSION',/"
 echo "manually check changes to \`setup.py\`"
 
-${FD} "update-version.sh" --exec ${SED} -i '' -e "s/CURRENT_VERSION=\"$CURRENT_VERSION\"$/CURRENT_VERSION=\"$NEW_VERSION\"/"
+${FD} "update-version.sh" --exec ${SED} -i '{}' -e "s/CURRENT_VERSION=\"$CURRENT_VERSION\"$/CURRENT_VERSION=\"$NEW_VERSION\"/"
 echo "manually check changes to \`update-version.sh\`"
