@@ -160,16 +160,107 @@ We try to provide wheels for as many platforms and architectures as
 possible. For the moment, here are the supported platforms and
 architectures:
 
-| Platform | Architecture | Triple |
-|-|-|-|
-| Linux | `amd64` | `x86_64-unknown-linux-gnu` |
-| Linux | `aarch64` | `aarch64-unknown-linux-gnu` |
-| Darwin | `amd64` | `x86_64-apple-darwin` |
-| Windows | `amd64` | `x86_64-pc-windows-msvc` |
+<table>
+  <thead>
+    <tr>
+      <th>Platform</th>
+      <th>Architecture</th>
+      <th>Triple</th>
+      <th colspan="2">Packages</th>
+    </tr>
+  </thead>
+  <tboby>
+    <tr>
+      <td rowspan="8">Linux</td>
+      <td rowspan="4"><code>amd64</td>
+      <td rowspan="4"><code>x86_64-unknown-linux-gnu</td>
+      <td><code>wasmer</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_singlepass</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_cranelift</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_llvm</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td rowspan="4"><code>aarch64</td>
+      <td rowspan="4"><code>aarch64-unknown-linux-gnu</td>
+      <td><code>wasmer</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_singlepass</code></td>
+      <td>❌ <sup><a href="#wheels-note-1">1</a></sup></td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_cranelift</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_llvm</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td rowspan="4">Darwin</td>
+      <td rowspan="4"><code>amd64</td>
+      <td rowspan="4"><code>x86_64-apple-darwin</td>
+      <td><code>wasmer</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_singlepass</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_cranelift</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_llvm</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td rowspan="4">Windows</td>
+      <td rowspan="4"><code>amd64</td>
+      <td rowspan="4"><code>x86_64-pc-windows-msvc</td>
+      <td><code>wasmer</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_singlepass</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_cranelift</code></td>
+      <td>✅</td>
+    </tr>
+    <tr>
+      <td><code>wasmer_compiler_llvm</code></td>
+      <td>❌ <sup><a href="#wheels-note-2">2</a></sup></td>
+    </tr>
+  </tbody>
+</table>
+
+Notes:
+
+<ul>
+  <li id="wheels-note-1"><sup>1</sup>
+  <code>wasmer_compiler_singlepass</code> does not support
+  <code>aarch64</code> for the moment</li>
+  <li id="wheels-note-2"><sup>2</sup>
+  <code>wasmer_compiler_llvm</code> is not packaging properly on
+  Windows for the moment</li>
+</ul>
 
 Wheels are all built for the following Python versions:
 
-* Python 3.5,
 * Python 3.6,
 * Python 3.7,
 * Python 3.8.
