@@ -129,7 +129,7 @@ doc:
 		wasmer_compiler_singlepass
 
 publish repository +WHEELS:
-	twine upload --username wasmer --repository {{repository}} {{WHEELS}}
+	twine upload --username wasmer --repository --skip-existing {{repository}} {{WHEELS}}
 
 publish-any repository='testpypi':
 	twine upload --username wasmer --repository {{repository}} target/wheels/wasmer-*-py3-none-any.whl
