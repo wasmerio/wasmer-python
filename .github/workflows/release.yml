@@ -101,12 +101,6 @@ jobs:
         run: |
           brew install gnu-sed
 
-      - name: Set build number when automatically pre-releasing
-        if: startsWith(github.ref, 'refs/heads/prepare-')
-        shell: bash
-        run: |
-          scripts/update-version.sh "$(scripts/update-version.sh --get)-${{ github.run_id }}"
-
       - name: Install the prelude
         shell: bash
         run: |
@@ -210,14 +204,14 @@ jobs:
 
       - uses: Swatinem/rust-cache@v1
 
-      - name: Set up just
+      - name: Set up utilities
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           test -f $HOME/.cargo/bin/just || cargo install just
 
-      - name: Prelude
+      - name: Install the prelude
         shell: bash
         run: |
           export PATH="$HOME/.cargo/bin:$PATH"
@@ -232,7 +226,7 @@ jobs:
           export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          just publish pypi artifacts/wheels-*/*.whl
+          just publish pypi $(ls artifacts/wheels-*/*.whl | grep --invert-match aarch64)
 
       - name: Create the release
         id: create_release

@@ -169,11 +169,11 @@ architectures:
       <th colspan="2">Packages</th>
     </tr>
   </thead>
-  <tboby>
+  <tbody>
     <tr>
       <td rowspan="8">Linux</td>
-      <td rowspan="4"><code>amd64</td>
-      <td rowspan="4"><code>x86_64-unknown-linux-gnu</td>
+      <td rowspan="4"><code>amd64</code></td>
+      <td rowspan="4"><code>x86_64-unknown-linux-gnu</code></td>
       <td><code>wasmer</code></td>
       <td>✅</td>
     </tr>
@@ -190,8 +190,8 @@ architectures:
       <td>✅</td>
     </tr>
     <tr>
-      <td rowspan="4"><code>aarch64</td>
-      <td rowspan="4"><code>aarch64-unknown-linux-gnu</td>
+      <td rowspan="4"><code>aarch64</code></td>
+      <td rowspan="4"><code>aarch64-unknown-linux-gnu</code></td>
       <td><code>wasmer</code></td>
       <td>✅</td>
     </tr>
@@ -209,8 +209,8 @@ architectures:
     </tr>
     <tr>
       <td rowspan="4">Darwin</td>
-      <td rowspan="4"><code>amd64</td>
-      <td rowspan="4"><code>x86_64-apple-darwin</td>
+      <td rowspan="4"><code>amd64</code></td>
+      <td rowspan="4"><code>x86_64-apple-darwin</code></td>
       <td><code>wasmer</code></td>
       <td>✅</td>
     </tr>
@@ -228,8 +228,8 @@ architectures:
     </tr>
     <tr>
       <td rowspan="4">Windows</td>
-      <td rowspan="4"><code>amd64</td>
-      <td rowspan="4"><code>x86_64-pc-windows-msvc</td>
+      <td rowspan="4"><code>amd64</code></td>
+      <td rowspan="4"><code>x86_64-pc-windows-msvc</code></td>
       <td><code>wasmer</code></td>
       <td>✅</td>
     </tr>
