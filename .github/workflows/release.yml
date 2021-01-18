@@ -174,7 +174,7 @@ jobs:
         run: |
           ls -lhaGiR artifacts/*
 
-          for wheel in $(ls artifacts/wheels-*/*.whl)
+          for wheel in $(ls artifacts/wheels-*/*.whl | tr '/' '\t' | sort -k 3 | uniq -f 2 | tr '\t' '/')
           do
               echo -e "${wheel}\t$(basename ${wheel})\tapplication/x-pywheel+zip"
           done | tee wheels
@@ -226,7 +226,7 @@ jobs:
           export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-          just publish pypi $(ls artifacts/wheels-*/*.whl | grep --invert-match aarch64)
+          just publish pypi $(cat wheels | cut -f 1 | grep --invert-match aarch64)
 
       - name: Create the release
         id: create_release
