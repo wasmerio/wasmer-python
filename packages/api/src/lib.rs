@@ -315,10 +315,6 @@ fn target(_py: Python, module: &PyModule) -> PyResult<()> {
 /// # Now we are ready to instantiate the module.
 /// instance = Instance(module, import_object)
 ///
-/// # … But (!) WASI needs an access to the memory of the
-/// # module. Simple, pass it.
-/// wasi_env.memory = instance.exports.memory
-///
 /// # Here we go, let's start the program.
 /// instance.exports._start()
 /// ```
