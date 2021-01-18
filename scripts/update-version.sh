@@ -13,7 +13,7 @@ fi
 
 : "${SED:=sed}"
 
-CURRENT_VERSION="1.0.0-beta2"
+CURRENT_VERSION="1.0.0"
 
 if [[ -z "$1" ]]
 then
