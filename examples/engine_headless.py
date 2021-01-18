@@ -92,7 +92,7 @@ serialized_module_file.seek(0, 0)
 # Second step, deserialize the compiled Wasm module, and execute it,
 # for example with Wasmer without a compiler.
 
-from wasmer import engine, wat2wasm, Store, Instance, Module
+from wasmer import engine, Store, Instance, Module
 
 # We create a headless native engine, i.e. an engine without a
 # compiler.
