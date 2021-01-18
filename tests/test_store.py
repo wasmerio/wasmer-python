@@ -14,8 +14,10 @@ def test_store_defaults():
     assert store.compiler_name == 'cranelift'
 
 def test_store_with_various_engines_and_compilers():
-    is_aarch64 = target.Triple.host().architecture == 'aarch64'
-    exclude_native = is_aarch64
+    host_triple = target.Triple.host()
+    is_aarch64 = host_triple.architecture == 'aarch64'
+    is_windows = host_triple.operating_system == 'windows'
+    exclude_native = is_aarch64 or is_windows
     
     compilers = [None]
     engines = [
