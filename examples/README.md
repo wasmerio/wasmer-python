@@ -8,9 +8,26 @@ The examples are written in a difficulty/discovery order. Concepts
 that are explained in an example is not necessarily re-explained in a
 next example.
 
+## Basics
+
+1. [**Instantiating a module**][instance], explains the basics of
+   using Wasmer and how to create an instance out of a WebAssembly
+   module.
+   
+   _Keywords_: instance, module.
+   
+   <details>
+   <summary><em>Execute the example</em></summary>
+
+   ```shell
+   $ python examples/instance.py
+   ```
+
+   </details>
+
 ## Engines
 
-1. [**JIT engine**][engine-jit], explains what an engine is, what the
+2. [**JIT engine**][engine-jit], explains what an engine is, what the
    JIT engine is, and how to set it up. The example completes itself
    with the compilation of the Wasm module, its instantiation, and
    finally, by calling an exported function.
@@ -26,7 +43,7 @@ next example.
 
    </details>
 
-2. [**Native engine**][engine-native], explains what a native engine
+3. [**Native engine**][engine-native], explains what a native engine
    is, and how to set it up. The example completes itself with the
    compilation of the Wasm module, its instantiation, and finally, by
    calling an exported function.
@@ -43,7 +60,7 @@ next example.
 
    </details>
 
-3. [**Headless engines**][engine-headless], explains what a headless
+4. [**Headless engines**][engine-headless], explains what a headless
    engine is, what problem it does solve, and what are the benefits of
    it. The example completes itself with the instantiation of a
    pre-compiled Wasm module, and finally, by calling an exported
@@ -61,7 +78,7 @@ next example.
 
    </details>
 
-4. [**Cross-compilation**][engine-cross-compilation], illustrates the
+5. [**Cross-compilation**][engine-cross-compilation], illustrates the
    power of the abstraction over the engines and the compilers, such
    as it is possible to cross-compile a Wasm module for a custom
    target.
@@ -79,7 +96,7 @@ next example.
 
 ## Compilers
 
-5. [**Singlepass compiler**][compiler-singlepass], explains how to use
+6. [**Singlepass compiler**][compiler-singlepass], explains how to use
    the `wasmer_compiler_singlepass` compiler.
    
    _Keywords_: compiler, singlepass.
@@ -93,7 +110,7 @@ next example.
 
    </details>
 
-6. [**Cranelift compiler**][compiler-cranelift], explains how to use
+7. [**Cranelift compiler**][compiler-cranelift], explains how to use
    the `wasmer-compiler-cranelift` compiler.
    
    _Keywords_: compiler, cranelift.
@@ -107,7 +124,7 @@ next example.
 
    </details>
 
-7. [**LLVM compiler**][compiler-llvm], explains how to use the
+8. [**LLVM compiler**][compiler-llvm], explains how to use the
    `wasmer-compiler-llvm` compiler.
    
    _Keywords_: compiler, llvm.
@@ -123,7 +140,7 @@ next example.
 
 ## Exports
    
-8. [**Exported function**][exported-function], explains how to get and
+9. [**Exported function**][exported-function], explains how to get and
    how to call an exported function.
    
    _Keywords_: export, function.
@@ -136,24 +153,24 @@ next example.
    ```
 
    </details>
-   
-9. [**Exported memory**][exported-memory], explains how to read from
-   and write into an exported memory.
 
-   _Keywords_: export, function.
+10. [**Exported memory**][exported-memory], explains how to read from
+    and write into an exported memory.
 
-   <details>
-   <summary><em>Execute the example</em></summary>
+    _Keywords_: export, function.
 
-   ```shell
-   $ python examples/exports_memory.rs
-   ```
+    <details>
+    <summary><em>Execute the example</em></summary>
 
-   </details>
+    ```shell
+    $ python examples/exports_memory.rs
+    ```
+
+    </details>
 
 ## Imports
 
-10. [**Imported function**][imported-function], aka _host function_,
+11. [**Imported function**][imported-function], aka _host function_,
     explains how to use a Python function inside a WebAssembly module.
 
     _Keywords_: import, function.
@@ -169,7 +186,7 @@ next example.
 
 ## Integrations
 
-11. [**WASI**][wasi], explains how to use the [WebAssembly System
+12. [**WASI**][wasi], explains how to use the [WebAssembly System
     Interface][WASI] (WASI).
    
     _Keywords_: wasi, system, interface
