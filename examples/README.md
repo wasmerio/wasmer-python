@@ -200,6 +200,7 @@ next example.
 
     </details>
 
+[instance]: ./instance.py
 [engine-jit]: ./engine_jit.py
 [engine-native]: ./engine_native.py
 [engine-headless]: ./engine_headless.py
