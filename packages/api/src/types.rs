@@ -1,12 +1,13 @@
 use crate::{errors::to_py_err, wasmer_inner::wasmer};
 use pyo3::{
+    class::basic::PyObjectProtocol,
     conversion::{FromPyObject, IntoPy},
     exceptions::PyValueError,
     prelude::*,
 };
 use std::{convert::TryFrom, slice};
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 #[repr(u8)]
 pub enum Type {
     I32 = 1,
@@ -171,6 +172,16 @@ impl Into<wasmer::FunctionType> for &FunctionType {
     }
 }
 
+#[pyproto]
+impl PyObjectProtocol for FunctionType {
+    fn __str__(&self) -> String {
+        format!(
+            "FunctionType(params: {:?}, results: {:?})",
+            self.params, self.results,
+        )
+    }
+}
+
 /// A descriptor for a WebAssembly memory type.
 ///
 /// Memories are described in units of pages (64Kb) and represent
@@ -230,6 +241,16 @@ impl Into<wasmer::MemoryType> for &MemoryType {
     }
 }
 
+#[pyproto]
+impl PyObjectProtocol for MemoryType {
+    fn __str__(&self) -> String {
+        format!(
+            "MemoryType(minimum: {}, maximum: {:?}, shared: {})",
+            self.minimum, self.maximum, self.shared,
+        )
+    }
+}
+
 /// A descriptor for a WebAssembly global.
 ///
 /// ## Example
@@ -266,6 +287,16 @@ impl From<&wasmer::GlobalType> for GlobalType {
             r#type: (&value.ty).into(),
             mutable: value.mutability.is_mutable(),
         }
+    }
+}
+
+#[pyproto]
+impl PyObjectProtocol for GlobalType {
+    fn __str__(&self) -> String {
+        format!(
+            "GlobalType(type: {:?}, mutable: {:?})",
+            self.r#type, self.mutable,
+        )
     }
 }
 
@@ -324,6 +355,16 @@ impl From<&wasmer::TableType> for TableType {
 impl Into<wasmer::TableType> for &TableType {
     fn into(self) -> wasmer::TableType {
         wasmer::TableType::new(self.r#type.into(), self.minimum, self.maximum)
+    }
+}
+
+#[pyproto]
+impl PyObjectProtocol for TableType {
+    fn __str__(&self) -> String {
+        format!(
+            "TableType(type: {:?}, minimum: {}, maximum: {:?})",
+            self.r#type, self.minimum, self.maximum,
+        )
     }
 }
 

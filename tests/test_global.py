@@ -61,6 +61,7 @@ def test_type():
 
     assert type.type == Type.I32
     assert type.mutable == True
+    assert str(type) == 'GlobalType(type: I32, mutable: true)'
 
 def test_global_mutable():
     exports = instance().exports

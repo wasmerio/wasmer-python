@@ -26,6 +26,7 @@ def test_type():
     assert type.minimum == 17
     assert type.maximum == None
     assert type.shared == False
+    assert str(type) == 'MemoryType(minimum: 17, maximum: None, shared: false)'
 
 def test_size():
     assert instance().exports.memory.size == 17
