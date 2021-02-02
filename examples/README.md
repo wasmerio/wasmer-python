@@ -149,7 +149,7 @@ next example.
    <summary><em>Execute the example</em></summary>
 
    ```shell
-   $ python examples/exports_function.rs
+   $ python examples/exports_function.py
    ```
 
    </details>
@@ -163,14 +163,29 @@ next example.
     <summary><em>Execute the example</em></summary>
 
     ```shell
-    $ python examples/exports_memory.rs
+    $ python examples/exports_memory.py
+    ```
+
+    </details>
+
+11. [**Exported global**][exported-global], explains how to work with
+    exported globals: get/set their value, have information about
+    their type.
+
+    _Keywords_: export, global.
+
+    <details>
+    <summary><em>Execute the example</em></summary>
+
+    ```shell
+    $ python examples/exports_global.py
     ```
 
     </details>
 
 ## Imports
 
-11. [**Imported function**][imported-function], aka _host function_,
+12. [**Imported function**][imported-function], aka _host function_,
     explains how to use a Python function inside a WebAssembly module.
 
     _Keywords_: import, function.
@@ -179,14 +194,14 @@ next example.
     <summary><em>Execute the example</em></summary>
 
     ```shell
-    $ python examples/imports_function.rs
+    $ python examples/imports_function.py
     ```
 
     </details>
 
 ## Integrations
 
-12. [**WASI**][wasi], explains how to use the [WebAssembly System
+13. [**WASI**][wasi], explains how to use the [WebAssembly System
     Interface][WASI] (WASI).
    
     _Keywords_: wasi, system, interface
@@ -210,5 +225,6 @@ next example.
 [compiler-llvm]: ./compiler_llvm.py
 [exported-function]: ./exports_function.py
 [exported-memory]: ./exports_memory.py
+[exported-global]: ./exports_global.py
 [imported-function]: ./imports_function.py
 [wasi]: ./wasi.py
