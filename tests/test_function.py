@@ -35,6 +35,7 @@ def test_type():
     assert isinstance(type, FunctionType)
     assert type.params == [Type.I32, Type.I32]
     assert type.results == [Type.I32]
+    assert str(type) == 'FunctionType(params: [I32, I32], results: [I32])'
 
 def test_basic_sum():
     assert value_with_type(instance().exports.sum(1, 2)) == (3, int)

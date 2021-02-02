@@ -18,6 +18,7 @@ def test_type():
     assert type.type == Type.FUNC_REF
     assert type.minimum == 0
     assert type.maximum == None
+    assert str(type) == 'TableType(type: FuncRef, minimum: 0, maximum: None)'
 
 def test_size():
     assert instance().exports.table.size == 0
