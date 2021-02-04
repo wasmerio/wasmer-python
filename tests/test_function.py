@@ -105,6 +105,6 @@ def test_early_exit():
     try:
         instance.exports.run(1, 2)
     except RuntimeError as err:
-        assert str(err) == "RuntimeError: Python exception: Exception: oops"
+        assert 'oops' in str(err)
     else:
         assert False
