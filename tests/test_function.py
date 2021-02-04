@@ -1,5 +1,5 @@
 import wasmer
-from wasmer import Instance, Module, Store, Function, FunctionType, Type
+from wasmer import Instance, Module, Store, Function, FunctionType, Type, ImportObject
 import os
 import pytest
 
@@ -68,3 +68,43 @@ def test_call_string():
 
 def test_call_void():
     assert instance().exports.void() == None
+
+def test_early_exit():
+    store = Store()
+    module = Module(
+        store,
+        """
+        (module
+          (type $run_t (func (param i32 i32) (result i32)))
+          (type $early_exit_t (func (param) (result)))
+
+          (import "env" "early_exit" (func $early_exit (type $early_exit_t)))
+
+          (func $run (type $run_t) (param $x i32) (param $y i32) (result i32)
+            (call $early_exit)
+            (i32.add
+                local.get $x
+                local.get $y))
+
+          (export "run" (func $run)))
+        """
+    )
+
+    def early_exit():
+        raise Exception('oops')
+
+    import_object = ImportObject()
+    import_object.register(
+        "env",
+        {
+            "early_exit": Function(store, early_exit),
+        }
+    )
+    instance = Instance(module, import_object)
+
+    try:
+        instance.exports.run(1, 2)
+    except RuntimeError as err:
+        assert 'oops' in str(err)
+    else:
+        assert False
