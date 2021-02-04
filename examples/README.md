@@ -199,9 +199,23 @@ next example.
 
     </details>
 
+13. [**Early exit**][imported-function-early-exit], explains how to
+    early exit from a host function, and how to catch the error later.
+
+    _Keywords_: import, function, error.
+
+    <details>
+    <summary><em>Execute the example</em></summary>
+
+    ```shell
+    $ python examples/imports_function_early_exit.py
+    ```
+
+    </details>
+
 ## Integrations
 
-13. [**WASI**][wasi], explains how to use the [WebAssembly System
+14. [**WASI**][wasi], explains how to use the [WebAssembly System
     Interface][WASI] (WASI).
    
     _Keywords_: wasi, system, interface
@@ -227,4 +241,5 @@ next example.
 [exported-memory]: ./exports_memory.py
 [exported-global]: ./exports_global.py
 [imported-function]: ./imports_function.py
+[imported-function-early-exit]: ./imports_function_early_exit.py
 [wasi]: ./wasi.py
