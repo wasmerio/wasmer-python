@@ -92,7 +92,7 @@ After compilation to WebAssembly, the
 binary file is generated. ([Download
 it](https://github.com/wasmerio/wasmer-python/raw/master/examples/appendices/simple.wasm)).
 
-Then, we can excecute it in Python:
+Then, we can execute it in Python:
 
 ```python
 from wasmer import engine, Store, Module, Instance
