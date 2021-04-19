@@ -2,7 +2,7 @@ use crate::{errors::to_py_err, wasmer_inner::wasmer};
 use pyo3::{
     class::buffer::PyBufferProtocol,
     exceptions::PyBufferError,
-    ffi::{PyBUF_FORMAT, PyBUF_ND, PyBUF_STRIDES, PyBUF_WRITABLE, Py_buffer},
+    ffi::{PyBUF_FORMAT, PyBUF_ND, PyBUF_STRIDES, Py_buffer},
     prelude::*,
     pycell::PyRefMut,
 };
@@ -113,11 +113,16 @@ impl PyBufferProtocol for Buffer {
 
             // An indicator of whether the buffer is read-only. This
             // field is controlled by the `PyBUF_WRITABLE` flag.
-            (*view).readonly = if PyBUF_WRITABLE == (flags & PyBUF_WRITABLE) {
-                0
-            } else {
-                1
-            };
+            //
+            // PyBUF_WRITABLE Controls the readonly field. If set, the
+            // exporter MUST provide a writable buffer or else report
+            // failure. Otherwise, the exporter MAY provide either a
+            // read-only or writable buffer, but the choice MUST be
+            // consistent for all consumers.
+            //
+            // IMPL NOTE: always provide a writable buffer, requests
+            // are allowed to still interpret it as readonly.
+            (*view).readonly = 0;
 
             // Item size in bytes of a single element. Same as the
             // value of `struct.calcsize()` called on non-`NULL`

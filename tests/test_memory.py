@@ -1,4 +1,5 @@
 from wasmer import Instance, Module, Store, Memory, MemoryType, Buffer, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array
+import ctypes
 import inspect
 import os
 import pytest
@@ -248,7 +249,7 @@ def test_memory_buffer_memoryview():
     memory_view = memoryview(memory.buffer)
 
     assert memory_view.nbytes == 1114112
-    assert memory_view.readonly == True
+    assert memory_view.readonly == False
     assert memory_view.format == 'B'
     assert memory_view.itemsize == 1
     assert memory_view.ndim == 1
@@ -279,3 +280,31 @@ def test_memory_buffer_bytearray():
     assert len(byte_array) == 1114112
     assert byte_array[0:3] == b'\x01\x02\x03'
     assert byte_array[3:9].decode() == 'Wasmer'
+
+def test_memory_buffer_supports_ctypes():
+    c_uint8_4 = ctypes.c_uint8 * 4
+
+    memory = instance().exports.memory
+
+    arr = c_uint8_4.from_buffer(memory.buffer)
+    arr[0] = 0b00000001
+    arr[1] = 0b00000100
+    arr[2] = 0b00010000
+    arr[3] = 0b01000000
+
+    byte_array = bytearray(memory.buffer)
+    assert byte_array[0] == 0b00000001
+    assert byte_array[1] == 0b00000100
+    assert byte_array[2] == 0b00010000
+    assert byte_array[3] == 0b01000000
+
+
+# NOTE: executing this test crashes the interpreter due #498
+@pytest.mark.skip
+def test_memory_buffer_supports_keeps_object_alive():
+    # IMPL NOTE: make sure the memory instance is immediately del'd
+    view = memoryview(instance().exports.memory.buffer)
+
+    val = bytes([42] * 1024)
+    for i in range(len(view) // 1024):
+        view[i * 1024:(i + 1) * 1024] = val
