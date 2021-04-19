@@ -2,7 +2,7 @@ use crate::{errors::to_py_err, wasmer_inner::wasmer};
 use pyo3::{
     class::buffer::PyBufferProtocol,
     exceptions::PyBufferError,
-    ffi::{PyBUF_FORMAT, PyBUF_ND, PyBUF_STRIDES, Py_buffer, Py_IncRef},
+    ffi::{PyBUF_FORMAT, PyBUF_ND, PyBUF_STRIDES, Py_IncRef, Py_buffer},
     prelude::*,
     pycell::PyRefMut,
     AsPyPointer,
