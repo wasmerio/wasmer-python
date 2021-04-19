@@ -298,9 +298,6 @@ def test_memory_buffer_supports_ctypes():
     assert byte_array[2] == 0b00010000
     assert byte_array[3] == 0b01000000
 
-
-# NOTE: executing this test crashes the interpreter due #498
-@pytest.mark.skip
 def test_memory_buffer_supports_keeps_object_alive():
     # IMPL NOTE: make sure the memory instance is immediately del'd
     view = memoryview(instance().exports.memory.buffer)

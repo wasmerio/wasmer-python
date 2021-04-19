@@ -2,9 +2,10 @@ use crate::{errors::to_py_err, wasmer_inner::wasmer};
 use pyo3::{
     class::buffer::PyBufferProtocol,
     exceptions::PyBufferError,
-    ffi::{PyBUF_FORMAT, PyBUF_ND, PyBUF_STRIDES, Py_buffer},
+    ffi::{PyBUF_FORMAT, PyBUF_ND, PyBUF_STRIDES, Py_buffer, Py_IncRef},
     prelude::*,
     pycell::PyRefMut,
+    AsPyPointer,
 };
 use std::{
     ffi::{c_void, CStr},
@@ -97,7 +98,11 @@ impl PyBufferProtocol for Buffer {
             // wrapped by `PyMemoryView_FromBuffer()` or
             // `PyBuffer_FillInfo()` this field is `NULL`. In general,
             // exporting objects MUST NOT use this scheme.
-            (*view).obj = ptr::null_mut();
+            //
+            // Step 3 bf_getbuffer: Set view->obj to exporter and increment
+            // view->obj.
+            (*view).obj = slf.as_ptr();
+            Py_IncRef((*view).obj);
 
             // `product(shape) * itemsize`. For contiguous arrays,
             // this is the length of the underlying memory block. For
