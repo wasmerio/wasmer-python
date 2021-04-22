@@ -136,7 +136,7 @@ impl Global {
     /// store = Store()
     ///
     /// global_ = Global(store, Value.i32(42), mutable=False)
-    /// global_type = global.type
+    /// global_type = global_.type
     ///
     /// assert global_type.type == Type.I32
     /// assert global_type.mutable == False

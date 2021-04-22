@@ -455,7 +455,7 @@ impl TryFrom<wasmer::ExportType> for ExportType {
 /// ## Example
 ///
 /// ```py
-/// from wasmer import Store, Module, ImportType, FunctionTYpe, GlobalType, TableType, MemoryType, Type
+/// from wasmer import Store, Module, ImportType, FunctionType, GlobalType, TableType, MemoryType, Type
 ///
 /// module = Module(
 ///     Store(),

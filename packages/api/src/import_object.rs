@@ -174,7 +174,7 @@ impl ImportObject {
     /// ## Example
     ///
     /// ```py
-    /// from wasmer import ImportObject, Function, Memory, MemoryType
+    /// from wasmer import Store, ImportObject, Function, Memory, MemoryType
     ///
     /// store = Store()
     ///

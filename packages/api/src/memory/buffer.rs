@@ -30,7 +30,7 @@ use std::{
 /// ## Example
 ///
 /// ```py
-/// from wasmer import Memory, MemoryType
+/// from wasmer import Memory, MemoryType, Store
 ///
 /// store = Store()
 /// memory = Memory(store, MemoryType(128, shared=False))

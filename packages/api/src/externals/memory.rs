@@ -244,7 +244,7 @@ impl Memory {
     /// ## Example
     ///
     /// ```py
-    /// from wasmer import Store, Memory, Instance
+    /// from wasmer import Store, Memory, Module, Instance
     ///
     /// module = Module(Store(), open('tests/tests.wasm', 'rb').read())
     /// instance = Instance(module)

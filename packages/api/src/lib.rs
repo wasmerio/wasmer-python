@@ -110,6 +110,8 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     /// ## Example
     ///
     /// ```py
+    /// from wasmer import wasm2wat
+    ///
     /// assert wasm2wat(b'\x00asm\x01\x00\x00\x00') == '(module)'
     /// ```
     #[pyfn(module, "wasm2wat")]
