@@ -67,13 +67,13 @@ class DocTest:
             exec(co)
 
         except Exception as cause:
-            raise DocTestError(self.obj, cause) from cause
+            raise DocTestError(self.obj, self.source, cause) from cause
 
 
 class DocTestError(Exception):
     def __str__(self):
-        obj, cause = self.args
+        obj, source, cause = self.args
 
         lineno = cause.__traceback__.tb_lineno
 
-        return "Error in docstring of {!r} in line {}: {}".format(obj, lineno, cause)
+        return "Error in docstring of {!r} in line {}: {}\n{}".format(obj, lineno, cause, source)
