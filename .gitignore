@@ -7,4 +7,5 @@
 /packages/any/dist
 /packages/any/wasmer.egg-info/
 /target
-/tests/__pycache__/
+
+__pycache__/
