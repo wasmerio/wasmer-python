@@ -3,15 +3,14 @@ import pytest
 import wasmer
 
 known_issues = {
-    wasmer.engine,
     wasmer.target,
     wasmer.wasi.Environment.generate_import_object,
     wasmer.wasi.StateBuilder.preopen_directories,
     wasmer.wasi.StateBuilder.preopen_directory,
 }
 
-def test_docexample(docexample):
-    if docexample.obj in known_issues:
+def test_doctest(doctest):
+    if doctest.obj in known_issues:
         pytest.xfail()
 
-    docexample.exec()
+    doctest.exec()

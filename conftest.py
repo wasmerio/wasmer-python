@@ -1,13 +1,22 @@
+# This file defines a custom plugin for `pytest` to test the
+# documentation of this project.
+#
+# It extracts all code from the documentation example, compile them,
+# and run them as tests.
+
 import enum
 import inspect
 
-
 def pytest_generate_tests(metafunc):
-    if 'docexample' in metafunc.fixturenames:
+    if 'doctest' in metafunc.fixturenames:
         import wasmer
-        docexamples = list(collect_doc_tests(wasmer))
-        metafunc.parametrize("docexample", docexamples)
 
+        doctests = list(collect_doc_tests(wasmer))
+
+        def ids(doctest):
+            return str(doctest.obj)
+
+        metafunc.parametrize("doctest", doctests, ids=ids)
 
 def collect_doc_tests(root):
     for obj, doc in collect_docs(root):
@@ -46,11 +55,9 @@ def parse_doc_string(doc):
             current = []
             state = ParserState.WAIT_SOURCE
 
-
 class ParserState(int, enum.Enum):
     WAIT_SOURCE = enum.auto()
     IN_SOURCE = enum.auto()
-
 
 class DocTest:
     def __init__(self, obj, source, start_line):
@@ -68,7 +75,6 @@ class DocTest:
 
         except Exception as cause:
             raise DocTestError(self.obj, self.source, cause) from cause
-
 
 class DocTestError(Exception):
     def __str__(self):
