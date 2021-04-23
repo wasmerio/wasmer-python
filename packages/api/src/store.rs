@@ -31,7 +31,7 @@ use pyo3::{exceptions::PyTypeError, prelude::*};
 ///
 /// Use the JIT engine with the LLVM compiler:
 ///
-/// ```py
+/// ```py,ignore
 /// from wasmer import engine, Store
 /// from wasmer_compiler_llvm import Compiler
 ///

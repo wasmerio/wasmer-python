@@ -208,7 +208,8 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
 ///
 /// Create a JIT engine with the LLVM compiler:
 ///
-/// ```py
+/// ```py,ignore
+/// tagtag = 1
 /// from wasmer import engine
 /// from wasmer_compiler_llvm import Compiler
 ///
