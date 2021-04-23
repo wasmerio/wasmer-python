@@ -98,13 +98,13 @@ impl Memory {
     /// ## Example
     ///
     /// ```py
-    /// from wasmer import Store, Module, Instance
+    /// from wasmer import Store, Memory, MemoryType
     ///
-    /// module = Module(Store(), open('tests/tests.wasm', 'rb').read())
-    /// instance = Instance(module)
-    /// memory = instance.exports.memory
+    /// store = Store()
+    /// memory_type = MemoryType(3, shared=False)
+    /// memory = Memory(store, memory_type)
     ///
-    /// assert memory.size == 1114112
+    /// assert memory.data_size == 196608
     /// ```
     #[getter]
     fn data_size(&self) -> u64 {
