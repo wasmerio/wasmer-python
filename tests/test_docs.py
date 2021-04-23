@@ -3,8 +3,6 @@ import pytest
 import wasmer
 
 known_issues = {
-    wasmer.target,
-    wasmer.wasi.Environment.generate_import_object,
     wasmer.wasi.StateBuilder.preopen_directories,
     wasmer.wasi.StateBuilder.preopen_directory,
 }

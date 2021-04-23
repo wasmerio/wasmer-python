@@ -1,6 +1,6 @@
 use crate::{
-    errors::to_py_err, import_object::ImportObject, module::Module,
-    store::Store, wasmer_inner::wasmer_wasi,
+    errors::to_py_err, import_object::ImportObject, module::Module, store::Store,
+    wasmer_inner::wasmer_wasi,
 };
 use pyo3::{
     exceptions::{PyRuntimeError, PyValueError},
@@ -460,7 +460,7 @@ impl Environment {
     /// from wasmer import wasi, Store
     ///
     /// store = Store()
-    /// wasi_env = wasi.StateBuilder('test-program').argument('--foo')
+    /// wasi_env = wasi.StateBuilder('test-program').argument('--foo').finalize()
     /// import_object = wasi_env.generate_import_object(store, wasi.Version.SNAPSHOT1)
     /// ```
     //#[text_signature = "($self, store, wasi_version)"]
