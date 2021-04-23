@@ -2,10 +2,7 @@ import pytest
 
 import wasmer
 
-known_issues = {
-    wasmer.wasi.StateBuilder.preopen_directories,
-    wasmer.wasi.StateBuilder.preopen_directory,
-}
+known_issues = []
 
 def test_doctest(doctest):
     if doctest.obj in known_issues:

@@ -317,7 +317,7 @@ impl StateBuilder {
     ///
     /// wasi_state_builder = \
     ///     wasi.StateBuilder('test-program'). \
-    ///         preopen_directories(["foo", "bar"])
+    ///         preopen_directories(["."])
     /// ```
     #[text_signature = "($self, preopen_directories)"]
     pub fn preopen_directories<'py>(
@@ -340,13 +340,12 @@ impl StateBuilder {
     ///
     /// ## Example
     ///
-    /// ```py
+    /// ```py,ignore
     /// from wasmer import wasi
     ///
     /// wasi_state_builder = \
     ///     wasi.StateBuilder('test-program'). \
-    ///         preopen_directory("foo"). \
-    ///         preopen_directory("bar")
+    ///         preopen_directory(".")
     /// ```
     #[text_signature = "($self, preopen_directory)"]
     pub fn preopen_directory<'py>(
