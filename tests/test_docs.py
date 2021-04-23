@@ -3,9 +3,7 @@ import pytest
 import wasmer
 
 known_issues = {
-    wasmer.Memory.data_size,
     wasmer.Table.type,
-    wasmer.Store,
     wasmer.engine,
     wasmer.target,
     wasmer.wasi.Environment.generate_import_object,

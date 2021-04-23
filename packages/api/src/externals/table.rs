@@ -72,8 +72,8 @@ impl Table {
     /// table = instance.exports.table
     /// table_type = table.type
     ///
-    /// assert table_type == Type.FUNC_REF
-    /// assert table_type.minimum == 0
+    /// assert table_type.type == Type.FUNC_REF
+    /// assert table_type.minimum == 2
     /// assert table_type.maximum == None
     /// ```
     #[getter(type)]
