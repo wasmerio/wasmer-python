@@ -239,7 +239,7 @@ fn engine(_py: Python, module: &PyModule) -> PyResult<()> {
 ///
 /// ## Example
 ///
-/// ```py
+/// ```py,ignore
 /// from wasmer import engine, target, Store, Module
 /// from wasmer_compiler_cranelift import Compiler
 ///
