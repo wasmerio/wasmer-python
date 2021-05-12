@@ -3,7 +3,7 @@ from setuptools.dist import Distribution
 from os import path
 
 __dir__ = path.abspath(path.dirname(__file__))
-readme_path = path.join(__dir__, 'api_README.md')
+readme_path = path.join(__dir__, 'README.md')
 
 with open(readme_path, encoding='utf-8') as readme:
     long_description = readme.read()

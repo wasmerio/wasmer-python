@@ -2,10 +2,11 @@
 /.benchmarks
 /.env
 /.pytest_cache/
-/packages/any/api_README.md
 /packages/any/build
 /packages/any/dist
 /packages/any/wasmer.egg-info/
 /target
 
 __pycache__/
+.python-version
+wheels

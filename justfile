@@ -113,8 +113,10 @@ build-wheel package python_version rust_target:
 # Create a distribution of wasmer that can be installed anywhere (it will fail on import)
 build-any-wheel:
 	mkdir -p ./target/wheels/
-	cp packages/api/README.md packages/any/api_README.md
-	cd packages/any/ && pip3 wheel . --wheel-dir ../../target/wheels/
+	cd packages/any-api/ && pip3 wheel . --wheel-dir ../../target/wheels/
+	cd packages/any-compiler-singlepass/ && pip3 wheel . --wheel-dir ../../target/wheels/
+	cd packages/any-compiler-cranelift/ && pip3 wheel . --wheel-dir ../../target/wheels/
+	cd packages/any-compiler-llvm/ && pip3 wheel . --wheel-dir ../../target/wheels/
 
 # Run the tests.
 test files='tests':
@@ -132,7 +134,7 @@ publish repository +WHEELS:
 	twine upload --username wasmer --repository {{repository}} --skip-existing {{WHEELS}}
 
 publish-any repository='testpypi':
-	twine upload --username wasmer --repository {{repository}} target/wheels/wasmer-*-py3-none-any.whl
+	twine upload --username wasmer --repository {{repository}} target/wheels/wasmer*-py3-none-any.whl
 
 # Compile a Rust program to Wasm.
 compile-wasm FILE='examples/simple':
