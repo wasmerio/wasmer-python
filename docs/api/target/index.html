@@ -32,43 +32,37 @@ architecture than the host's.</p>
 target for the compiler. A <code><a title="target.Target" href="#target.Target">Target</a></code> is defined by a <code><a title="target.Triple" href="#target.Triple">Triple</a></code> and
 <code><a title="target.CpuFeatures" href="#target.CpuFeatures">CpuFeatures</a></code> (optional).</p>
 <h2 id="example">Example</h2>
-<pre><code class="language-py">from wasmer import engine, target, Store, Module
-from wasmer_compiler_cranelift import Compiler
-
-# Build a triple from a string.
-triple = target.Triple('x86_64-linux-musl')
-
-# Build the CPU features (optional).
-cpu_features = target.CpuFeatures()
-cpu_features.add('sse2')
-
-# Build the target.
-target = target.Target(triple, cpu_features)
-
-# There we go. When creating the engine, pass the compiler _and_
-# the target.
-engine = engine.Native(Compiler, target)
-
-# And finally, build the store with the engine.
-store = Store(engine)
-
-# Now, let's compile the module for the defined target.
-module = Module(
-    store,
-    &quot;&quot;&quot;
-    (module
-    (type $sum_t (func (param i32 i32) (result i32)))
-    (func $sum_f (type $sum_t) (param $x i32) (param $y i32) (result i32)
-        local.get $x
-        local.get $y
-        i32.add)
-    (export &quot;sum&quot; (func $sum_f)))
-    &quot;&quot;&quot;
-)
-
-# What's next? Serialize the module, and execute it on the
-# targeted host.
-</code></pre>
+<p>```py,ignore
+from wasmer import engine, target, Store, Module
+from wasmer_compiler_cranelift import Compiler</p>
+<h1 id="build-a-triple-from-a-string">Build a triple from a string.</h1>
+<p>triple = target.Triple('x86_64-linux-musl')</p>
+<h1 id="build-the-cpu-features-optional">Build the CPU features (optional).</h1>
+<p>cpu_features = target.CpuFeatures()
+cpu_features.add('sse2')</p>
+<h1 id="build-the-target">Build the target.</h1>
+<p>target = target.Target(triple, cpu_features)</p>
+<h1 id="there-we-go-when-creating-the-engine-pass-the-compiler-and">There we go. When creating the engine, pass the compiler <em>and</em></h1>
+<h1 id="the-target">the target.</h1>
+<p>engine = engine.Dylib(Compiler, target)</p>
+<h1 id="and-finally-build-the-store-with-the-engine">And finally, build the store with the engine.</h1>
+<p>store = Store(engine)</p>
+<h1 id="now-lets-compile-the-module-for-the-defined-target">Now, let's compile the module for the defined target.</h1>
+<p>module = Module(
+store,
+"""
+(module
+(type $sum_t (func (param i32 i32) (result i32)))
+(func $sum_f (type $sum_t) (param $x i32) (param $y i32) (result i32)
+local.get $x
+local.get $y
+i32.add)
+(export "sum" (func $sum_f)))
+"""
+)</p>
+<h1 id="whats-next-serialize-the-module-and-execute-it-on-the">What's next? Serialize the module, and execute it on the</h1>
+<h1 id="targeted-host">targeted host.</h1>
+<p>```</p>
 </section>
 <section>
 </section>
@@ -251,6 +245,15 @@ are the possible returned values.</p></div>
 <div class="toc">
 <ul>
 <li><a href="#example">Example</a></li>
+<li><a href="#build-a-triple-from-a-string">Build a triple from a string.</a></li>
+<li><a href="#build-the-cpu-features-optional">Build the CPU features (optional).</a></li>
+<li><a href="#build-the-target">Build the target.</a></li>
+<li><a href="#there-we-go-when-creating-the-engine-pass-the-compiler-and">There we go. When creating the engine, pass the compiler and</a></li>
+<li><a href="#the-target">the target.</a></li>
+<li><a href="#and-finally-build-the-store-with-the-engine">And finally, build the store with the engine.</a></li>
+<li><a href="#now-lets-compile-the-module-for-the-defined-target">Now, let's compile the module for the defined target.</a></li>
+<li><a href="#whats-next-serialize-the-module-and-execute-it-on-the">What's next? Serialize the module, and execute it on the</a></li>
+<li><a href="#targeted-host">targeted host.</a></li>
 </ul>
 </div>
 <ul id="index">

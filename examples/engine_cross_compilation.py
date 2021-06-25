@@ -53,12 +53,12 @@ target = target.Target(triple, cpu_features)
 
 # Define the engine that will drive everything.
 #
-# In this case, the engine is `wasmer.engine.Native` which means that
+# In this case, the engine is `wasmer.engine.Dylib` which means that
 # a native object is going to be generated.
 #
 # That's where we specify the target for the compiler.
-# Use the native engine.
-engine = engine.Native(Compiler, target)
+# Use the Dylib engine.
+engine = engine.Dylib(Compiler, target)
 
 # Create a store, that holds the engine.
 store = Store(engine)

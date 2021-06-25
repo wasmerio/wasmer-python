@@ -32,8 +32,8 @@ pushing the code into executable memory and so on).</li>
 </ol>
 <p>It currently has two implementations:</p>
 <ol>
-<li>JIT with <code><a title="engine.JIT" href="#engine.JIT">JIT</a></code>,</li>
-<li>Native with <code><a title="engine.Native" href="#engine.Native">Native</a></code>.</li>
+<li>Universal with <code><a title="engine.Universal" href="#engine.Universal">Universal</a></code>,</li>
+<li>Dylib with <code><a title="engine.Dylib" href="#engine.Dylib">Dylib</a></code>.</li>
 </ol>
 <p>Both engines receive an optional compiler. If absent, engines will
 run in headless mode, i.e. they won't be able to compile (create)
@@ -42,20 +42,20 @@ an artifact), they will only be able to run (laod) an artifact.</p>
 <ul>
 <li><code><a title="wasmer_compiler_cranelift" href="../wasmer_compiler_cranelift/index.html">wasmer_compiler_cranelift</a></code> to use the Cranelift compiler,</li>
 <li><code><a title="wasmer_compiler_llvm" href="../wasmer_compiler_llvm/index.html">wasmer_compiler_llvm</a></code> to use the LLVM compiler,</li>
-<li><code><a title="wasmer_compiler_singlepass" href="../wasmer_compiler_singlepass/index.html">wasmer_compiler_singlepass</a></code> to use the Singlepass compiler.</li>
+<li><code>wasmer_compiler_singlepass</code> to use the Singlepass compiler.</li>
 </ul>
 <h2 id="example">Example</h2>
-<p>Create a JIT engine with no compiler (headless mode):</p>
+<p>Create a Universal engine with no compiler (headless mode):</p>
 <pre><code class="language-py">from wasmer import engine
 
-engine = engine.JIT()
+engine = engine.Universal()
 </code></pre>
-<p>Create a JIT engine with the LLVM compiler:</p>
-<pre><code class="language-py">from wasmer import engine
-from wasmer_compiler_llvm import Compiler
-
-engine = engine.JIT(Compiler)
-</code></pre>
+<p>Create a Universal engine with the LLVM compiler:</p>
+<p>```py,ignore
+from wasmer import engine
+from wasmer_compiler_llvm import Compiler</p>
+<p>engine = engine.Universal(Compiler)
+```</p>
 <p>Engines are stored inside the <code><a title="wasmer.Store" href="../wasmer/index.html#wasmer.Store">Store</a></code>.</p>
 </section>
 <section>
@@ -67,31 +67,63 @@ engine = engine.JIT(Compiler)
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="engine.Dylib"><code class="flex name class">
+<span>class <span class="ident">Dylib</span></span>
+<span>(</span><span>compiler, target, /)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Dylib engine for Wasmer compilers.</p>
+<p>Given an optional compiler, it generates a shared object file
+(<code>.so</code>, <code>.dylib</code> or <code>.dll</code> depending on the target), saves it
+temporarily to disk and uses it dylibly via <code>dlopen</code> and <code>dlsym</code>.
+and publishes it into memory so it can be used externally.</p>
+<p>If the compiler is absent, it will generate a headless engine.</p>
+<p>It is possible to specify a <code>Target</code> to possibly cross-compile for
+a different target. It requires a compiler.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li>builtins.Native</li>
+</ul>
+</dd>
 <dt id="engine.JIT"><code class="flex name class">
 <span>class <span class="ident">JIT</span></span>
 <span>(</span><span>compiler, target, /)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>JIT engine for Wasmer compilers.</p>
-<p>Given an optional compiler, it generates the compiled machine code,
-and publishes it into memory so it can be used externally.</p>
-<p>If the compiler is absent, it will generate a headless engine.</p>
-<p>It is possible to specify a <code>Target</code> to possibly cross-compile for
-a different target. It requires a compiler.</p></div>
+<div class="desc"><p>Deprecated engine. Please use the parent engine instead,
+i.e. <code><a title="engine.Universal" href="#engine.Universal">Universal</a></code>.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Universal</li>
+</ul>
 </dd>
 <dt id="engine.Native"><code class="flex name class">
 <span>class <span class="ident">Native</span></span>
 <span>(</span><span>compiler, target, /)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Native engine for Wasmer compilers.</p>
-<p>Given an optional compiler, it generates a shared object file
-(<code>.so</code>, <code>.dylib</code> or <code>.dll</code> depending on the target), saves it
-temporarily to disk and uses it natively via <code>dlopen</code> and <code>dlsym</code>.
+<div class="desc"><p>Deprecated engine. Please use the parent engine instead,
+i.e. <code><a title="engine.Dylib" href="#engine.Dylib">Dylib</a></code>.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Dylib</li>
+</ul>
+</dd>
+<dt id="engine.Universal"><code class="flex name class">
+<span>class <span class="ident">Universal</span></span>
+<span>(</span><span>compiler, target, /)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Universal engine for Wasmer compilers.</p>
+<p>Given an optional compiler, it generates the compiled machine code,
 and publishes it into memory so it can be used externally.</p>
 <p>If the compiler is absent, it will generate a headless engine.</p>
 <p>It is possible to specify a <code>Target</code> to possibly cross-compile for
 a different target. It requires a compiler.</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li>builtins.JIT</li>
+</ul>
 </dd>
 </dl>
 </section>
@@ -112,10 +144,16 @@ a different target. It requires a compiler.</p></div>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
+<h4><code><a title="engine.Dylib" href="#engine.Dylib">Dylib</a></code></h4>
+</li>
+<li>
 <h4><code><a title="engine.JIT" href="#engine.JIT">JIT</a></code></h4>
 </li>
 <li>
 <h4><code><a title="engine.Native" href="#engine.Native">Native</a></code></h4>
+</li>
+<li>
+<h4><code><a title="engine.Universal" href="#engine.Universal">Universal</a></code></h4>
 </li>
 </ul>
 </li>

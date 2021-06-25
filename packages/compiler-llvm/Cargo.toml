@@ -16,7 +16,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasmer_engines = { path = "../engines/" }
-wasmer-compiler-llvm = "1.0.2"
+wasmer-compiler-llvm = "2.0"
 pyo3 = { version = "0.13", features = ["extension-module"] }
 
 [package.metadata.maturin]

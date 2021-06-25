@@ -2,7 +2,7 @@ use crate::target_lexicon::Target;
 use pyo3::{exceptions::PyRuntimeError, prelude::*};
 use std::mem::ManuallyDrop;
 
-/// JIT engine for Wasmer compilers.
+/// Universal engine for Wasmer compilers.
 ///
 /// Given an optional compiler, it generates the compiled machine code,
 /// and publishes it into memory so it can be used externally.
@@ -11,17 +11,17 @@ use std::mem::ManuallyDrop;
 ///
 /// It is possible to specify a `Target` to possibly cross-compile for
 /// a different target. It requires a compiler.
-#[pyclass(unsendable)]
+#[pyclass(unsendable, subclass)]
 #[text_signature = "(/, compiler, target)"]
-pub struct JIT {
-    inner: wasmer::JITEngine,
+pub struct Universal {
+    inner: wasmer::UniversalEngine,
     compiler_name: Option<String>,
 }
 
-impl JIT {
+impl Universal {
     pub fn raw_new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<Self> {
         let (inner, compiler_name) = match compiler {
-            None => (wasmer::JIT::headless().engine(), None),
+            None => (wasmer::Universal::headless().engine(), None),
             Some(compiler) => {
                 let opaque_compiler = compiler.call_method0("into_opaque_compiler")?;
                 let opaque_compiler_inner_ptr = opaque_compiler
@@ -45,7 +45,7 @@ impl JIT {
                 let compiler_config =
                     unsafe { ManuallyDrop::take(&mut opaque_compiler_inner_ref.compiler_config) };
 
-                let mut engine_builder = wasmer::JIT::new(compiler_config);
+                let mut engine_builder = wasmer::Universal::new(compiler_config);
 
                 if let Some(target) = target {
                     engine_builder = engine_builder.target(target.inner().clone());
@@ -70,10 +70,10 @@ impl JIT {
     }
 
     pub fn name() -> &'static str {
-        "jit"
+        "universal"
     }
 
-    pub fn inner(&self) -> &wasmer::JITEngine {
+    pub fn inner(&self) -> &wasmer::UniversalEngine {
         &self.inner
     }
 
@@ -83,35 +83,35 @@ impl JIT {
 }
 
 #[pymethods]
-impl JIT {
+impl Universal {
     #[new]
     fn new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<Self> {
         Self::raw_new(compiler, target)
     }
 }
 
-/// Native engine for Wasmer compilers.
+/// Dylib engine for Wasmer compilers.
 ///
 /// Given an optional compiler, it generates a shared object file
 /// (`.so`, `.dylib` or `.dll` depending on the target), saves it
-/// temporarily to disk and uses it natively via `dlopen` and `dlsym`.
+/// temporarily to disk and uses it dylibly via `dlopen` and `dlsym`.
 /// and publishes it into memory so it can be used externally.
 ///
 /// If the compiler is absent, it will generate a headless engine.
 ///
 /// It is possible to specify a `Target` to possibly cross-compile for
 /// a different target. It requires a compiler.
-#[pyclass(unsendable)]
+#[pyclass(unsendable, subclass)]
 #[text_signature = "(/, compiler, target)"]
-pub struct Native {
-    inner: wasmer::NativeEngine,
+pub struct Dylib {
+    inner: wasmer::DylibEngine,
     compiler_name: Option<String>,
 }
 
-impl Native {
+impl Dylib {
     pub fn raw_new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<Self> {
         let (inner, compiler_name) = match compiler {
-            None => (wasmer::Native::headless().engine(), None),
+            None => (wasmer::Dylib::headless().engine(), None),
             Some(compiler) => {
                 let opaque_compiler = compiler.call_method0("into_opaque_compiler")?;
                 let opaque_compiler_inner_ptr = opaque_compiler
@@ -135,7 +135,7 @@ impl Native {
                 let compiler_config =
                     unsafe { ManuallyDrop::take(&mut opaque_compiler_inner_ref.compiler_config) };
 
-                let mut engine_builder = wasmer::Native::new(compiler_config);
+                let mut engine_builder = wasmer::Dylib::new(compiler_config);
 
                 if let Some(target) = target {
                     engine_builder = engine_builder.target(target.inner().clone());
@@ -160,10 +160,10 @@ impl Native {
     }
 
     pub fn name() -> &'static str {
-        "native"
+        "dylib"
     }
 
-    pub fn inner(&self) -> &wasmer::NativeEngine {
+    pub fn inner(&self) -> &wasmer::DylibEngine {
         &self.inner
     }
 
@@ -173,7 +173,7 @@ impl Native {
 }
 
 #[pymethods]
-impl Native {
+impl Dylib {
     #[new]
     fn new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<Self> {
         Self::raw_new(compiler, target)
@@ -219,5 +219,31 @@ impl OpaqueCompiler {
     #[getter]
     fn name(&self) -> &String {
         &self.compiler_name
+    }
+}
+
+/// Deprecated engine. Please use the parent engine instead,
+/// i.e. `Universal`.
+#[pyclass(extends=Universal)]
+pub struct JIT {}
+
+#[pymethods]
+impl JIT {
+    #[new]
+    fn new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<(Self, Universal)> {
+        Ok((Self {}, Universal::raw_new(compiler, target)?))
+    }
+}
+
+/// Deprecated engine. Please use the parent engine instead,
+/// i.e. `Dylib`.
+#[pyclass(extends=Dylib)]
+pub struct Native {}
+
+#[pymethods]
+impl Native {
+    #[new]
+    fn new(compiler: Option<&PyAny>, target: Option<&Target>) -> PyResult<(Self, Dylib)> {
+        Ok((Self {}, Dylib::raw_new(compiler, target)?))
     }
 }

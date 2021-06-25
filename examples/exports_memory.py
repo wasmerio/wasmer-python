@@ -37,7 +37,7 @@ wasm_bytes = wat2wasm(
 )
 
 # Create a store.
-store = Store(engine.JIT(Compiler))
+store = Store(engine.Universal(Compiler))
 
 # Let's compile the Wasm module.
 module = Module(store, wasm_bytes)

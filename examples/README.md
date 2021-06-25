@@ -27,35 +27,35 @@ next example.
 
 ## Engines
 
-2. [**JIT engine**][engine-jit], explains what an engine is, what the
-   JIT engine is, and how to set it up. The example completes itself
-   with the compilation of the Wasm module, its instantiation, and
-   finally, by calling an exported function.
+2. [**Universal engine**][engine-universal], explains what an engine
+   is, what the Universal engine is, and how to set it up. The example
+   completes itself with the compilation of the Wasm module, its
+   instantiation, and finally, by calling an exported function.
    
-   _Keywords_: JIT, engine, in-memory, executable code.
+   _Keywords_: universal, engine, in-memory, executable code.
    
    <details>
    <summary><em>Execute the example</em></summary>
 
    ```shell
-   $ python examples/engine_jit.py
+   $ python examples/engine_universal.py
    ```
 
    </details>
 
-3. [**Native engine**][engine-native], explains what a native engine
+3. [**Dylib engine**][engine-dylib], explains what a Dylib engine
    is, and how to set it up. The example completes itself with the
    compilation of the Wasm module, its instantiation, and finally, by
    calling an exported function.
    
-   _Keywords_: native, engine, shared library, dynamic library,
+   _Keywords_: dylib, engine, shared library, dynamic library,
    executable code.
 
    <details>
    <summary><em>Execute the example</em></summary>
 
    ```shell
-   $ python examples/engine_native.py
+   $ python examples/engine_dylib.py
    ```
 
    </details>
@@ -66,7 +66,7 @@ next example.
    pre-compiled Wasm module, and finally, by calling an exported
    function.
    
-   _Keywords_: native, engine, constrained environment, ahead-of-time
+   _Keywords_: dylib, engine, constrained environment, ahead-of-time
    compilation, cross-compilation, executable code, serialization.
 
    <details>
@@ -230,8 +230,8 @@ next example.
     </details>
 
 [instance]: ./instance.py
-[engine-jit]: ./engine_jit.py
-[engine-native]: ./engine_native.py
+[engine-universal]: ./engine_universal.py
+[engine-dylib]: ./engine_dylib.py
 [engine-headless]: ./engine_headless.py
 [engine-cross-compilation]: ./engine_cross_compilation.py
 [compiler-singlepass]: ./compiler_singlepass.py
