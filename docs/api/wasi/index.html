@@ -49,10 +49,6 @@ import_object = wasi_env.generate_import_object(store, wasi_version)
 # Now we are ready to instantiate the module.
 instance = Instance(module, import_object)
 
-# … But (!) WASI needs an access to the memory of the
-# module. Simple, pass it.
-wasi_env.memory = instance.exports.memory
-
 # Here we go, let's start the program.
 instance.exports._start()
 </code></pre>
@@ -82,44 +78,12 @@ detection is faster than the non-strict one.</p></div>
 <dl>
 <dt id="wasi.Environment"><code class="flex name class">
 <span>class <span class="ident">Environment</span></span>
+<span>(</span><span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The environment provided to the WASI imports.</p>
 <p>To build it, use <code><a title="wasi.StateBuilder" href="#wasi.StateBuilder">StateBuilder</a></code>. See <code><a title="wasi.StateBuilder.finalize" href="#wasi.StateBuilder.finalize">StateBuilder.finalize()</a></code> to
 learn more.</p></div>
-<h3>Instance variables</h3>
-<dl>
-<dt id="wasi.Environment.memory"><code class="name">var <span class="ident">memory</span></code></dt>
-<dd>
-<div class="desc"><p>Set a memory to the WASI. Usually, it is a <code><a title="wasmer.Memory" href="../wasmer/index.html#wasmer.Memory">Memory</a></code>
-object from <code>instance.exports.&lt;memory_name&gt;</code>.</p>
-<h2 id="example">Example</h2>
-<pre><code class="language-py">from wasmer import wasi, Store, Module, Instance
-
-store = Store()
-module = Module(store, open('tests/wasi.wasm', 'rb').read())
-
-# Get the WASI version.
-wasi_version = wasi.get_version(module, strict=True)
-
-# Build a WASI environment for the imports.
-wasi_env = wasi.StateBuilder('test-program').argument('--foo').finalize()
-
-# Generate an `ImportObject` from the WASI environment.
-import_object = wasi_env.generate_import_object(store, wasi_version)
-
-# Now we are ready to instantiate the module.
-instance = Instance(module, import_object)
-
-# … But (!) WASI needs an access to the memory of the
-# module. Simple, pass it.
-wasi_env.memory = instance.exports.memory
-
-# Here we go, let's start the program.
-instance.exports._start()
-</code></pre></div>
-</dd>
-</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="wasi.Environment.generate_import_object"><code class="name flex">
@@ -135,7 +99,7 @@ to the WASI version.</p>
 <pre><code class="language-py">from wasmer import wasi, Store
 
 store = Store()
-wasi_env = wasi.StateBuilder('test-program').argument('--foo')
+wasi_env = wasi.StateBuilder('test-program').argument('--foo').finalize()
 import_object = wasi_env.generate_import_object(store, wasi.Version.SNAPSHOT1)
 </code></pre></div>
 </dd>
@@ -277,7 +241,7 @@ directories.</p>
 
 wasi_state_builder = \
     wasi.StateBuilder('test-program'). \
-        preopen_directories([&quot;foo&quot;, &quot;bar&quot;])
+        preopen_directories([&quot;.&quot;])
 </code></pre></div>
 </dd>
 <dt id="wasi.StateBuilder.preopen_directory"><code class="name flex">
@@ -290,13 +254,12 @@ allows the WASI module to read and write to the given
 directory.</p>
 <p>This method returns <code>self</code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="language-py">from wasmer import wasi
-
-wasi_state_builder = \
-    wasi.StateBuilder('test-program'). \
-        preopen_directory(&quot;foo&quot;). \
-        preopen_directory(&quot;bar&quot;)
-</code></pre></div>
+<p>```py,ignore
+from wasmer import wasi</p>
+<p>wasi_state_builder = \
+wasi.StateBuilder('test-program'). \
+preopen_directory(".")
+```</p></div>
 </dd>
 </dl>
 </dd>
@@ -355,7 +318,6 @@ wasi_state_builder = \
 <h4><code><a title="wasi.Environment" href="#wasi.Environment">Environment</a></code></h4>
 <ul class="">
 <li><code><a title="wasi.Environment.generate_import_object" href="#wasi.Environment.generate_import_object">generate_import_object</a></code></li>
-<li><code><a title="wasi.Environment.memory" href="#wasi.Environment.memory">memory</a></code></li>
 </ul>
 </li>
 <li>

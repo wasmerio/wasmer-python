@@ -235,6 +235,12 @@ impl From<&wasmer::MemoryType> for MemoryType {
     }
 }
 
+impl From<wasmer::MemoryType> for MemoryType {
+    fn from(value: wasmer::MemoryType) -> Self {
+        Self::from(&value)
+    }
+}
+
 impl Into<wasmer::MemoryType> for &MemoryType {
     fn into(self) -> wasmer::MemoryType {
         wasmer::MemoryType::new(self.minimum, self.maximum, self.shared)

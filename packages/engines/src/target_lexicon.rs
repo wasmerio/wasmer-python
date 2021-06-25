@@ -198,6 +198,7 @@ impl Triple {
                 wasmer_compiler::CallingConvention::SystemV => "system_v",
                 wasmer_compiler::CallingConvention::WasmBasicCAbi => "wasm_basic_c_abi",
                 wasmer_compiler::CallingConvention::WindowsFastcall => "windows_fastcall",
+                _ => "(unknown)",
             })
     }
 }

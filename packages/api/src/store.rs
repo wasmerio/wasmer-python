@@ -21,24 +21,24 @@ use pyo3::{exceptions::PyTypeError, prelude::*};
 ///
 /// ## Examples
 ///
-/// Use the JIT engine with no compiler (headless mode):
+/// Use the Universal engine with no compiler (headless mode):
 ///
 /// ```py
 /// from wasmer import engine, Store
 ///
-/// store = Store(engine.JIT())
+/// store = Store(engine.Universal())
 /// ```
 ///
-/// Use the JIT engine with the LLVM compiler:
+/// Use the Universal engine with the LLVM compiler:
 ///
 /// ```py,ignore
 /// from wasmer import engine, Store
 /// from wasmer_compiler_llvm import Compiler
 ///
-/// store = Store(engine.JIT(Compiler))
+/// store = Store(engine.Universal(Compiler))
 /// ```
 ///
-/// If the store is built without an engine, the JIT engine will be
+/// If the store is built without an engine, the Universal engine will be
 /// used, with the first compiler found in this order:
 /// `compiler_compiler_cranelift`, `compiler_compiler_llvm`,
 /// `compiler_compiler_singlepass`, otherwise it will run in headless
@@ -63,21 +63,21 @@ impl Store {
     fn new(py: Python, engine: Option<&PyAny>) -> PyResult<Self> {
         let (inner, engine_name, compiler_name) = match engine {
             Some(engine) => {
-                if let Ok(jit) = engine.downcast::<PyCell<engines::JIT>>() {
-                    let jit = jit.borrow();
+                if let Ok(universal) = engine.downcast::<PyCell<engines::Universal>>() {
+                    let universal = universal.borrow();
 
                     (
-                        wasmer::Store::new(jit.inner()),
-                        engines::JIT::name(),
-                        jit.compiler_name().cloned(),
+                        wasmer::Store::new(universal.inner()),
+                        engines::Universal::name(),
+                        universal.compiler_name().cloned(),
                     )
-                } else if let Ok(native) = engine.downcast::<PyCell<engines::Native>>() {
-                    let native = native.borrow();
+                } else if let Ok(dylib) = engine.downcast::<PyCell<engines::Dylib>>() {
+                    let dylib = dylib.borrow();
 
                     (
-                        wasmer::Store::new(native.inner()),
-                        engines::Native::name(),
-                        native.compiler_name().cloned(),
+                        wasmer::Store::new(dylib.inner()),
+                        engines::Dylib::name(),
+                        dylib.compiler_name().cloned(),
                     )
                 } else {
                     return Err(to_py_err::<PyTypeError, _>("Unknown engine"));
@@ -86,7 +86,7 @@ impl Store {
 
             // No engine?
             None => {
-                // This package embeds the `JIT` engine, we are going
+                // This package embeds the `Universal` engine, we are going
                 // to use it. We may want to load a compiler with it,
                 // otherwise it's going to be a headless engine.
                 let compiler = py
@@ -99,11 +99,11 @@ impl Store {
                     .ok();
 
                 let target = None;
-                let engine = engines::JIT::raw_new(compiler, target)?;
+                let engine = engines::Universal::raw_new(compiler, target)?;
 
                 (
                     wasmer::Store::new(engine.inner()),
-                    engines::JIT::name(),
+                    engines::Universal::name(),
                     engine.compiler_name().cloned(),
                 )
             }

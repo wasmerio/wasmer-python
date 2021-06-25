@@ -11,7 +11,7 @@ categories = ["wasm"]
 publish = false
 
 [dependencies]
-wasmer = { version = "1.0.2", default-features = false, features = ["wat", "jit", "native", "compiler"] }
-wasmer-compiler = "1.0.2"
+wasmer = { version = "2.0", default-features = false, features = ["wat", "universal", "dylib", "compiler"] }
+wasmer-compiler = "2.0"
 pyo3 = { version = "0.13", features = ["extension-module"] }
-enumset = "1.0.4"
+enumset = "1.0.6"

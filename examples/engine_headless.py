@@ -7,8 +7,8 @@
 # What problem does it solve, and what does it mean?
 #
 # Once a Wasm module is compiled into executable code and stored
-# somewhere (e.g. in memory with the JIT engine, or in a native
-# object with the native engine), the module can be instantiated and
+# somewhere (e.g. in memory with the Universal engine, or in a native
+# object with the Dylib engine), the module can be instantiated and
 # executed. But imagine for a second the following scenario:
 #
 #   * Modules are compiled ahead of time, to be instantiated later
@@ -66,12 +66,12 @@ wasm_bytes = wat2wasm(
 
 # Define the engine that will drive everything.
 #
-# In this case, the engine is `wasmer.engine.Native` which means that
+# In this case, the engine is `wasmer.engine.Dylib` which means that
 # a native object is going to be generated. So when we are going to
 # serialize the compiled Wasm module, we are going to store it in a
 # file with the `.so` extension for example (or `.dylib`, or `.dll`
 # depending of the platform).
-engine = engine.Native(Compiler)
+engine = engine.Dylib(Compiler)
 
 # Create a store, that holds the engine.
 store = Store(engine)
@@ -94,9 +94,9 @@ serialized_module_file.seek(0, 0)
 
 from wasmer import engine, Store, Instance, Module
 
-# We create a headless native engine, i.e. an engine without a
+# We create a headless Dylib engine, i.e. an engine without a
 # compiler.
-engine = engine.Native()
+engine = engine.Dylib()
 
 # Create a store, as usual.
 store = Store(engine)

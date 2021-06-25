@@ -28,12 +28,12 @@ wasm_bytes = wat2wasm(
 
 # Define the engine that will drive everything.
 #
-# In this case, the engine is `wasmer.engine.JIT` which roughly
+# In this case, the engine is `wasmer.engine.Universal` which roughly
 # means that the executable code will live in memory.
 #
 # This is _the_ place to pass the compiler. Note that `Compiler` is
 # not instantiated, we pass the class only.
-engine = engine.JIT(Compiler)
+engine = engine.Universal(Compiler)
 
 # Create a store, that holds the engine.
 store = Store(engine)

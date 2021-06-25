@@ -100,7 +100,9 @@ implementation …</p></div>
 <dd>
 <div class="desc"><p>Disassemble WebAssembly binary to WebAssembly text format.</p>
 <h2 id="example">Example</h2>
-<pre><code class="language-py">assert wasm2wat(b'\x00asm\x01\x00\x00\x00') == '(module)'
+<pre><code class="language-py">from wasmer import wasm2wat
+
+assert wasm2wat(b'\x00asm\x01\x00\x00\x00') == '(module)'
 </code></pre></div>
 </dd>
 <dt id="wasmer.wat2wasm"><code class="name flex">
@@ -121,6 +123,7 @@ assert wat2wasm('(module)') == b'\x00asm\x01\x00\x00\x00'
 <dl>
 <dt id="wasmer.Buffer"><code class="flex name class">
 <span>class <span class="ident">Buffer</span></span>
+<span>(</span><span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a read-and-write buffer over data of a memory.</p>
@@ -129,7 +132,7 @@ assert wat2wasm('(module)') == b'\x00asm\x01\x00\x00\x00'
 is possible to read and write bytes with <a href="https://docs.python.org/3/library/stdtypes.html#bytes"><code>bytes</code></a>,
 <a href="https://docs.python.org/3/library/stdtypes.html#bytearray"><code>bytearray</code></a> or <a href="https://docs.python.org/3/library/stdtypes.html?#memoryview"><code>memoryview</code></a>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="language-py">from wasmer import Memory, MemoryType
+<pre><code class="language-py">from wasmer import Memory, MemoryType, Store
 
 store = Store()
 memory = Memory(store, MemoryType(128, shared=False))
@@ -216,6 +219,7 @@ assert exports[3].type.shared == False
 </dd>
 <dt id="wasmer.Exports"><code class="flex name class">
 <span>class <span class="ident">Exports</span></span>
+<span>(</span><span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents all the exports of an instance. It is built by
@@ -392,7 +396,7 @@ assert global_.mutable == True
 store = Store()
 
 global_ = Global(store, Value.i32(42), mutable=False)
-global_type = global.type
+global_type = global_.type
 
 assert global_type.type == Type.I32
 assert global_type.mutable == False
@@ -575,7 +579,7 @@ assert import_object.contains_namespace(&quot;foo&quot;) == False
 <div class="desc"><p>Registers a set of <code><a title="wasmer.Function" href="#wasmer.Function">Function</a></code>, <code><a title="wasmer.Memory" href="#wasmer.Memory">Memory</a></code>, <code><a title="wasmer.Global" href="#wasmer.Global">Global</a></code> or <code><a title="wasmer.Table" href="#wasmer.Table">Table</a></code>
 to a particular namespace.</p>
 <h2 id="example">Example</h2>
-<pre><code class="language-py">from wasmer import ImportObject, Function, Memory, MemoryType
+<pre><code class="language-py">from wasmer import Store, ImportObject, Function, Memory, MemoryType
 
 store = Store()
 
@@ -602,7 +606,7 @@ import_object.register(
 <div class="desc"><p>Represents the type of a module's import. It is usually built from
 the <code><a title="wasmer.Module.imports" href="#wasmer.Module.imports">Module.imports</a></code> getter.</p>
 <h2 id="example">Example</h2>
-<pre><code class="language-py">from wasmer import Store, Module, ImportType, FunctionTYpe, GlobalType, TableType, MemoryType, Type
+<pre><code class="language-py">from wasmer import Store, Module, ImportType, FunctionType, GlobalType, TableType, MemoryType, Type
 
 module = Module(
     Store(),
@@ -747,6 +751,7 @@ assert instance.exports.add_one(41) == 42
 </dd>
 <dt id="wasmer.Int16Array"><code class="flex name class">
 <span>class <span class="ident">Int16Array</span></span>
+<span>(</span><span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a read-and-write view over the data of a
@@ -785,6 +790,7 @@ assert string == 'Hello, World!'
 </dd>
 <dt id="wasmer.Int32Array"><code class="flex name class">
 <span>class <span class="ident">Int32Array</span></span>
+<span>(</span><span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a read-and-write view over the data of a
@@ -823,6 +829,7 @@ assert string == 'Hello, World!'
 </dd>
 <dt id="wasmer.Int8Array"><code class="flex name class">
 <span>class <span class="ident">Int8Array</span></span>
+<span>(</span><span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a read-and-write view over the data of a
@@ -915,33 +922,33 @@ assert isinstance(memory.buffer, Buffer)
 <dd>
 <div class="desc"><p>Returns the size (in bytes) of the <code><a title="wasmer.Memory" href="#wasmer.Memory">Memory</a></code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="language-py">from wasmer import Store, Module, Instance
+<pre><code class="language-py">from wasmer import Store, Memory, MemoryType
 
-module = Module(Store(), open('tests/tests.wasm', 'rb').read())
-instance = Instance(module)
-memory = instance.exports.memory
+store = Store()
+memory_type = MemoryType(3, shared=False)
+memory = Memory(store, memory_type)
 
-assert memory.size == 1114112
+assert memory.data_size == 196608
 </code></pre></div>
 </dd>
 <dt id="wasmer.Memory.size"><code class="name">var <span class="ident">size</span></code></dt>
 <dd>
 <div class="desc"><p>Returns the size (in pages) of the <code><a title="wasmer.Memory" href="#wasmer.Memory">Memory</a></code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="language-py">from wasmer import Store, Module, Instance
+<pre><code class="language-py">from wasmer import Store, Memory, MemoryType
 
-module = Module(Store(), open('tests/tests.wasm', 'rb').read())
-instance = Instance(module)
-memory = instance.exports.memory
+store = Store()
+memory_type = MemoryType(3, shared=False)
+memory = Memory(store, memory_type)
 
-assert memory.size == 17
+assert memory.size == 3
 </code></pre></div>
 </dd>
 <dt id="wasmer.Memory.type"><code class="name">var <span class="ident">type</span></code></dt>
 <dd>
 <div class="desc"><p>Gets the memory type, of kind <code><a title="wasmer.MemoryType" href="#wasmer.MemoryType">MemoryType</a></code>.</p>
 <h2 id="example">Example</h2>
-<pre><code class="language-py">from wasmer import Store, Memory, Instance
+<pre><code class="language-py">from wasmer import Store, Memory, Module, Instance
 
 module = Module(Store(), open('tests/tests.wasm', 'rb').read())
 instance = Instance(module)
@@ -1250,18 +1257,18 @@ module.</p>
 <p>Specification: <a href="https://webassembly.github.io/spec/core/exec/runtime.html#store">https://webassembly.github.io/spec/core/exec/runtime.html#store</a></p>
 <p>Read the documentation of the <code><a title="engine" href="../engine/index.html">engine</a></code> submodule to learn more.</p>
 <h2 id="examples">Examples</h2>
-<p>Use the JIT engine with no compiler (headless mode):</p>
+<p>Use the Universal engine with no compiler (headless mode):</p>
 <pre><code class="language-py">from wasmer import engine, Store
 
-store = Store(engine.JIT())
+store = Store(engine.Universal())
 </code></pre>
-<p>Use the JIT engine with the LLVM compiler:</p>
-<pre><code class="language-py">from wasmer import engine, Store
-from wasmer_compiler_llvm import Compiler
-
-store = Store(engine.JIT(Compiler))
-</code></pre>
-<p>If the store is built without an engine, the JIT engine will be
+<p>Use the Universal engine with the LLVM compiler:</p>
+<p>```py,ignore
+from wasmer import engine, Store
+from wasmer_compiler_llvm import Compiler</p>
+<p>store = Store(engine.Universal(Compiler))
+```</p>
+<p>If the store is built without an engine, the Universal engine will be
 used, with the first compiler found in this order:
 <code>compiler_compiler_cranelift</code>, <code>compiler_compiler_llvm</code>,
 <code>compiler_compiler_singlepass</code>, otherwise it will run in headless
@@ -1315,8 +1322,8 @@ instance = Instance(module)
 table = instance.exports.table
 table_type = table.type
 
-assert table_type == Type.FUNC_REF
-assert table_type.minimum == 0
+assert table_type.type == Type.FUNC_REF
+assert table_type.minimum == 2
 assert table_type.maximum == None
 </code></pre></div>
 </dd>
@@ -1399,6 +1406,7 @@ table_type = TableType(Type.I32, minimum=7, maximum=42)
 </dd>
 <dt id="wasmer.Uint16Array"><code class="flex name class">
 <span>class <span class="ident">Uint16Array</span></span>
+<span>(</span><span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a read-and-write view over the data of a
@@ -1437,6 +1445,7 @@ assert string == 'Hello, World!'
 </dd>
 <dt id="wasmer.Uint32Array"><code class="flex name class">
 <span>class <span class="ident">Uint32Array</span></span>
+<span>(</span><span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a read-and-write view over the data of a
@@ -1475,6 +1484,7 @@ assert string == 'Hello, World!'
 </dd>
 <dt id="wasmer.Uint8Array"><code class="flex name class">
 <span>class <span class="ident">Uint8Array</span></span>
+<span>(</span><span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a read-and-write view over the data of a
@@ -1513,6 +1523,7 @@ assert string == 'Hello, World!'
 </dd>
 <dt id="wasmer.Value"><code class="flex name class">
 <span>class <span class="ident">Value</span></span>
+<span>(</span><span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a WebAssembly value of a specific type.</p>

@@ -25,7 +25,7 @@ __dir__ = os.path.dirname(os.path.realpath(__file__))
 wasm_bytes = open(__dir__ + '/appendices/wasi.wasm', 'rb').read()
 
 # Create a store.
-store = Store(engine.JIT(Compiler))
+store = Store(engine.Universal(Compiler))
 
 # Let's compile the Wasm module, as usual.
 module = Module(store, wasm_bytes)

@@ -183,8 +183,8 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
 ///
 /// It currently has two implementations:
 ///
-/// 1. JIT with `engine.JIT`,
-/// 2. Native with `engine.Native`.
+/// 1. Universal with `engine.Universal`,
+/// 2. Dylib with `engine.Dylib`.
 ///
 /// Both engines receive an optional compiler. If absent, engines will
 /// run in headless mode, i.e. they won't be able to compile (create)
@@ -198,29 +198,33 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
 ///
 /// ## Example
 ///
-/// Create a JIT engine with no compiler (headless mode):
+/// Create a Universal engine with no compiler (headless mode):
 ///
 /// ```py
 /// from wasmer import engine
 ///
-/// engine = engine.JIT()
+/// engine = engine.Universal()
 /// ```
 ///
-/// Create a JIT engine with the LLVM compiler:
+/// Create a Universal engine with the LLVM compiler:
 ///
 /// ```py,ignore
 /// from wasmer import engine
 /// from wasmer_compiler_llvm import Compiler
 ///
-/// engine = engine.JIT(Compiler)
+/// engine = engine.Universal(Compiler)
 /// ```
 ///
 /// Engines are stored inside the `wasmer.Store`.
 #[pymodule]
 fn engine(_py: Python, module: &PyModule) -> PyResult<()> {
     // Classes.
-    module.add_class::<engines::JIT>()?;
-    module.add_class::<engines::Native>()?;
+    module.add_class::<engines::Universal>()?;
+    module.add_class::<engines::Dylib>()?;
+
+    // Deprecated classes.
+    module.add_class::<engines::JIT>()?; // Alias to `Universal`.
+    module.add_class::<engines::Native>()?; // Alias to `Dylib`.
 
     Ok(())
 }
@@ -255,7 +259,7 @@ fn engine(_py: Python, module: &PyModule) -> PyResult<()> {
 ///
 /// # There we go. When creating the engine, pass the compiler _and_
 /// # the target.
-/// engine = engine.Native(Compiler, target)
+/// engine = engine.Dylib(Compiler, target)
 ///
 /// # And finally, build the store with the engine.
 /// store = Store(engine)

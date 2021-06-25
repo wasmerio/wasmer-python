@@ -1,19 +1,19 @@
 # Defining an engine in Wasmer is one of the fundamental steps.
 #
-# This example illustrates how to use `wasmer.engine.JIT`, aka the JIT
-# engine. An engine applies roughly 2 steps:
+# This example illustrates how to use `wasmer.engine.Universal`, aka
+# the Universal engine. An engine applies roughly 2 steps:
 #
 #   1. It compiles the Wasm module bytes to executable code, through
 #      the intervention of a compiler,
 #   2. It stores the executable code somewhere.
 #
-# In the particular context of the JIT engine, the executable code
-# is stored in memory.
+# In the particular context of the Universal engine, the executable
+# code is stored in memory.
 #
 # You can run the example directly by executing in Wasmer root:
 #
 # ```shell
-# $ python examples/engine_jit.py
+# $ python examples/engine_universal.py
 # ```
 #
 # Ready?
@@ -36,9 +36,9 @@ wasm_bytes = wat2wasm(
 
 # Define the engine that will drive everything.
 #
-# In this case, the engine is `wasmer.engine.JIT` which roughly
+# In this case, the engine is `wasmer.engine.Universal` which roughly
 # means that the executable code will live in memory.
-engine = engine.JIT(Compiler)
+engine = engine.Universal(Compiler)
 
 # Create a store, that holds the engine.
 store = Store(engine)
