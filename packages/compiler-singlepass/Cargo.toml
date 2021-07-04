@@ -17,7 +17,7 @@ crate-type = ["cdylib"]
 [dependencies]
 wasmer_engines = { path = "../engines/" }
 wasmer-compiler-singlepass = "2.0"
-pyo3 = { version = "0.13", features = ["extension-module"] }
+pyo3 = { version = "0.14", features = ["extension-module"] }
 
 [package.metadata.maturin]
 classifier = [
