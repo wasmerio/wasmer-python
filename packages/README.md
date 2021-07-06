@@ -5,9 +5,9 @@ Wasmer provides several Python packages. We recommend to read the
 
 Succinctly, here is a short description of this directory:
 
-* `any/` contains a fallback to make `wasmer` always installable on
-  all platforms, but it could raise an `ImportError` if the current
-  platform isn't supported,
+* `any*/` contain fallbacks to make `wasmer` and sibling packages
+  always installable on all platforms, but it could raise an
+  `ImportError` if the current platform isn't supported,
 
 * `api/` contains the `wasmer` package,
 
