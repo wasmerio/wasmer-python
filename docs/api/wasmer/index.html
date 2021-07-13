@@ -225,6 +225,9 @@ assert exports[3].type.shared == False
 <div class="desc"><p>Represents all the exports of an instance. It is built by
 <code><a title="wasmer.Instance.exports" href="#wasmer.Instance.exports">Instance.exports</a></code>.</p>
 <p>Exports can be of kind <code><a title="wasmer.Function" href="#wasmer.Function">Function</a></code>, <code><a title="wasmer.Global" href="#wasmer.Global">Global</a></code>, <code><a title="wasmer.Table" href="#wasmer.Table">Table</a></code>, or <code><a title="wasmer.Memory" href="#wasmer.Memory">Memory</a></code>.</p>
+<p>The <code><a title="wasmer.Exports" href="#wasmer.Exports">Exports</a></code> class implement <a href="https://docs.python.org/3/c-api/iter.html">the Iterator
+Protocol</a>. Please see
+the <code><a title="wasmer.ExportsIterator" href="#wasmer.ExportsIterator">ExportsIterator</a></code> class.</p>
 <h2 id="example">Example</h2>
 <pre><code class="language-py">from wasmer import Store, Module, Instance, Exports, Function, Global, Table, Memory
 
@@ -246,6 +249,30 @@ assert isinstance(exports.func, Function)
 assert isinstance(exports.glob, Global)
 assert isinstance(exports.tab, Table)
 assert isinstance(exports.mem, Memory)
+</code></pre></div>
+</dd>
+<dt id="wasmer.ExportsIterator"><code class="flex name class">
+<span>class <span class="ident">ExportsIterator</span></span>
+<span>(</span><span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Iterator over all the exports of an <code><a title="wasmer.Instance" href="#wasmer.Instance">Instance</a></code>.</p>
+<h2 id="example">Example</h2>
+<pre><code class="language-py">from wasmer import Store, Module, Instance, Exports, Function, Global, Table, Memory
+
+module = Module(
+    Store(),
+    &quot;&quot;&quot;
+    (module
+      (func (export &quot;func&quot;) (param i32 i64))
+      (global (export &quot;glob&quot;) i32 (i32.const 7))
+      (table (export &quot;tab&quot;) 0 funcref)
+      (memory (export &quot;mem&quot;) 1))
+    &quot;&quot;&quot;
+)
+instance = Instance(module)
+
+assert [name for (name, export) in instance.exports] == [&quot;func&quot;, &quot;glob&quot;, &quot;tab&quot;, &quot;mem&quot;]
 </code></pre></div>
 </dd>
 <dt id="wasmer.Function"><code class="flex name class">
@@ -1634,6 +1661,9 @@ value = Value.v128(42)
 </li>
 <li>
 <h4><code><a title="wasmer.Exports" href="#wasmer.Exports">Exports</a></code></h4>
+</li>
+<li>
+<h4><code><a title="wasmer.ExportsIterator" href="#wasmer.ExportsIterator">ExportsIterator</a></code></h4>
 </li>
 <li>
 <h4><code><a title="wasmer.Function" href="#wasmer.Function">Function</a></code></h4>
