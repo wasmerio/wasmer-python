@@ -42,6 +42,15 @@ def test_constructor_with_annotated_function():
     exception = context_manager.value
     assert str(exception) == 'Variable `a` cannot have type `None`'
 
+    def tuple(a: int) -> (int, int):
+        return (a, a)
+
+    function = Function(store, tuple)
+    function_type = function.type
+
+    assert function_type.params == [Type.I32]
+    assert function_type.results == [Type.I32, Type.I32]
+
 def test_constructor_with_blank_function():
     def sum(x, y):
         return x + y
@@ -131,3 +140,53 @@ def test_early_exit():
         assert 'oops' in str(err)
     else:
         assert False
+
+def test_return_multiple_values():
+    store = Store()
+    module = Module(
+        store,
+        """
+        (module
+          (type $swap_t (func (param i32 i64) (result i64 i32)))
+          (func $swap_f (type $swap_t) (param $x i32) (param $y i64) (result i64 i32)
+            local.get $y
+            local.get $x)
+          (export "swap" (func $swap_f)))
+        """
+    )
+    instance = Instance(module)
+
+    assert instance.exports.swap(41, 42) == (42, 41)
+
+def test_return_multiple_values_from_host_function():
+    store = Store()
+    module = Module(
+        store,
+        """
+        (module
+          (type $swap_t (func (param i32 i64) (result i64 i32)))
+          (type $test_t (func (param i32 i64) (result i64 i32)))
+
+          (import "env" "swap" (func $swap (type $swap_t)))
+
+          (func $test (type $test_t) (param $x i32) (param $y i64) (result i64 i32)
+            local.get $x
+            local.get $y
+            call $swap)
+          (export "test" (func $test)))
+        """
+    )
+
+    def swap(x: 'i32', y: 'i64') -> ('i64', 'i32'):
+        return (y, x)
+
+    import_object = ImportObject()
+    import_object.register(
+        "env",
+        {
+            "swap": Function(store, swap),
+        }
+    )
+    instance = Instance(module, import_object)
+
+    assert instance.exports.test(41, 42) == (42, 41)
