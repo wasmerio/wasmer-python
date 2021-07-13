@@ -122,6 +122,7 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
 
     // Classes.
     module.add_class::<exports::Exports>()?;
+    module.add_class::<exports::ExportsIterator>()?;
     module.add_class::<externals::Function>()?;
     module.add_class::<externals::Global>()?;
     module.add_class::<externals::Memory>()?;
