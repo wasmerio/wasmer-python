@@ -303,6 +303,37 @@ def sum(x: int, y: int) -&gt; int:
 store = Store()
 function = Function(store, sum)
 </code></pre>
+<p>Here is the mapping table:</p>
+<table>
+<thead>
+<tr>
+<th>Annotations</th>
+<th>WebAssembly type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>int</code>, <code>'i32'</code>, <code>'I32'</code></td>
+<td><code><a title="wasmer.Type.I32" href="#wasmer.Type.I32">Type.I32</a></code></td>
+</tr>
+<tr>
+<td><code>'i64'</code>, <code>'I64'</code></td>
+<td><code><a title="wasmer.Type.I64" href="#wasmer.Type.I64">Type.I64</a></code></td>
+</tr>
+<tr>
+<td><code>float</code>, <code>'f32'</code>, <code>'F32'</code></td>
+<td><code><a title="wasmer.Type.F32" href="#wasmer.Type.F32">Type.F32</a></code></td>
+</tr>
+<tr>
+<td><code>'f64'</code>, <code>'F64'</code></td>
+<td><code><a title="wasmer.Type.F64" href="#wasmer.Type.F64">Type.F64</a></code></td>
+</tr>
+<tr>
+<td><code>None</code></td>
+<td>none (only in <code>return</code> position)</td>
+</tr>
+</tbody>
+</table>
 <p>Second, the same code but without annotations and a <code><a title="wasmer.FunctionType" href="#wasmer.FunctionType">FunctionType</a></code>:</p>
 <pre><code class="language-py">from wasmer import Store, Function, FunctionType, Type
 
