@@ -13,11 +13,34 @@ def value_with_type(value):
     return (value, type(value))
 
 def test_constructor_with_annotated_function():
-    def sum(x: int, y: int) -> int:
-        return x + y
-
     store = Store()
+
+    def sum(a: int, b: 'i32', c: 'I32', d: 'i64', e: 'I64', f: float, g: 'f32', h: 'F32', i: 'f64', j: 'F64') -> int:
+        return a + b
+
     function = Function(store, sum)
+    function_type = function.type
+
+    assert function_type.params == [Type.I32, Type.I32, Type.I32, Type.I64, Type.I64, Type.F32, Type.F32, Type.F32, Type.F64, Type.F64]
+    assert function_type.results == [Type.I32]
+
+    def return_none(a: int) -> None:
+        pass
+
+    function = Function(store, return_none)
+    function_type = function.type
+
+    assert function_type.params == [Type.I32]
+    assert function_type.results == []
+
+    def take_none(a: None):
+        pass
+
+    with pytest.raises(RuntimeError) as context_manager:
+        Function(store, take_none)
+
+    exception = context_manager.value
+    assert str(exception) == 'Variable `a` cannot have type `None`'
 
 def test_constructor_with_blank_function():
     def sum(x, y):

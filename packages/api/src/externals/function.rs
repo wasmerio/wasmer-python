@@ -45,6 +45,16 @@ use std::{io, sync::Arc};
 /// function = Function(store, sum)
 /// ```
 ///
+/// Here is the mapping table:
+///
+/// | Annotations | WebAssembly type |
+/// |-|-|
+/// | `int`, `'i32'`, `'I32'` | `Type.I32` |
+/// | `'i64'`, `'I64'` | `Type.I64` |
+/// | `float`, `'f32'`, `'F32'` | `Type.F32` |
+/// | `'f64'`, `'F64'` | `Type.F64` |
+/// | `None` | none (only in `return` position) |
+///
 /// Second, the same code but without annotations and a `FunctionType`:
 ///
 /// ```py
@@ -111,11 +121,12 @@ impl Function {
                 let mut result_types = Vec::new();
 
                 for (annotation_name, annotation_value) in annotations {
-                    let ty = match annotation_value.to_string().as_str() {
-                        "i32" | "I32" | "<class 'int'>" => wasmer::Type::I32,
-                        "i64" | "I64" => wasmer::Type::I64,
-                        "f32" | "F32" | "<class 'float'>" => wasmer::Type::F32,
-                        "f64" | "F64" => wasmer::Type::F64,
+                    let maybe_ty = match annotation_value.to_string().as_str() {
+                        "i32" | "I32" | "<class 'int'>" => Some(wasmer::Type::I32),
+                        "i64" | "I64" => Some(wasmer::Type::I64),
+                        "f32" | "F32" | "<class 'float'>" => Some(wasmer::Type::F32),
+                        "f64" | "F64" => Some(wasmer::Type::F64),
+                        "none" | "None" => None,
                         ty => {
                             return Err(to_py_err::<PyRuntimeError, _>(format!(
                                 "Type `{}` is not a supported type",
@@ -124,9 +135,16 @@ impl Function {
                         }
                     };
 
-                    match annotation_name.to_string().as_str() {
-                        "return" => result_types.push(ty),
-                        _ => argument_types.push(ty),
+                    match (annotation_name.to_string().as_str(), maybe_ty) {
+                        ("return", Some(ty)) => result_types.push(ty),
+                        ("return", None) => (),
+                        (_, Some(ty)) => argument_types.push(ty),
+                        (name, None) => {
+                            return Err(to_py_err::<PyRuntimeError, _>(format!(
+                                "Variable `{}` cannot have type `None`",
+                                name
+                            )))
+                        }
                     }
                 }
 
