@@ -4,7 +4,7 @@ use crate::{
     wasmer_inner::wasmer,
 };
 use pyo3::{
-    class::{basic::PyObjectProtocol, sequence::PySequenceProtocol},
+    class::{basic::PyObjectProtocol, iter::PyIterProtocol, sequence::PySequenceProtocol},
     exceptions::PyLookupError,
     prelude::*,
 };
@@ -13,6 +13,10 @@ use pyo3::{
 /// `Instance.exports`.
 ///
 /// Exports can be of kind `Function`, `Global`, `Table`, or `Memory`.
+///
+/// The `Exports` class implement [the Iterator
+/// Protocol](https://docs.python.org/3/c-api/iter.html). Please see
+/// the `ExportsIterator` class.
 ///
 /// ## Example
 ///
@@ -52,11 +56,11 @@ impl Exports {
 
 #[pyproto]
 impl PyObjectProtocol for Exports {
-    fn __getattr__(&self, key: String) -> PyResult<PyObject> {
+    fn __getattr__(&self, key: &str) -> PyResult<PyObject> {
         let gil_guard = Python::acquire_gil();
         let py = gil_guard.python();
 
-        Ok(match self.inner.get_extern(key.as_str()) {
+        Ok(match self.inner.get_extern(key) {
             Some(wasmer::Extern::Function(function)) => {
                 Py::new(py, Function::raw_new(function.clone()))?.to_object(py)
             }
@@ -83,5 +87,87 @@ impl PyObjectProtocol for Exports {
 impl PySequenceProtocol for Exports {
     fn __len__(&self) -> usize {
         self.inner.len()
+    }
+}
+
+#[pyproto]
+impl PyIterProtocol for Exports {
+    fn __iter__(slf: PyRef<Self>) -> ExportsIterator {
+        ExportsIterator {
+            vector: slf
+                .inner
+                .iter()
+                .map(|(name, export)| (name.clone(), export.clone()))
+                .collect(),
+            index: 0,
+        }
+    }
+}
+
+/// Iterator over all the exports of an `Instance`.
+///
+/// ## Example
+///
+/// ```py
+/// from wasmer import Store, Module, Instance, Exports, Function, Global, Table, Memory
+///
+/// module = Module(
+///     Store(),
+///     """
+///     (module
+///       (func (export "func") (param i32 i64))
+///       (global (export "glob") i32 (i32.const 7))
+///       (table (export "tab") 0 funcref)
+///       (memory (export "mem") 1))
+///     """
+/// )
+/// instance = Instance(module)
+///
+/// assert [name for (name, export) in instance.exports] == ["func", "glob", "tab", "mem"]
+/// ```
+#[pyclass]
+pub struct ExportsIterator {
+    vector: Vec<(String, wasmer::Extern)>,
+    index: usize,
+}
+
+#[pyproto]
+impl PyIterProtocol for ExportsIterator {
+    fn __iter__(slf: PyRef<Self>) -> PyRef<Self> {
+        slf
+    }
+
+    fn __next__(mut slf: PyRefMut<Self>) -> PyResult<Option<(String, PyObject)>> {
+        let gil_guard = Python::acquire_gil();
+        let py = gil_guard.python();
+
+        let (output, next_index) = match slf.vector.get(slf.index) {
+            Some((name, export)) => (
+                Ok(Some((
+                    name.clone(),
+                    match export {
+                        wasmer::Extern::Function(function) => {
+                            Py::new(py, Function::raw_new(function.clone()))?.to_object(py)
+                        }
+                        wasmer::Extern::Global(global) => {
+                            Py::new(py, Global::raw_new(global.clone()))?.to_object(py)
+                        }
+                        wasmer::Extern::Memory(memory) => {
+                            Py::new(py, Memory::raw_new(memory.clone()))?.to_object(py)
+                        }
+                        wasmer::Extern::Table(table) => {
+                            Py::new(py, Table::raw_new(table.clone()))?.to_object(py)
+                        }
+                    },
+                ))),
+                slf.index + 1,
+            ),
+
+            None => (Ok(None), slf.index),
+        };
+
+        slf.index = next_index;
+
+        output
     }
 }
