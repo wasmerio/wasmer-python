@@ -294,14 +294,19 @@ it is an exported function (see <code><a title="wasmer.Exports" href="#wasmer.Ex
 <p>To build a <code><a title="wasmer.Function" href="#wasmer.Function">Function</a></code>, we need its type. It can either be inferred
 from Python thanks to annotations, or be given with a
 <code><a title="wasmer.FunctionType" href="#wasmer.FunctionType">FunctionType</a></code> value.</p>
+<h2 id="with-python-annotations">With Python annotations</h2>
 <p>First, let's see with Python annotations:</p>
-<pre><code class="language-py">from wasmer import Store, Function
+<pre><code class="language-py">from wasmer import Store, Function, Type
 
 def sum(x: int, y: int) -&gt; int:
     return x + y
 
 store = Store()
 function = Function(store, sum)
+function_type = function.type
+
+assert function_type.params == [Type.I32, Type.I32]
+assert function_type.results == [Type.I32]
 </code></pre>
 <p>Here is the mapping table:</p>
 <table>
@@ -334,6 +339,20 @@ function = Function(store, sum)
 </tr>
 </tbody>
 </table>
+<p>It is possible for a host function to return a tuple of the types above (except <code>None</code>), like:</p>
+<pre><code class="language-py">from wasmer import Store, Function, Type
+
+def swap(x: 'i32', y: 'i64') -&gt; ('i64', 'i32'):
+    return (y, x)
+
+store = Store()
+function = Function(store, swap)
+function_type = function.type
+
+assert function_type.params == [Type.I32, Type.I64]
+assert function_type.results == [Type.I64, Type.I32]
+</code></pre>
+<h2 id="with-functiontype">With <code><a title="wasmer.FunctionType" href="#wasmer.FunctionType">FunctionType</a></code></h2>
 <p>Second, the same code but without annotations and a <code><a title="wasmer.FunctionType" href="#wasmer.FunctionType">FunctionType</a></code>:</p>
 <pre><code class="language-py">from wasmer import Store, Function, FunctionType, Type
 
