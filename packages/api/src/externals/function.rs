@@ -33,16 +33,22 @@ use std::{io, sync::Arc};
 /// from Python thanks to annotations, or be given with a
 /// `FunctionType` value.
 ///
+/// ## With Python annotations
+///
 /// First, let's see with Python annotations:
 ///
 /// ```py
-/// from wasmer import Store, Function
+/// from wasmer import Store, Function, Type
 ///
 /// def sum(x: int, y: int) -> int:
 ///     return x + y
 ///
 /// store = Store()
 /// function = Function(store, sum)
+/// function_type = function.type
+///
+/// assert function_type.params == [Type.I32, Type.I32]
+/// assert function_type.results == [Type.I32]
 /// ```
 ///
 /// Here is the mapping table:
@@ -54,6 +60,24 @@ use std::{io, sync::Arc};
 /// | `float`, `'f32'`, `'F32'` | `Type.F32` |
 /// | `'f64'`, `'F64'` | `Type.F64` |
 /// | `None` | none (only in `return` position) |
+///
+/// It is possible for a host function to return a tuple of the types above (except `None`), like:
+///
+/// ```py
+/// from wasmer import Store, Function, Type
+///
+/// def swap(x: 'i32', y: 'i64') -> ('i64', 'i32'):
+///     return (y, x)
+///
+/// store = Store()
+/// function = Function(store, swap)
+/// function_type = function.type
+///
+/// assert function_type.params == [Type.I32, Type.I64]
+/// assert function_type.results == [Type.I64, Type.I32]
+/// ```
+///
+/// ## With `FunctionType`
 ///
 /// Second, the same code but without annotations and a `FunctionType`:
 ///
@@ -121,27 +145,23 @@ impl Function {
                 let mut result_types = Vec::new();
 
                 for (annotation_name, annotation_value) in annotations {
-                    let maybe_ty = match annotation_value.to_string().as_str() {
-                        "i32" | "I32" | "<class 'int'>" => Some(wasmer::Type::I32),
-                        "i64" | "I64" => Some(wasmer::Type::I64),
-                        "f32" | "F32" | "<class 'float'>" => Some(wasmer::Type::F32),
-                        "f64" | "F64" => Some(wasmer::Type::F64),
-                        "none" | "None" => None,
-                        ty => {
-                            return Err(to_py_err::<PyRuntimeError, _>(format!(
-                                "Type `{}` is not a supported type",
-                                ty,
-                            )))
-                        }
-                    };
+                    let maybe_ty = to_wasm_type(annotation_value)?;
 
                     match (annotation_name.to_string().as_str(), maybe_ty) {
-                        ("return", Some(ty)) => result_types.push(ty),
-                        ("return", None) => (),
-                        (_, Some(ty)) => argument_types.push(ty),
-                        (name, None) => {
+                        ("return", MappedType::None) => (),
+                        ("return", MappedType::One(ty)) => result_types.push(ty),
+                        ("return", MappedType::Many(mut tys)) => result_types.append(&mut tys),
+
+                        (name, MappedType::None) => {
                             return Err(to_py_err::<PyRuntimeError, _>(format!(
                                 "Variable `{}` cannot have type `None`",
+                                name
+                            )))
+                        }
+                        (_, MappedType::One(ty)) => argument_types.push(ty),
+                        (name, MappedType::Many(_)) => {
+                            return Err(to_py_err::<PyRuntimeError, _>(format!(
+                                "Variable `{}` cannot receive a tuple (not supported yet)",
                                 name
                             )))
                         }
@@ -277,4 +297,66 @@ impl Function {
     fn ty(&self) -> FunctionType {
         self.inner.ty().into()
     }
+}
+
+enum MappedType {
+    None,
+    One(wasmer::Type),
+    Many(Vec<wasmer::Type>),
+}
+
+fn to_wasm_type(value: &PyAny) -> PyResult<MappedType> {
+    enum Level {
+        Top,
+        Deeper,
+    }
+
+    fn inner(value: &PyAny, level: Level) -> PyResult<MappedType> {
+        Ok(
+            match (level, value.get_type().name()?, value.to_string().as_str()) {
+                (_, "type", "<class 'int'>") => MappedType::One(wasmer::Type::I32),
+                (_, "str", "i32" | "I32") => MappedType::One(wasmer::Type::I32),
+                (_, "str", "i64" | "I64") => MappedType::One(wasmer::Type::I64),
+
+                (_, "type", "<class 'float'>") => MappedType::One(wasmer::Type::F32),
+                (_, "str", "f32" | "F32") => MappedType::One(wasmer::Type::F32),
+                (_, "str", "f64" | "F64") => MappedType::One(wasmer::Type::F64),
+
+                (Level::Top, "tuple", _) => {
+                    let tuple = value.cast_as::<PyTuple>()?;
+                    let mut types = Vec::with_capacity(tuple.len());
+
+                    for tuple_value in tuple.iter() {
+                        match inner(tuple_value, Level::Deeper)? {
+                            MappedType::One(ty) => types.push(ty),
+                            _ => {
+                                return Err(to_py_err::<PyRuntimeError, _>(
+                                    "A tuple cannot contain `None` or another tuple",
+                                ))
+                            }
+                        }
+                    }
+
+                    MappedType::Many(types)
+                }
+
+                (Level::Deeper, "tuple", _) => {
+                    return Err(to_py_err::<PyRuntimeError, _>(
+                        "It is not possible to get a tuple inside a tuple yet",
+                    ))
+                }
+
+                (_, "NoneType", "None") => MappedType::None,
+
+                (_, ty, as_str) => {
+                    return Err(to_py_err::<PyRuntimeError, _>(format!(
+                        "Type `{}` (`{}`) is not a supported type",
+                        ty, as_str,
+                    )))
+                }
+            },
+        )
+    }
+
+    inner(value, Level::Top)
 }
