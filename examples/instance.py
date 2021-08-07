@@ -4,7 +4,7 @@
 # World”-like project:
 #
 #   1. How to load a WebAssembly module as bytes,
-#   2. How to compile the mdule,
+#   2. How to compile the module,
 #   3. How to create an instance of the module.
 #
 # You can run the example directly by executing in Wasmer root:
