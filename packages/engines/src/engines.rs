@@ -12,7 +12,7 @@ use std::mem::ManuallyDrop;
 /// It is possible to specify a `Target` to possibly cross-compile for
 /// a different target. It requires a compiler.
 #[pyclass(unsendable, subclass)]
-#[text_signature = "(/, compiler, target)"]
+#[pyo3(text_signature = "(/, compiler, target)")]
 pub struct Universal {
     inner: wasmer::UniversalEngine,
     compiler_name: Option<String>,
@@ -102,7 +102,7 @@ impl Universal {
 /// It is possible to specify a `Target` to possibly cross-compile for
 /// a different target. It requires a compiler.
 #[pyclass(unsendable, subclass)]
-#[text_signature = "(/, compiler, target)"]
+#[pyo3(text_signature = "(/, compiler, target)")]
 pub struct Dylib {
     inner: wasmer::DylibEngine,
     compiler_name: Option<String>,

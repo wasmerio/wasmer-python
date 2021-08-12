@@ -31,7 +31,7 @@ use pyo3::{exceptions::PyRuntimeError, prelude::*};
 /// from wasmer import Store, Memory, MemoryType
 ///
 /// store = Store()
-/// memory_type = MemoryType(3, shared=False)
+/// memory_type = MemoryType(minimum=3)
 /// memory = Memory(store, memory_type)
 ///
 /// assert memory.size == 3
@@ -50,7 +50,7 @@ use pyo3::{exceptions::PyRuntimeError, prelude::*};
 /// assert isinstance(memory, Memory)
 /// ```
 #[pyclass(unsendable)]
-#[text_signature = "(store, memory_type)"]
+#[pyo3(text_signature = "(store, memory_type)")]
 pub struct Memory {
     inner: wasmer::Memory,
 }
@@ -83,7 +83,7 @@ impl Memory {
     /// from wasmer import Store, Memory, MemoryType
     ///
     /// store = Store()
-    /// memory_type = MemoryType(3, shared=False)
+    /// memory_type = MemoryType(minimum=3)
     /// memory = Memory(store, memory_type)
     ///
     /// assert memory.size == 3
@@ -101,7 +101,7 @@ impl Memory {
     /// from wasmer import Store, Memory, MemoryType
     ///
     /// store = Store()
-    /// memory_type = MemoryType(3, shared=False)
+    /// memory_type = MemoryType(minimum=3)
     /// memory = Memory(store, memory_type)
     ///
     /// assert memory.data_size == 196608
@@ -119,7 +119,7 @@ impl Memory {
     /// from wasmer import Store, Memory, MemoryType
     ///
     /// store = Store()
-    /// memory_type = MemoryType(3, shared=False)
+    /// memory_type = MemoryType(minimum=3)
     /// memory = Memory(store, memory_type)
     ///
     /// assert memory.size == 3
@@ -128,7 +128,7 @@ impl Memory {
     ///
     /// assert memory.size == 5
     /// ```
-    #[text_signature = "($self, number_of_pages)"]
+    #[pyo3(text_signature = "($self, number_of_pages)")]
     fn grow(&self, number_of_pages: u32) -> PyResult<u32> {
         self.inner
             .grow(number_of_pages)
@@ -145,7 +145,7 @@ impl Memory {
     /// from wasmer import Store, Memory, MemoryType, Buffer
     ///
     /// store = Store()
-    /// memory_type = MemoryType(3, shared=False)
+    /// memory_type = MemoryType(minimum=3)
     /// memory = Memory(store, memory_type)
     ///
     /// assert isinstance(memory.buffer, Buffer)
@@ -165,12 +165,12 @@ impl Memory {
     /// from wasmer import Store, Memory, MemoryType, Uint8Array
     ///
     /// store = Store()
-    /// memory_type = MemoryType(3, shared=False)
+    /// memory_type = MemoryType(minimum=3)
     /// memory = Memory(store, memory_type)
     ///
     /// assert isinstance(memory.uint8_view(offset=42), Uint8Array)
     /// ```
-    #[text_signature = "($self, /, offset=0)"]
+    #[pyo3(text_signature = "($self, /, offset=0)")]
     #[args(offset = 0)]
     fn uint8_view(&self, offset: usize) -> Uint8Array {
         Uint8Array {
@@ -182,7 +182,7 @@ impl Memory {
     /// Creates a read-and-write over the memory data where elements
     /// are of kind `int8`. See the `Int8Array` view to learn more,
     /// and the `Memory.uint8_view` method to see an example.
-    #[text_signature = "($self, /, offset=0)"]
+    #[pyo3(text_signature = "($self, /, offset=0)")]
     #[args(offset = 0)]
     fn int8_view(&self, offset: usize) -> Int8Array {
         Int8Array {
@@ -194,7 +194,7 @@ impl Memory {
     /// Creates a read-and-write over the memory data where elements
     /// are of kind `uint16`. See the `Uint16Array` view to learn
     /// more, and the `Memory.uint8_view` method to see an example.
-    #[text_signature = "($self, /, offset=0)"]
+    #[pyo3(text_signature = "($self, /, offset=0)")]
     #[args(offset = 0)]
     fn uint16_view(&self, offset: usize) -> Uint16Array {
         Uint16Array {
@@ -206,7 +206,7 @@ impl Memory {
     /// Creates a read-and-write over the memory data where elements
     /// are of kind `int16`. See the `Int16Array` view to learn more,
     /// and the `Memory.uint8_view` method to see an example.
-    #[text_signature = "($self, /, offset=0)"]
+    #[pyo3(text_signature = "($self, /, offset=0)")]
     #[args(offset = 0)]
     fn int16_view(&self, offset: usize) -> Int16Array {
         Int16Array {
@@ -218,7 +218,7 @@ impl Memory {
     /// Creates a read-and-write over the memory data where elements
     /// are of kind `uint32`. See the `Uint32Array` view to learn
     /// more, and the `Memory.uint8_view` method to see an example.
-    #[text_signature = "($self, /, offset=0)"]
+    #[pyo3(text_signature = "($self, /, offset=0)")]
     #[args(offset = 0)]
     fn uint32_view(&self, offset: usize) -> Uint32Array {
         Uint32Array {
@@ -230,7 +230,7 @@ impl Memory {
     /// Creates a read-and-write over the memory data where elements
     /// are of kind `int32`. See the `Int32Array` view to learn more,
     /// and the `Memory.uint8_view` method to see an example.
-    #[text_signature = "($self, /, offset=0)"]
+    #[pyo3(text_signature = "($self, /, offset=0)")]
     #[args(offset = 0)]
     fn int32_view(&self, offset: usize) -> Int32Array {
         Int32Array {

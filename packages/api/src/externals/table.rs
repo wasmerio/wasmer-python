@@ -13,7 +13,7 @@ use pyo3::{exceptions::PyRuntimeError, prelude::*};
 ///
 /// Specification: https://webassembly.github.io/spec/core/exec/runtime.html#table-instances
 #[pyclass(unsendable)]
-#[text_signature = "(store, table_type, initial_value)"]
+#[pyo3(text_signature = "(store, table_type, initial_value)")]
 pub struct Table {
     inner: wasmer::Table,
 }

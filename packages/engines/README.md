@@ -1,4 +1,4 @@
-# `wasmer_engines`
+# `wasmer-engines`
 
 This crate is not compiled to a Python package. It represents engines
 and sibling types that are shared between the `wasmer` and the

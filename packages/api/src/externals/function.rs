@@ -91,7 +91,7 @@ use std::{io, sync::Arc};
 /// function = Function(store, sum, FunctionType([Type.I32, Type.I32], [Type.I32]))
 /// ```
 #[pyclass(unsendable)]
-#[text_signature = "(store, function, function_type)"]
+#[pyo3(text_signature = "(store, function, function_type)")]
 pub struct Function {
     inner: wasmer::Function,
 }

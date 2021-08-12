@@ -15,7 +15,7 @@ name = "wasmer_compiler_llvm"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasmer_engines = { path = "../engines/" }
+wasmer-engines = { path = "../engines/" }
 wasmer-compiler-llvm = "2.0"
 pyo3 = { version = "0.14", features = ["extension-module"] }
 

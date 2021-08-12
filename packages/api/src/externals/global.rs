@@ -39,7 +39,7 @@ use pyo3::{
 /// assert global_.mutable == True
 /// ```
 #[pyclass(unsendable)]
-#[text_signature = "(store, value, mutable)"]
+#[pyo3(text_signature = "(store, value, mutable)")]
 pub struct Global {
     inner: wasmer::Global,
 }

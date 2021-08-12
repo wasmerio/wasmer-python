@@ -34,7 +34,7 @@ use std::{
 /// from wasmer import Memory, MemoryType, Store
 ///
 /// store = Store()
-/// memory = Memory(store, MemoryType(128, shared=False))
+/// memory = Memory(store, MemoryType(minimum=128))
 ///
 /// # Let's write data with a `Int8Array` view for example.
 /// int8 = memory.int8_view()

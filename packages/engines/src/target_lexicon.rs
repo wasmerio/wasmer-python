@@ -20,7 +20,7 @@ use std::str::FromStr;
 /// target = target.Target(triple, cpu_features)
 /// ```
 #[pyclass]
-#[text_signature = "(triple, cpu_features)"]
+#[pyo3(text_signature = "(triple, cpu_features)")]
 pub struct Target {
     inner: wasmer_compiler::Target,
 }
@@ -70,7 +70,7 @@ impl Target {
 /// assert triple.default_calling_convention == 'system_v'
 /// ```
 #[pyclass]
-#[text_signature = "(triple)"]
+#[pyo3(text_signature = "(triple)")]
 pub struct Triple {
     inner: wasmer_compiler::Triple,
 }
@@ -245,7 +245,7 @@ impl PyObjectProtocol for Triple {
 /// cpu_features.add('sse2')
 /// ```
 #[pyclass]
-#[text_signature = "()"]
+#[pyo3(text_signature = "()")]
 pub struct CpuFeatures {
     inner: EnumSet<wasmer_compiler::CpuFeature>,
 }
@@ -266,7 +266,7 @@ impl CpuFeatures {
     }
 
     /// Add a new CPU feature.
-    #[text_signature = "($self, feature)"]
+    #[pyo3(text_signature = "($self, feature)")]
     fn add(&mut self, feature: &str) -> PyResult<()> {
         self.inner.insert(
             wasmer_compiler::CpuFeature::from_str(feature)

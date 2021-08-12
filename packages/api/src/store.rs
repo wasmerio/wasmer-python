@@ -44,7 +44,7 @@ use pyo3::{exceptions::PyTypeError, prelude::*};
 /// `compiler_compiler_singlepass`, otherwise it will run in headless
 /// mode.
 #[pyclass]
-#[text_signature = "(engine)"]
+#[pyo3(text_signature = "(engine)")]
 pub struct Store {
     inner: wasmer::Store,
     engine_name: String,
@@ -95,7 +95,7 @@ impl Store {
                     .or_else(|_| py.import("wasmer_compiler_llvm"))
                     .or_else(|_| py.import("wasmer_compiler_singlepass"))
                     // If any, load the `Compiler` class.
-                    .and_then(|compiler_module| compiler_module.get("Compiler"))
+                    .and_then(|compiler_module| compiler_module.getattr("Compiler"))
                     .ok();
 
                 let target = None;

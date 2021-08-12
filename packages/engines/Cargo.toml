@@ -1,5 +1,5 @@
 [package]
-name = "wasmer_engines"
+name = "wasmer-engines"
 version = "1.0.0"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
@@ -9,9 +9,6 @@ repository = "https://github.com/wasmerio/wasmer-python"
 keywords = ["python", "extension", "webassembly"]
 categories = ["wasm"]
 publish = false
-
-[lib]
-crate-type = ["cdylib"]
 
 [dependencies]
 wasmer = { version = "2.0", default-features = false, features = ["wat", "universal", "dylib", "compiler"] }
