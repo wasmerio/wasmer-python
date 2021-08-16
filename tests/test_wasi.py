@@ -43,23 +43,14 @@ def test_wasi_env_memory():
     instance = Instance(Module(store, TEST_BYTES), import_object)
 
 def test_wasi():
-    python = sys.executable
-    result = subprocess.check_output(
-        [
-            python,
-            '-c',
-            'from wasmer import wasi, Store, Module, Instance; \
-            store = Store(); \
-            module = Module(store, open("tests/wasi.wasm", "rb").read()); \
-            wasi_version = wasi.get_version(module, strict=True); \
-            wasi_env = wasi.StateBuilder("test-program").argument("--foo").environments({"ABC": "DEF", "X": "YZ"}).map_directory("the_host_current_dir", ".").finalize(); \
-            import_object = wasi_env.generate_import_object(store, wasi_version); \
-            instance = Instance(module, import_object); \
-            instance.exports._start()'
-        ]
-    )
+    store = Store()
+    wasi_env = \
+        wasi.StateBuilder("test-program"). \
+            argument("--foo"). \
+            environments({"ABC": "DEF", "X": "YZ"}). \
+            map_directory("the_host_current_dir", "."). \
+            finalize()
+    import_object = wasi_env.generate_import_object(store, wasi.Version.LATEST)
 
-    assert result == b'Found program name: `test-program`\n\
-Found 1 arguments: --foo\n\
-Found 2 environment variables: ABC=DEF, X=YZ\n\
-Found 1 preopened directories: DirEntry("/the_host_current_dir")\n'
+    instance = Instance(Module(store, TEST_BYTES), import_object)
+    instance.exports._start()
