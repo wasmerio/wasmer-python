@@ -127,7 +127,7 @@ impl Into<wasmer::Type> for Type {
 /// )
 /// ```
 #[pyclass]
-#[text_signature = "(params, results)"]
+#[pyo3(text_signature = "(params, results)")]
 pub struct FunctionType {
     /// Parameters, i.e. inputs, of the function.
     #[pyo3(get)]
@@ -198,7 +198,7 @@ impl PyObjectProtocol for FunctionType {
 /// )
 /// ```
 #[pyclass]
-#[text_signature = "(minimum, maximum, shared)"]
+#[pyo3(text_signature = "(minimum, /, maximum, shared)")]
 pub struct MemoryType {
     /// The minimum number of pages in the memory.
     #[pyo3(get)]
@@ -216,6 +216,7 @@ pub struct MemoryType {
 #[pymethods]
 impl MemoryType {
     #[new]
+    #[args(maximum = "None", shared = "false")]
     fn new(minimum: u32, maximum: Option<u32>, shared: bool) -> Self {
         Self {
             minimum,
@@ -268,7 +269,7 @@ impl PyObjectProtocol for MemoryType {
 /// global_type = GlobalType(Type.I32, mutable=False)
 /// ```
 #[pyclass]
-#[text_signature = "(type, mutable)"]
+#[pyo3(text_signature = "(type, mutable)")]
 pub struct GlobalType {
     /// The type of the value stored in the global.
     #[pyo3(get)]
@@ -321,7 +322,7 @@ impl PyObjectProtocol for GlobalType {
 /// table_type = TableType(Type.I32, minimum=7, maximum=42)
 /// ```
 #[pyclass]
-#[text_signature = "(type, minium, maximum)"]
+#[pyo3(text_signature = "(type, minium, maximum)")]
 pub struct TableType {
     /// The type of data stored in elements of the table.
     #[pyo3(get)]
@@ -421,7 +422,7 @@ impl PyObjectProtocol for TableType {
 /// assert exports[3].type.shared == False
 /// ```
 #[pyclass]
-#[text_signature = "(name, type)"]
+#[pyo3(text_signature = "(name, type)")]
 pub struct ExportType {
     /// The name of the export.
     #[pyo3(get)]
@@ -504,7 +505,7 @@ impl TryFrom<wasmer::ExportType> for ExportType {
 /// assert imports[3].type.shared == False
 /// ```
 #[pyclass]
-#[text_signature = "(module, name, type)"]
+#[pyo3(text_signature = "(module, name, type)")]
 pub struct ImportType {
     /// The namespace name (also known as module name).
     #[pyo3(get)]

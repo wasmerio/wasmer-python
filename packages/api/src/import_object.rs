@@ -70,7 +70,7 @@ use pyo3::{
 ///     """
 /// )
 ///
-/// memory = Memory(store, MemoryType(1, shared=False))
+/// memory = Memory(store, MemoryType(minimum=1))
 /// view = memory.uint8_view(offset=0)
 ///
 /// import_object = ImportObject()
@@ -130,7 +130,7 @@ use pyo3::{
 ///
 /// etc.
 #[pyclass(unsendable)]
-#[text_signature = "()"]
+#[pyo3(text_signature = "()")]
 pub struct ImportObject {
     inner: wasmer::ImportObject,
 }
@@ -163,7 +163,7 @@ impl ImportObject {
     ///
     /// assert import_object.contains_namespace("foo") == False
     /// ```
-    #[text_signature = "($self, namespace_name)"]
+    #[pyo3(text_signature = "($self, namespace_name)")]
     fn contains_namespace(&self, namespace_name: &str) -> bool {
         self.inner.contains_namespace(namespace_name)
     }
@@ -186,11 +186,11 @@ impl ImportObject {
     ///     "env",
     ///     {
     ///         "sum": Function(store, sum),
-    ///         "memory": Memory(store, MemoryType(1, shared=False))
+    ///         "memory": Memory(store, MemoryType(minimum=1))
     ///     }
     /// )
     /// ```
-    #[text_signature = "($self, namespace_name, namespace)"]
+    #[pyo3(text_signature = "($self, namespace_name, namespace)")]
     fn register(&mut self, namespace_name: &str, namespace: &PyDict) -> PyResult<()> {
         let mut wasmer_namespace = wasmer::Exports::new();
 

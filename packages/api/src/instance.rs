@@ -83,7 +83,7 @@ use pyo3::{exceptions::PyRuntimeError, prelude::*};
 /// assert instance.exports.add_one(41) == 42
 /// ```
 #[pyclass(unsendable)]
-#[text_signature = "(module, import_object)"]
+#[pyo3(text_signature = "(module, import_object)")]
 pub struct Instance {
     #[allow(unused)]
     inner: wasmer::Instance,

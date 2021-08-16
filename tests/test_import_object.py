@@ -56,7 +56,7 @@ def test_import_memory():
         """
     )
 
-    memory = Memory(store, MemoryType(1, shared=False))
+    memory = Memory(store, MemoryType(minimum=1))
     view = memory.uint8_view(offset=0)
 
     import_object = ImportObject()

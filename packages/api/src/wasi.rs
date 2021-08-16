@@ -98,7 +98,7 @@ impl Into<wasmer_wasi::WasiVersion> for Version {
 /// wasi_state_builder = wasi.StateBuilder('test-program')
 /// ```
 #[pyclass]
-#[text_signature = "(arguments=[], environments={}, preopen_directories=[], map_directories={})"]
+#[pyo3(text_signature = "(arguments=[], environments={}, preopen_directories=[], map_directories={})")]
 pub struct StateBuilder {
     inner: wasmer_wasi::WasiStateBuilder,
 }
@@ -211,7 +211,7 @@ impl StateBuilder {
     ///     wasi.StateBuilder('test-program'). \
     ///         arguments(['--verbose --help'])
     /// ```
-    #[text_signature = "($self, arguments)"]
+    #[pyo3(text_signature = "($self, arguments)")]
     pub fn arguments<'py>(
         slf: &'py PyCell<Self>,
         arguments: &PyList,
@@ -238,7 +238,7 @@ impl StateBuilder {
     ///         argument('--verbose'). \
     ///         argument('--help')
     /// ```
-    #[text_signature = "($self, argument)"]
+    #[pyo3(text_signature = "($self, argument)")]
     pub fn argument<'py>(slf: &'py PyCell<Self>, argument: String) -> PyResult<&'py PyCell<Self>> {
         let mut slf_mut = slf.try_borrow_mut()?;
         slf_mut.self_argument(argument);
@@ -262,7 +262,7 @@ impl StateBuilder {
     ///     wasi.StateBuilder('test-program'). \
     ///         environments({"ABC": "DEF", "X": "YZ"})
     /// ```
-    #[text_signature = "($self, environments)"]
+    #[pyo3(text_signature = "($self, environments)")]
     pub fn environments<'py>(
         slf: &'py PyCell<Self>,
         environments: &PyDict,
@@ -290,7 +290,7 @@ impl StateBuilder {
     ///         environment("ABC", "DEF"). \
     ///         environment("X", "YZ")
     /// ```
-    #[text_signature = "($self, key, value)"]
+    #[pyo3(text_signature = "($self, key, value)")]
     pub fn environment<'py>(
         slf: &'py PyCell<Self>,
         key: String,
@@ -319,7 +319,7 @@ impl StateBuilder {
     ///     wasi.StateBuilder('test-program'). \
     ///         preopen_directories(["."])
     /// ```
-    #[text_signature = "($self, preopen_directories)"]
+    #[pyo3(text_signature = "($self, preopen_directories)")]
     pub fn preopen_directories<'py>(
         slf: &'py PyCell<Self>,
         preopen_directories: &PyList,
@@ -347,7 +347,7 @@ impl StateBuilder {
     ///     wasi.StateBuilder('test-program'). \
     ///         preopen_directory(".")
     /// ```
-    #[text_signature = "($self, preopen_directory)"]
+    #[pyo3(text_signature = "($self, preopen_directory)")]
     pub fn preopen_directory<'py>(
         slf: &'py PyCell<Self>,
         preopen_directory: String,
@@ -371,7 +371,7 @@ impl StateBuilder {
     ///     wasi.StateBuilder('test-program'). \
     ///         map_directories({"foo": "."})
     /// ```
-    #[text_signature = "($self, map_directories)"]
+    #[pyo3(text_signature = "($self, map_directories)")]
     pub fn map_directories<'py>(
         slf: &'py PyCell<Self>,
         map_directories: &PyDict,
@@ -395,7 +395,7 @@ impl StateBuilder {
     ///     wasi.StateBuilder('test-program'). \
     ///         map_directory("foo", ".")
     /// ```
-    #[text_signature = "($self, alias, directory)"]
+    #[pyo3(text_signature = "($self, alias, directory)")]
     pub fn map_directory<'py>(
         slf: &'py PyCell<Self>,
         alias: String,
@@ -419,7 +419,7 @@ impl StateBuilder {
     ///         argument('--foo'). \
     ///         finalize()
     /// ```
-    #[text_signature = "($self)"]
+    #[pyo3(text_signature = "($self)")]
     pub fn finalize(&mut self) -> PyResult<Environment> {
         Ok(Environment::raw_new(
             self.inner
@@ -462,7 +462,7 @@ impl Environment {
     /// wasi_env = wasi.StateBuilder('test-program').argument('--foo').finalize()
     /// import_object = wasi_env.generate_import_object(store, wasi.Version.SNAPSHOT1)
     /// ```
-    //#[text_signature = "($self, store, wasi_version)"]
+    //#[pyo3(text_signature = "($self, store, wasi_version)")]
     fn generate_import_object(&self, store: &Store, wasi_version: Version) -> ImportObject {
         let import_object = wasmer_wasi::generate_import_object_from_env(
             store.inner(),

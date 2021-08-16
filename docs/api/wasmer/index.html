@@ -135,7 +135,7 @@ is possible to read and write bytes with <a href="https://docs.python.org/3/libr
 <pre><code class="language-py">from wasmer import Memory, MemoryType, Store
 
 store = Store()
-memory = Memory(store, MemoryType(128, shared=False))
+memory = Memory(store, MemoryType(minimum=128))
 
 # Let's write data with a `Int8Array` view for example.
 int8 = memory.int8_view()
@@ -579,7 +579,7 @@ module = Module(
     &quot;&quot;&quot;
 )
 
-memory = Memory(store, MemoryType(1, shared=False))
+memory = Memory(store, MemoryType(minimum=1))
 view = memory.uint8_view(offset=0)
 
 import_object = ImportObject()
@@ -668,7 +668,7 @@ import_object.register(
     &quot;env&quot;,
     {
         &quot;sum&quot;: Function(store, sum),
-        &quot;memory&quot;: Memory(store, MemoryType(1, shared=False))
+        &quot;memory&quot;: Memory(store, MemoryType(minimum=1))
     }
 )
 </code></pre></div>
@@ -964,7 +964,7 @@ mutable from both host and WebAssembly.</p>
 <pre><code class="language-py">from wasmer import Store, Memory, MemoryType
 
 store = Store()
-memory_type = MemoryType(3, shared=False)
+memory_type = MemoryType(minimum=3)
 memory = Memory(store, memory_type)
 
 assert memory.size == 3
@@ -989,7 +989,7 @@ the <code><a title="wasmer.Buffer" href="#wasmer.Buffer">Buffer</a></code> class
 <pre><code class="language-py">from wasmer import Store, Memory, MemoryType, Buffer
 
 store = Store()
-memory_type = MemoryType(3, shared=False)
+memory_type = MemoryType(minimum=3)
 memory = Memory(store, memory_type)
 
 assert isinstance(memory.buffer, Buffer)
@@ -1002,7 +1002,7 @@ assert isinstance(memory.buffer, Buffer)
 <pre><code class="language-py">from wasmer import Store, Memory, MemoryType
 
 store = Store()
-memory_type = MemoryType(3, shared=False)
+memory_type = MemoryType(minimum=3)
 memory = Memory(store, memory_type)
 
 assert memory.data_size == 196608
@@ -1015,7 +1015,7 @@ assert memory.data_size == 196608
 <pre><code class="language-py">from wasmer import Store, Memory, MemoryType
 
 store = Store()
-memory_type = MemoryType(3, shared=False)
+memory_type = MemoryType(minimum=3)
 memory = Memory(store, memory_type)
 
 assert memory.size == 3
@@ -1049,7 +1049,7 @@ assert memory_type.shared == False
 <pre><code class="language-py">from wasmer import Store, Memory, MemoryType
 
 store = Store()
-memory_type = MemoryType(3, shared=False)
+memory_type = MemoryType(minimum=3)
 memory = Memory(store, memory_type)
 
 assert memory.size == 3
@@ -1110,7 +1110,7 @@ learn more.</p>
 <pre><code class="language-py">from wasmer import Store, Memory, MemoryType, Uint8Array
 
 store = Store()
-memory_type = MemoryType(3, shared=False)
+memory_type = MemoryType(minimum=3)
 memory = Memory(store, memory_type)
 
 assert isinstance(memory.uint8_view(offset=42), Uint8Array)
@@ -1120,7 +1120,7 @@ assert isinstance(memory.uint8_view(offset=42), Uint8Array)
 </dd>
 <dt id="wasmer.MemoryType"><code class="flex name class">
 <span>class <span class="ident">MemoryType</span></span>
-<span>(</span><span>minimum, maximum, shared)</span>
+<span>(</span><span>minimum, /, maximum, shared)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>A descriptor for a WebAssembly memory type.</p>

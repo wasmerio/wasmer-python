@@ -125,7 +125,7 @@ impl Value {
     /// value = Value.i32(42)
     /// ```
     #[staticmethod]
-    #[text_signature = "(value)"]
+    #[pyo3(text_signature = "(value)")]
     fn i32(value: i32) -> Self {
         Self {
             inner: wasmer::Value::I32(value),
@@ -142,7 +142,7 @@ impl Value {
     /// value = Value.i64(42)
     /// ```
     #[staticmethod]
-    #[text_signature = "(value)"]
+    #[pyo3(text_signature = "(value)")]
     fn i64(value: i64) -> Self {
         Self {
             inner: wasmer::Value::I64(value),
@@ -159,7 +159,7 @@ impl Value {
     /// value = Value.f32(4.2)
     /// ```
     #[staticmethod]
-    #[text_signature = "(value)"]
+    #[pyo3(text_signature = "(value)")]
     fn f32(value: f32) -> Self {
         Self {
             inner: wasmer::Value::F32(value),
@@ -176,7 +176,7 @@ impl Value {
     /// value = Value.f64(4.2)
     /// ```
     #[staticmethod]
-    #[text_signature = "(value)"]
+    #[pyo3(text_signature = "(value)")]
     fn f64(value: f64) -> Self {
         Self {
             inner: wasmer::Value::F64(value),
@@ -193,7 +193,7 @@ impl Value {
     /// value = Value.v128(42)
     /// ```
     #[staticmethod]
-    #[text_signature = "(value)"]
+    #[pyo3(text_signature = "(value)")]
     fn v128(value: u128) -> Self {
         Self {
             inner: wasmer::Value::V128(value),

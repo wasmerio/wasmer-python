@@ -99,8 +99,8 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     ///
     /// assert wat2wasm('(module)') == b'\x00asm\x01\x00\x00\x00'
     /// ```
-    #[pyfn(module, "wat2wasm")]
-    #[text_signature = "(wat)"]
+    #[pyfn(module)]
+    #[pyo3(text_signature = "(wat)")]
     fn wat2wasm<'py>(py: Python<'py>, wat: String) -> PyResult<&'py PyBytes> {
         wat::wat2wasm(py, wat)
     }
@@ -114,8 +114,8 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     ///
     /// assert wasm2wat(b'\x00asm\x01\x00\x00\x00') == '(module)'
     /// ```
-    #[pyfn(module, "wasm2wat")]
-    #[text_signature = "(bytes)"]
+    #[pyfn(module)]
+    #[pyo3(text_signature = "(bytes)")]
     fn wasm2wat(bytes: &PyBytes) -> PyResult<String> {
         wat::wasm2wat(bytes)
     }
@@ -149,20 +149,17 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     // Enums.
     module.add(
         "Type",
-        enum_module.call1(
-            "IntEnum",
-            PyTuple::new(
-                py,
-                &[
-                    "Type",
-                    types::Type::iter()
-                        .map(Into::into)
-                        .collect::<Vec<&'static str>>()
-                        .join(" ")
-                        .as_str(),
-                ],
-            ),
-        )?,
+        enum_module.getattr("IntEnum")?.call1(PyTuple::new(
+            py,
+            &[
+                "Type",
+                types::Type::iter()
+                    .map(Into::into)
+                    .collect::<Vec<&'static str>>()
+                    .join(" ")
+                    .as_str(),
+            ],
+        ))?,
     )?;
 
     // Modules.
@@ -338,8 +335,8 @@ fn wasi(py: Python, module: &PyModule) -> PyResult<()> {
     /// namespace. A non-strict detection expects that at least one WASI
     /// namespace exits to detect the version. Note that the strict
     /// detection is faster than the non-strict one.
-    #[pyfn(module, "get_version")]
-    #[text_signature = "(module, strict)"]
+    #[pyfn(module)]
+    #[pyo3(text_signature = "(module, strict)")]
     fn get_version(module: &module::Module, strict: bool) -> Option<wasi::Version> {
         wasi::get_version(module, strict)
     }
@@ -351,20 +348,17 @@ fn wasi(py: Python, module: &PyModule) -> PyResult<()> {
     // Enums.
     module.add(
         "Version",
-        enum_module.call1(
-            "IntEnum",
-            PyTuple::new(
-                py,
-                &[
-                    "Version",
-                    wasi::Version::iter()
-                        .map(Into::into)
-                        .collect::<Vec<&'static str>>()
-                        .join(" ")
-                        .as_str(),
-                ],
-            ),
-        )?,
+        enum_module.getattr("IntEnum")?.call1(PyTuple::new(
+            py,
+            &[
+                "Version",
+                wasi::Version::iter()
+                    .map(Into::into)
+                    .collect::<Vec<&'static str>>()
+                    .join(" ")
+                    .as_str(),
+            ],
+        ))?,
     )?;
 
     Ok(())

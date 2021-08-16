@@ -35,7 +35,7 @@ use std::convert::TryInto;
 /// module = Module(store, '(module)')
 /// ```
 #[pyclass(unsendable)]
-#[text_signature = "(store, bytes)"]
+#[pyo3(text_signature = "(store, bytes)")]
 pub struct Module {
     inner: wasmer::Module,
 }
@@ -62,7 +62,7 @@ impl Module {
     ///
     /// assert Module.validate(Store(), wasm_bytes)
     /// ```
-    #[text_signature = "(bytes)"]
+    #[pyo3(text_signature = "(bytes)")]
     #[staticmethod]
     fn validate(store: &Store, bytes: &PyAny) -> bool {
         match bytes.downcast::<PyBytes>() {
@@ -178,7 +178,7 @@ impl Module {
     /// assert module.custom_sections('hello') == [b'World!']
     /// assert module.custom_sections('foo') == []
     /// ```
-    #[text_signature = "($self, name)"]
+    #[pyo3(text_signature = "($self, name)")]
     fn custom_sections<'p>(&self, py: Python<'p>, name: &str) -> &'p PyList {
         PyList::new(
             py,
@@ -203,7 +203,7 @@ impl Module {
     ///
     /// assert type(serialized_module) == bytes
     /// ```
-    #[text_signature = "($self)"]
+    #[pyo3(text_signature = "($self)")]
     fn serialize<'p>(&self, py: Python<'p>) -> PyResult<&'p PyBytes> {
         Ok(PyBytes::new(
             py,
@@ -253,7 +253,7 @@ impl Module {
     ///
     /// assert isinstance(module, Module)
     /// ```
-    #[text_signature = "($self, bytes)"]
+    #[pyo3(text_signature = "($self, bytes)")]
     #[staticmethod]
     fn deserialize(store: &Store, bytes: &PyBytes) -> PyResult<Self> {
         let module = unsafe { wasmer::Module::deserialize(store.inner(), bytes.as_bytes()) }

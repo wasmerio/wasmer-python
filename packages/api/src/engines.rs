@@ -1,3 +1,3 @@
-pub use wasmer_engines::{Dylib, Universal};
+pub use crate::wasmer_inner::wasmer_engines::{Dylib, Universal};
 // Deprecated engines.
-pub use wasmer_engines::{Native, JIT};
+pub use crate::wasmer_inner::wasmer_engines::{Native, JIT};

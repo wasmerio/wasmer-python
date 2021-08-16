@@ -13,7 +13,7 @@ def instance():
 
 def test_constructor():
     store = Store()
-    memory_type = MemoryType(3, shared=False)
+    memory_type = MemoryType(minimum=3)
     memory = Memory(store, memory_type)
 
     assert memory.size == 3
