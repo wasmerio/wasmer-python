@@ -786,9 +786,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-build-config"
-version = "0.14.2"
+version = "0.14.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "755944027ce803c7238e59c5a18e59c1d0a4553db50b23e9ba209a568353028d"
+checksum = "650911ce22a793e9af67a0a880741ab1519e4f84740642716cbe83e129d17a2e"
 dependencies = [
  "once_cell",
 ]
@@ -1098,9 +1098,9 @@ checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 
 [[package]]
 name = "syn"
-version = "1.0.74"
+version = "1.0.75"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1873d832550d4588c3dbc20f01361ab00bfe741048f71e3fecf145a7cc18b29c"
+checksum = "b7f58f7e8eaa0009c5fec437aabf511bd9933e4b2d7407bd05273c01a8906ea7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1582,9 +1582,9 @@ checksum = "a5f71b80b8193e50910919e7d1bc956d2b4f42b1cb1fad84bacb59332c16f2cf"
 
 [[package]]
 name = "wasmprinter"
-version = "0.2.28"
+version = "0.2.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b48e4f2999b9930e9b037e328357d7d2367e0d8ea6e534be90aeff60976c0452"
+checksum = "f62f18810edc34db799bcb3d555835b2eecc9b6b221f8ee74fdb5aae0bffa176"
 dependencies = [
  "anyhow",
  "wasmparser 0.80.0",
