@@ -20,7 +20,7 @@ wasmer = { version = "2.0", default-features = false, features = ["wat", "univer
 wasmer-engines = { path = "../engines/" }
 wasmer-types = "2.0"
 wasmer-wasi = "2.0"
-pyo3 = { version = "0.14", features = ["extension-module", "auto-initialize"] }
+pyo3 = { version = "0.15", features = ["extension-module", "auto-initialize"] }
 wat = "1.0"
 wasmprinter = "0.2"
 cfg-if = "1.0"
