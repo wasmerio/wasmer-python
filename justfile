@@ -122,6 +122,10 @@ build-any-wheel:
 test files='tests':
 	@py.test -v -s {{files}}
 
+# Run the benchmarks.
+benchmark files='benchmarks':
+	@for BENCH in {{files}}/*.py; do py.test -v -s $BENCH; done
+
 # Generate the documentation.
 doc:
 	@pdoc --html --output-dir docs/api --force \
