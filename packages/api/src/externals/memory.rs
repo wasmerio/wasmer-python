@@ -1,6 +1,9 @@
 use crate::{
     errors::to_py_err,
-    memory::{Buffer, Int16Array, Int32Array, Int8Array, Uint16Array, Uint32Array, Uint8Array},
+    memory::{
+        Buffer, Float32Array, Float64Array, Int16Array, Int32Array, Int64Array, Int8Array,
+        Uint16Array, Uint32Array, Uint64Array, Uint8Array,
+    },
     store::Store,
     types::MemoryType,
     wasmer_inner::wasmer,
@@ -234,6 +237,54 @@ impl Memory {
     #[args(offset = 0)]
     fn int32_view(&self, offset: usize) -> Int32Array {
         Int32Array {
+            memory: self.inner.clone(),
+            offset,
+        }
+    }
+
+    /// Creates a read-and-write over the memory data where elements
+    /// are of kind `uint64`. See the `Uint64Array` view to learn
+    /// more, and the `Memory.uint8_view` method to see an example.
+    #[pyo3(text_signature = "($self, /, offset=0)")]
+    #[args(offset = 0)]
+    fn uint64_view(&self, offset: usize) -> Uint64Array {
+        Uint64Array {
+            memory: self.inner.clone(),
+            offset,
+        }
+    }
+
+    /// Creates a read-and-write over the memory data where elements
+    /// are of kind `int64`. See the `Int64Array` view to learn more,
+    /// and the `Memory.uint8_view` method to see an example.
+    #[pyo3(text_signature = "($self, /, offset=0)")]
+    #[args(offset = 0)]
+    fn int64_view(&self, offset: usize) -> Int64Array {
+        Int64Array {
+            memory: self.inner.clone(),
+            offset,
+        }
+    }
+
+    /// Creates a read-and-write over the memory data where elements
+    /// are of kind `float32`. See the `Float32Array` view to learn more,
+    /// and the `Memory.uint8_view` method to see an example.
+    #[pyo3(text_signature = "($self, /, offset=0)")]
+    #[args(offset = 0)]
+    fn float32_view(&self, offset: usize) -> Float32Array {
+        Float32Array {
+            memory: self.inner.clone(),
+            offset,
+        }
+    }
+
+    /// Creates a read-and-write over the memory data where elements
+    /// are of kind `float64`. See the `Float64Array` view to learn more,
+    /// and the `Memory.uint8_view` method to see an example.
+    #[pyo3(text_signature = "($self, /, offset=0)")]
+    #[args(offset = 0)]
+    fn float64_view(&self, offset: usize) -> Float64Array {
+        Float64Array {
             memory: self.inner.clone(),
             offset,
         }

@@ -229,3 +229,7 @@ memory_view!(Uint16Array over u16|2);
 memory_view!(Int16Array over i16|2);
 memory_view!(Uint32Array over u32|4);
 memory_view!(Int32Array over i32|4);
+memory_view!(Uint64Array over u64|8);
+memory_view!(Int64Array over i64|8);
+memory_view!(Float32Array over f32|4);
+memory_view!(Float64Array over f64|8);
