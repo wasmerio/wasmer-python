@@ -17,25 +17,26 @@ jobs:
             os: 'ubuntu-18.04'
             target-name: 'x86_64-unknown-linux-gnu'
             rust-toolchain: 'stable'
-            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/11.x/linux-amd64.tar.gz'
+            llvm-archive-url: 'https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/clang+llvm-13.0.0-x86_64-linux-gnu-ubuntu-16.04.tar.xz'
 
-          - id: 'linux-aarch64'
-            os: ['self-hosted', 'linux', 'ARM64', 'python']
-            target-name: 'aarch64-unknown-linux-gnu'
-            rust-toolchain: 'stable'
-            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/11.x/linux-aarch64.tar.gz'
+          # - id: 'linux-aarch64'
+          #   os: ['self-hosted', 'linux', 'ARM64', 'python']
+          #   target-name: 'aarch64-unknown-linux-gnu'
+          #   rust-toolchain: 'stable'
+          #   llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/11.x/linux-aarch64.tar.gz'
 
           - id: 'darwin-amd64'
             os: 'macos-latest'
             target-name: 'x86_64-apple-darwin'
             rust-toolchain: 'stable'
-            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/11.x/darwin-amd64.tar.gz'
+            llvm-archive-url: 'https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/clang+llvm-13.0.0-x86_64-apple-darwin.tar.xz'
 
-          - id: 'windows-amd64'
-            os: 'windows-latest'
-            target-name: 'x86_64-pc-windows-msvc'
-            rust-toolchain: 'stable'
-            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/11.x/windows-amd64.tar.gz'
+          # - id: 'windows-amd64'
+          #   os: 'windows-latest'
+          #   target-name: 'x86_64-pc-windows-msvc'
+          #   rust-toolchain: 'stable'
+          #   llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/11.x/windows-amd64.tar.gz'
+
       fail-fast: true
 
     runs-on: ${{ matrix.target.os }}
@@ -80,10 +81,13 @@ jobs:
         if: matrix.target.id != 'windows-amd64' # This is disabled in the `just` file, skip it to save data.
         shell: bash
         run: |
-          curl --proto '=https' --tlsv1.2 -sSfL ${{ matrix.target.llvm-archive-url }} -o llvm.tar.gz
-          mkdir -p ${{ env.LLVM_DIR }}
-          tar xzvf llvm.tar.gz -C ${{ env.LLVM_DIR }}
-          echo ${{ env.LLVM_DIR }}/bin >> $GITHUB_PATH
+          curl --proto '=https' --tlsv1.2 -sSf ${{ matrix.target.llvm-archive-url }} -L -o llvm.tar.xz
+          LLVM_DIR=$(pwd)/${{ env.LLVM_DIR }}
+          mkdir ${LLVM_DIR}
+          tar xf llvm.tar.xz --strip-components=1 -C ${LLVM_DIR}
+          echo "${LLVM_DIR}/bin" >> $GITHUB_PATH
+          echo "LLVM_SYS_120_PREFIX=${LLVM_DIR}" >> $GITHUB_ENV
+
         env:
           LLVM_DIR: ${{ github.workspace }}/llvm
 
