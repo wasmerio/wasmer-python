@@ -97,6 +97,18 @@ pub struct Instance {
     exports: Py<Exports>,
 }
 
+// pub enum InstanceImportObject {
+//     ImportObject(ImportObject),
+// }
+
+// impl InstanceImportObject {
+//     fn inner(&self) {
+//         match &self {
+//             Self::ImportObject(import_object) => import_object.inner()
+//         }
+//     }
+// }
+
 pub enum InstanceError {
     InstantiationError(wasmer::InstantiationError),
     PyErr(PyErr),
@@ -106,12 +118,19 @@ impl Instance {
     pub fn raw_new(
         py: Python,
         module: &Module,
-        import_object: Option<&ImportObject>,
+        import_object: Option<&PyAny>,
     ) -> Result<Self, InstanceError> {
         let module = module.inner();
 
         let instance = match import_object {
-            Some(import_object) => wasmer::Instance::new(&module, import_object.inner()),
+            Some(import_object) => {
+                match import_object.downcast::<ImportObject>() {
+                    Ok(io) => wasmer::Instance::new(&module, io.inner()),
+                    Err(e) => {
+                        return Err(InstanceError::PyErr(e.into()));
+                    }
+                }
+            },
             None => wasmer::Instance::new(&module, &wasmer::imports! {}),
         };
         let instance = instance.map_err(InstanceError::InstantiationError)?;
@@ -129,7 +148,7 @@ impl Instance {
 #[pymethods]
 impl Instance {
     #[new]
-    fn new(py: Python, module: &Module, import_object: Option<&ImportObject>) -> PyResult<Self> {
+    fn new(py: Python, module: &Module, import_object: Option<&PyAny>) -> PyResult<Self> {
         Instance::raw_new(py, &module, import_object).map_err(|error| match error {
             InstanceError::InstantiationError(error) => to_py_err::<PyRuntimeError, _>(error),
             InstanceError::PyErr(error) => error,

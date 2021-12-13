@@ -226,3 +226,5 @@ impl ImportObject {
         Ok(())
     }
 }
+
+unsafe impl pyo3::PyNativeType for ImportObject {}
