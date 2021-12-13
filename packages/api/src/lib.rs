@@ -75,7 +75,7 @@ mod wat;
 /// * The basic elements are `Module` and `Instance`,
 /// * Exports of an instance are represented by the `Exports` object,
 /// * Maybe your module needs to import `Function`, `Memory`, `Global`
-///   or `Table`? Well, there is the `ImportObject` for that!
+///   or `Table`? Well, there is the Python `dict` for that!
 /// * It is possible to read and write `Memory` data with the Python
 ///   buffer protocol with `Buffer`.
 ///

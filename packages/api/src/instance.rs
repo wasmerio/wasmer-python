@@ -2,7 +2,9 @@ use crate::{
     errors::to_py_err, exports::Exports, import_object::ImportObject, module::Module,
     wasmer_inner::wasmer,
 };
+use pyo3::types::PyDict;
 use pyo3::{exceptions::PyRuntimeError, prelude::*};
+use std::borrow::Borrow;
 
 /// A WebAssembly instance is a stateful, executable instance of a
 /// WebAssembly `Module`.
@@ -44,7 +46,8 @@ use pyo3::{exceptions::PyRuntimeError, prelude::*};
 /// using the `math.sum` function).
 ///
 /// ```py
-/// from wasmer import Store, Module, Instance, ImportObject, Function
+/// from wasmer import Store, Module, Instance, Function
+/// from collections import defaultdict
 ///
 /// # Let's define the `sum` function!
 /// def sum(x: int, y: int) -> int:
@@ -68,13 +71,8 @@ use pyo3::{exceptions::PyRuntimeError, prelude::*};
 ///
 /// # Now, let's create an import object, and register the `sum`
 /// # function.
-/// import_object = ImportObject()
-/// import_object.register(
-///     "math",
-///     {
-///         "sum": Function(store, sum)
-///     }
-/// )
+/// import_object = defaultdict(dict)
+/// import_object["math"]["sum"] = Function(store, sum)
 ///
 /// # Here we go, let's instantiate the module with the import object!
 /// instance = Instance(module, import_object)
@@ -97,18 +95,6 @@ pub struct Instance {
     exports: Py<Exports>,
 }
 
-// pub enum InstanceImportObject {
-//     ImportObject(ImportObject),
-// }
-
-// impl InstanceImportObject {
-//     fn inner(&self) {
-//         match &self {
-//             Self::ImportObject(import_object) => import_object.inner()
-//         }
-//     }
-// }
-
 pub enum InstanceError {
     InstantiationError(wasmer::InstantiationError),
     PyErr(PyErr),
@@ -123,13 +109,25 @@ impl Instance {
         let module = module.inner();
 
         let instance = match import_object {
-            Some(import_object) => {
-                match import_object.downcast::<ImportObject>() {
-                    Ok(io) => wasmer::Instance::new(&module, io.inner()),
+            Some(import_object) => match import_object.downcast::<PyCell<ImportObject>>() {
+                Ok(io) => wasmer::Instance::new(&module, io.borrow().inner()),
+                Err(_e) => match import_object.downcast::<PyDict>() {
+                    Ok(dict) => {
+                        let mut io = ImportObject::new();
+                        for (namespace_name, namespace_dict) in dict.into_iter() {
+                            let namespace_name = namespace_name.to_string();
+                            let namespace_dict = namespace_dict
+                                .downcast::<PyDict>()
+                                .map_err(|e| InstanceError::PyErr(e.into()))?;
+                            io.register(&namespace_name, namespace_dict)
+                                .map_err(|e| InstanceError::PyErr(e.into()))?;
+                        }
+                        wasmer::Instance::new(&module, io.borrow().inner())
+                    }
                     Err(e) => {
                         return Err(InstanceError::PyErr(e.into()));
                     }
-                }
+                },
             },
             None => wasmer::Instance::new(&module, &wasmer::imports! {}),
         };

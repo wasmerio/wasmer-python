@@ -9,3 +9,12 @@ members = [
 exclude = [
     "packages/any",
 ]
+
+# [patch.crates-io]
+# wasmer = { path = "../wasmer/lib/api" }
+# wasmer-wasi = { path = "../wasmer/lib/wasi" }
+# wasmer-types = { path = "../wasmer/lib/types" }
+# wasmer-compiler-cranelift = { path = "../wasmer/lib/compiler-cranelift" }
+# wasmer-compiler-llvm = { path = "../wasmer/lib/compiler-llvm" }
+# wasmer-compiler-singlepass = { path = "../wasmer/lib/compiler-singlepass" }
+# wasmer-compiler = { path = "../wasmer/lib/compiler" }

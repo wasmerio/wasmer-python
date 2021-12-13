@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 * The whole API changed to better match Wasmer and Wasm C API
 
   ```python
-  from wasmer import engine, wat2wasm, ImportObject, Module, Store, Instance
+  from wasmer import engine, wat2wasm, Module, Store, Instance
   from wasmer_compiler_cranelift import Compiler
   
   # Create an Engine
@@ -29,7 +29,7 @@ All notable changes to this project will be documented in this file.
   module = Module(store, wasm_bytes)
   
   # Create an empty import object.
-  import_object = ImportObject()
+  import_object = {}
   
   # Let's instantiate the Wasm module.
   instance = Instance(module, import_object)

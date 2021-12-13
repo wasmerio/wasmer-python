@@ -98,7 +98,9 @@ impl Into<wasmer_wasi::WasiVersion> for Version {
 /// wasi_state_builder = wasi.StateBuilder('test-program')
 /// ```
 #[pyclass]
-#[pyo3(text_signature = "(arguments=[], environments={}, preopen_directories=[], map_directories={})")]
+#[pyo3(
+    text_signature = "(arguments=[], environments={}, preopen_directories=[], map_directories={})"
+)]
 pub struct StateBuilder {
     inner: wasmer_wasi::WasiStateBuilder,
 }
