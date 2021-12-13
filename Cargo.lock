@@ -800,16 +800,16 @@ dependencies = [
 
 [[package]]
 name = "pyo3"
-version = "0.14.2"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af205762ba65eec9f27a2fa1a57a40644e8e3368784b8c8b2f2de48f6e8ddd96"
+checksum = "7cf01dbf1c05af0a14c7779ed6f3aa9deac9c3419606ac9de537a2d649005720"
 dependencies = [
  "cfg-if 1.0.0",
  "indoc",
  "libc",
  "parking_lot",
  "paste",
- "pyo3-build-config",
+ "pyo3-build-config 0.15.1",
  "pyo3-macros",
  "unindent",
 ]
@@ -824,10 +824,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "pyo3-macros"
-version = "0.14.2"
+name = "pyo3-build-config"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cd31b36bccfd902c78804bd96c28ea93eac6fa0ca311f9d21ef2230b6665b29a"
+checksum = "dbf9e4d128bfbddc898ad3409900080d8d5095c379632fbbfbb9c8cfb1fb852b"
+dependencies = [
+ "once_cell",
+]
+
+[[package]]
+name = "pyo3-macros"
+version = "0.15.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "67701eb32b1f9a9722b4bc54b548ff9d7ebfded011c12daece7b9063be1fd755"
 dependencies = [
  "pyo3-macros-backend",
  "quote",
@@ -836,12 +845,12 @@ dependencies = [
 
 [[package]]
 name = "pyo3-macros-backend"
-version = "0.14.2"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c21c59ba36db9c823e931c662766b0dd01a030b1d96585b67d8857a96a56b972"
+checksum = "f44f09e825ee49a105f2c7b23ebee50886a9aee0746f4dd5a704138a64b0218a"
 dependencies = [
  "proc-macro2",
- "pyo3-build-config",
+ "pyo3-build-config 0.15.1",
  "quote",
  "syn",
 ]
@@ -1439,7 +1448,7 @@ version = "1.0.0"
 dependencies = [
  "cfg-if 1.0.0",
  "pyo3",
- "pyo3-build-config",
+ "pyo3-build-config 0.14.4",
  "wasmer 2.1.0",
  "wasmer-engines",
  "wasmer-types",
