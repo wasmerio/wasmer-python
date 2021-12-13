@@ -1,4 +1,4 @@
-from wasmer import Instance, Module, Store, Memory, MemoryType, Buffer, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array
+from wasmer import Instance, Module, Store, Memory, MemoryType, Buffer, Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array, Uint64Array, Int64Array, Float32Array, Float64Array
 import ctypes
 import gc
 import inspect
@@ -48,6 +48,10 @@ def test_is_a_class():
     assert inspect.isclass(Int16Array)
     assert inspect.isclass(Uint32Array)
     assert inspect.isclass(Int32Array)
+    assert inspect.isclass(Uint64Array)
+    assert inspect.isclass(Int64Array)
+    assert inspect.isclass(Float32Array)
+    assert inspect.isclass(Float64Array)
     assert inspect.isclass(Buffer)
 
 def test_bytes_per_element():
@@ -59,6 +63,10 @@ def test_bytes_per_element():
     assert memory.int16_view().bytes_per_element ==  2
     assert memory.uint32_view().bytes_per_element ==  4
     assert memory.int32_view().bytes_per_element ==  4
+    assert memory.uint64_view().bytes_per_element ==  8
+    assert memory.int64_view().bytes_per_element ==  8
+    assert memory.float32_view().bytes_per_element ==  4
+    assert memory.float64_view().bytes_per_element ==  8
 
 @pytest.mark.xfail()
 def test_cannot_construct():

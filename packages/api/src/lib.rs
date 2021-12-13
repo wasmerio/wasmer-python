@@ -130,11 +130,15 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
     module.add_class::<import_object::ImportObject>()?;
     module.add_class::<instance::Instance>()?;
     module.add_class::<memory::Buffer>()?;
+    module.add_class::<memory::Float32Array>()?;
+    module.add_class::<memory::Float64Array>()?;
     module.add_class::<memory::Int16Array>()?;
     module.add_class::<memory::Int32Array>()?;
+    module.add_class::<memory::Int64Array>()?;
     module.add_class::<memory::Int8Array>()?;
     module.add_class::<memory::Uint16Array>()?;
     module.add_class::<memory::Uint32Array>()?;
+    module.add_class::<memory::Uint64Array>()?;
     module.add_class::<memory::Uint8Array>()?;
     module.add_class::<module::Module>()?;
     module.add_class::<store::Store>()?;
