@@ -331,3 +331,22 @@ def test_memory_buffer_supports_keeps_object_alive():
     val = bytes([42] * 1024)
     for i in range(len(view) // 1024):
         view[i * 1024:(i + 1) * 1024] = val
+
+def test_memory_views_length():
+    store = Store()
+    memory_type = MemoryType(minimum=1, maximum=1)
+    memory = Memory(store, memory_type)
+
+    PAGE_SIZE = 65536
+
+    assert memory.size == 1
+    assert len(memory.uint8_view()) == PAGE_SIZE
+    assert len(memory.int8_view()) == PAGE_SIZE
+    assert len(memory.uint16_view()) == PAGE_SIZE/2
+    assert len(memory.int16_view()) == PAGE_SIZE/2
+    assert len(memory.uint32_view()) == PAGE_SIZE/4
+    assert len(memory.int32_view()) == PAGE_SIZE/4
+    assert len(memory.uint64_view()) == PAGE_SIZE/8
+    assert len(memory.int64_view()) == PAGE_SIZE/8
+    assert len(memory.float32_view()) == PAGE_SIZE/4
+    assert len(memory.float64_view()) == PAGE_SIZE/8
