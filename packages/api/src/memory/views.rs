@@ -5,7 +5,7 @@ use pyo3::{
     prelude::*,
     types::{PyAny, PyInt, PyLong, PySequence, PySlice},
 };
-use std::{cell::Cell, cmp::min, mem::size_of, ops::Range};
+use std::{cell::Cell, cmp::min, ops::Range};
 
 macro_rules! memory_view {
     ($class_name:ident over $wasm_type:ty | $bytes_per_element:expr) => {
@@ -62,7 +62,7 @@ macro_rules! memory_view {
         impl PyMappingProtocol for $class_name {
             /// Returns the length of the memory view.
             fn __len__(&self) -> PyResult<usize> {
-                Ok(self.memory.view::<$wasm_type>()[self.offset..].len() / size_of::<$wasm_type>())
+                Ok(self.memory.view::<$wasm_type>()[self.offset..].len())
             }
 
             /// Returns one or more values from the memory view.
