@@ -12,6 +12,24 @@ use pyo3::{
 /// An `ImportObject` represents all of the import data used when
 /// instantiating a WebAssembly module.
 ///
+/// # Important
+///
+/// This object is deprecated in favor of dictionaries in Python.
+/// You can now type:
+///
+/// ```py
+/// from wasmer import Store, Function
+///
+/// def sum(x: int, y: int) -> int:
+///     return x + y
+///
+/// store = Store()
+/// import_object = {}
+/// import_object["math"] = {
+///     "sum": Function(store, sum)
+/// }
+/// ```
+///
 /// ## Example
 ///
 /// Importing a function, `math.sum`, and call it through the exported
@@ -148,7 +166,7 @@ impl ImportObject {
 #[pymethods]
 impl ImportObject {
     #[new]
-    fn new() -> Self {
+    pub(crate) fn new() -> Self {
         ImportObject::raw_new(Default::default())
     }
 
@@ -191,7 +209,7 @@ impl ImportObject {
     /// )
     /// ```
     #[pyo3(text_signature = "($self, namespace_name, namespace)")]
-    fn register(&mut self, namespace_name: &str, namespace: &PyDict) -> PyResult<()> {
+    pub(crate) fn register(&mut self, namespace_name: &str, namespace: &PyDict) -> PyResult<()> {
         let mut wasmer_namespace = wasmer::Exports::new();
 
         for (name, item) in namespace.into_iter() {
