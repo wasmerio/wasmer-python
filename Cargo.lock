@@ -289,9 +289,9 @@ checksum = "212d0f5754cb6769937f4501cc0e67f4f4483c8d2c3e1e922ee9edbe4ab4c7c0"
 
 [[package]]
 name = "dynasm"
-version = "1.1.0"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cdc2d9a5e44da60059bd38db2d05cbb478619541b8c79890547861ec1e3194f0"
+checksum = "ab1096ebdaa974cd6a41a743e94dfa00cce9bfbf4690bcc73fdec6a903938ccc"
 dependencies = [
  "bitflags",
  "byteorder",
@@ -304,13 +304,13 @@ dependencies = [
 
 [[package]]
 name = "dynasmrt"
-version = "1.1.0"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42276e3f205fe63887cca255aa9a65a63fb72764c30b9a6252a7c7e46994f689"
+checksum = "c20c69d1e16ae47889b47c301c790f48615cd9bfbdf586e3f6d4fde64af3d259"
 dependencies = [
  "byteorder",
  "dynasm",
- "memmap2 0.2.3",
+ "memmap2",
 ]
 
 [[package]]
@@ -597,15 +597,6 @@ checksum = "308cc39be01b73d0d18f82a0e7b2a3df85245f84af96fdddc5d202d27e47b86a"
 
 [[package]]
 name = "memmap2"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "723e3ebdcdc5c023db1df315364573789f8857c11b631a2fdfad7c00f5c046b4"
-dependencies = [
- "libc",
-]
-
-[[package]]
-name = "memmap2"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4647a11b578fead29cdbb34d4adef8dd3dc35b876c9c6d5240d83f205abfe96e"
@@ -735,9 +726,9 @@ checksum = "8d31d11c69a6b52a174b42bdc0c30e5e11670f90788b2c471c31c1d17d449443"
 
 [[package]]
 name = "ppv-lite86"
-version = "0.2.10"
+version = "0.2.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac74c624d6b2d21f425f752262f42188365d7b8ff1aff74c82e45136510a4857"
+checksum = "ed0cfbc8191465bed66e1718596ee0b0b35d5ee1f41c5df2189d0fe8bde535ba"
 
 [[package]]
 name = "proc-macro-error"
@@ -1580,7 +1571,7 @@ dependencies = [
  "enumset",
  "lazy_static",
  "loupe",
- "memmap2 0.5.0",
+ "memmap2",
  "more-asserts",
  "rustc-demangle",
  "serde",
