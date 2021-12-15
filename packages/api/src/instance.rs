@@ -113,15 +113,7 @@ impl Instance {
                 Ok(io) => wasmer::Instance::new(&module, io.borrow().inner()),
                 Err(_e) => match import_object.downcast::<PyDict>() {
                     Ok(dict) => {
-                        let mut io = ImportObject::new();
-                        for (namespace_name, namespace_dict) in dict.into_iter() {
-                            let namespace_name = namespace_name.to_string();
-                            let namespace_dict = namespace_dict
-                                .downcast::<PyDict>()
-                                .map_err(|e| InstanceError::PyErr(e.into()))?;
-                            io.register(&namespace_name, namespace_dict)
-                                .map_err(|e| InstanceError::PyErr(e.into()))?;
-                        }
+                        let io = ImportObject::from_pydict(dict).map_err(|e| InstanceError::PyErr(e.into()))?;
                         wasmer::Instance::new(&module, io.borrow().inner())
                     }
                     Err(e) => {

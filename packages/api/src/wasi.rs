@@ -465,14 +465,14 @@ impl Environment {
     /// import_object = wasi_env.generate_import_object(store, wasi.Version.SNAPSHOT1)
     /// ```
     //#[pyo3(text_signature = "($self, store, wasi_version)")]
-    fn generate_import_object(&self, store: &Store, wasi_version: Version) -> ImportObject {
+    fn generate_import_object(&self, store: &Store, wasi_version: Version) -> PyResult<PyObject> {
         let import_object = wasmer_wasi::generate_import_object_from_env(
             store.inner(),
             self.inner.clone(),
             wasi_version.into(),
         );
 
-        ImportObject::raw_new(import_object)
+        ImportObject::raw_new(import_object).to_dict()
     }
 }
 
