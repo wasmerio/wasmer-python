@@ -113,7 +113,8 @@ impl Instance {
                 Ok(io) => wasmer::Instance::new(&module, io.borrow().inner()),
                 Err(_e) => match import_object.downcast::<PyDict>() {
                     Ok(dict) => {
-                        let io = ImportObject::from_pydict(dict).map_err(|e| InstanceError::PyErr(e.into()))?;
+                        let io = ImportObject::from_pydict(dict)
+                            .map_err(|e| InstanceError::PyErr(e.into()))?;
                         wasmer::Instance::new(&module, io.borrow().inner())
                     }
                     Err(e) => {

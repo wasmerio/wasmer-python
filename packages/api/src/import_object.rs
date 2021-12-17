@@ -200,7 +200,7 @@ impl ImportObject {
         self.inner.contains_namespace(namespace_name)
     }
 
-    /// Gets an `ImportObject` from a Python dictionary.
+    /// Gets a Python dictionary from an `ImportObject`.
     #[pyo3(text_signature = "($self)")]
     pub(crate) fn to_dict<'py>(&'py self) -> Result<PyObject, PyErr> {
         let gil_guard = Python::acquire_gil();
