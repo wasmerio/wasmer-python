@@ -1,5 +1,5 @@
 use crate::{
-    errors::to_py_err,
+    errors::{runtime_error_to_py_err, to_py_err},
     store::Store,
     types::FunctionType,
     values::{to_py_object, to_wasm_value},
@@ -10,7 +10,7 @@ use pyo3::{
     prelude::*,
     types::{PyDict, PyTuple},
 };
-use std::{io, sync::Arc};
+use std::sync::Arc;
 
 /// Represents a WebAssembly function instance.
 ///
@@ -199,9 +199,7 @@ impl Function {
                 let results = environment
                     .py_function
                     .call(py, PyTuple::new(py, arguments), None)
-                    .map_err(|error| {
-                        wasmer::RuntimeError::new(io::Error::from(error).to_string())
-                    })?;
+                    .map_err(|error| wasmer::RuntimeError::user(Box::new(error)))?;
 
                 let result_types = &environment.result_types;
                 let has_result_types = !result_types.is_empty();
@@ -212,22 +210,16 @@ impl Function {
                         .zip(result_types)
                         .map(|(value, ty)| to_wasm_value((value, *ty)))
                         .collect::<PyResult<_>>()
-                        .map_err(|error| {
-                            wasmer::RuntimeError::new(io::Error::from(error).to_string())
-                        })?
+                        .map_err(|error| wasmer::RuntimeError::user(Box::new(error)))?
                 } else if !results.is_none(py) && has_result_types {
                     vec![to_wasm_value((
                         results
                             .cast_as::<PyAny>(py)
                             .map_err(PyErr::from)
-                            .map_err(|error| {
-                                wasmer::RuntimeError::new(io::Error::from(error).to_string())
-                            })?,
+                            .map_err(|error| wasmer::RuntimeError::user(Box::new(error)))?,
                         result_types[0],
                     ))
-                    .map_err(|error| {
-                        wasmer::RuntimeError::new(io::Error::from(error).to_string())
-                    })?]
+                    .map_err(|error| wasmer::RuntimeError::user(Box::new(error)))?]
                 } else {
                     Vec::new()
                 })
@@ -251,7 +243,7 @@ impl Function {
             .inner
             .call(&arguments)
             .map(<[_]>::into_vec)
-            .map_err(to_py_err::<PyRuntimeError, _>)?;
+            .map_err(runtime_error_to_py_err)?;
 
         let to_py_object = to_py_object(py);
 
