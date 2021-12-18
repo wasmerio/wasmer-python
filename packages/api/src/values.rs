@@ -27,6 +27,22 @@ impl NativeFromPyAny for i64 {
     }
 }
 
+impl NativeFromPyAny for u32 {
+    type Native = Self;
+
+    fn from_pyany(any: &PyAny) -> PyResult<Self::Native> {
+        any.downcast::<PyLong>()?.extract::<Self::Native>()
+    }
+}
+
+impl NativeFromPyAny for u64 {
+    type Native = Self;
+
+    fn from_pyany(any: &PyAny) -> PyResult<Self::Native> {
+        any.downcast::<PyLong>()?.extract::<Self::Native>()
+    }
+}
+
 impl NativeFromPyAny for f32 {
     type Native = Self;
 
@@ -68,8 +84,8 @@ impl TryFromPyAny for PyAny {
 
 pub(crate) fn to_wasm_value((any, ty): (&PyAny, wasmer::Type)) -> PyResult<wasmer::Value> {
     Ok(match ty {
-        wasmer::Type::I32 => any.try_from::<i32>()?.to_value(),
-        wasmer::Type::I64 => any.try_from::<i64>()?.to_value(),
+        wasmer::Type::I32 => any.try_from::<i32>().or_else(|_| any.try_from::<u32>().map(|x| x as i32))?.to_value(),
+        wasmer::Type::I64 => any.try_from::<i64>().or_else(|_| any.try_from::<u64>().map(|x| x as i64))?.to_value(),
         wasmer::Type::F32 => any.try_from::<f32>()?.to_value(),
         wasmer::Type::F64 => any.try_from::<f64>()?.to_value(),
         wasmer::Type::V128 => any.try_from::<u128>()?.to_value(),
