@@ -474,6 +474,27 @@ impl Environment {
 
         ImportObject::raw_new(import_object)
     }
+
+    /// Create a dictionary of import with an existing
+    /// `Environment`. The import object will be different according
+    /// to the WASI version.
+    ///
+    /// Use the `Version` enum to use a specific WASI version, or use
+    /// `get_version` to read the WASI version from a `wasmer.Module`.
+    ///
+    /// ## Example
+    ///
+    /// ```py
+    /// from wasmer import wasi, Store
+    ///
+    /// store = Store()
+    /// wasi_env = wasi.StateBuilder('test-program').argument('--foo').finalize()
+    /// imports = wasi_env.generate_imports(store, wasi.Version.SNAPSHOT1)
+    /// ```
+    //#[pyo3(text_signature = "($self, store, wasi_version)")]
+    fn generate_imports(&self, store: &Store, wasi_version: Version) -> PyResult<PyObject> {
+        self.generate_import_object(store, wasi_version).to_dict()
+    }
 }
 
 pub fn get_version(module: &Module, strict: bool) -> Option<Version> {

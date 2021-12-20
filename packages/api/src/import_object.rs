@@ -163,6 +163,20 @@ impl ImportObject {
     }
 }
 
+impl ImportObject {
+    /// Gets an `ImportObject` from a Python dictionary.
+    pub(crate) fn from_pydict(dict: &PyDict) -> Result<Self, PyErr> {
+        let mut io = ImportObject::new();
+        for (namespace_name, namespace_dict) in dict.into_iter() {
+            let namespace_name = namespace_name.to_string();
+            let namespace_dict = namespace_dict
+                .downcast::<PyDict>()?;
+            io.register(&namespace_name, namespace_dict)?;
+        }
+        Ok(io)
+    }
+}
+
 #[pymethods]
 impl ImportObject {
     #[new]
@@ -184,6 +198,43 @@ impl ImportObject {
     #[pyo3(text_signature = "($self, namespace_name)")]
     fn contains_namespace(&self, namespace_name: &str) -> bool {
         self.inner.contains_namespace(namespace_name)
+    }
+
+    /// Gets a Python dictionary from an `ImportObject`.
+    #[pyo3(text_signature = "($self)")]
+    pub(crate) fn to_dict<'py>(&'py self) -> Result<PyObject, PyErr> {
+        let gil_guard = Python::acquire_gil();
+        let py = gil_guard.python();
+
+        let dict = PyDict::new(py);
+        for (namespace, name, export) in self.inner.externs_vec() {
+            let elem = match export {
+                wasmer::Extern::Function(function) => {
+                    Py::new(py, Function::raw_new(function.clone()))?.to_object(py)
+                }
+                wasmer::Extern::Global(global) => {
+                    Py::new(py, Global::raw_new(global.clone()))?.to_object(py)
+                }
+                wasmer::Extern::Memory(memory) => {
+                    Py::new(py, Memory::raw_new(memory.clone()))?.to_object(py)
+                }
+                wasmer::Extern::Table(table) => {
+                    Py::new(py, Table::raw_new(table.clone()))?.to_object(py)
+                }
+            };
+            let namespace_dict = match dict.get_item(&namespace) {
+                Some(namespace_dict) => {
+                    namespace_dict
+                },
+                None => {
+                    let namespace_dict = PyDict::new(py);
+                    dict.set_item(&namespace, namespace_dict)?;
+                    namespace_dict
+                }
+            };
+            namespace_dict.set_item(&name, elem)?;
+        }
+        Ok(dict.to_object(py))
     }
 
     /// Registers a set of `Function`, `Memory`, `Global` or `Table`
