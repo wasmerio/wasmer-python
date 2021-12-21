@@ -23,7 +23,7 @@ jobs:
             os: 'ubuntu-18.04'
             target-name: 'x86_64-unknown-linux-gnu'
             rust-toolchain: 'stable'
-            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/11.x/linux-amd64.tar.gz'
+            llvm_url: 'https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/clang+llvm-13.0.0-x86_64-linux-gnu-ubuntu-16.04.tar.xz'
 
           #- id: 'linux-aarch64'
           #  os: ['self-hosted', 'linux', 'ARM64', 'python']
@@ -35,13 +35,14 @@ jobs:
             os: 'macos-latest'
             target-name: 'x86_64-apple-darwin'
             rust-toolchain: 'stable'
-            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/11.x/darwin-amd64.tar.gz'
+            llvm_url: 'https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/clang+llvm-13.0.0-x86_64-apple-darwin.tar.xz'
 
           - id: 'windows-amd64'
             os: 'windows-latest'
             target-name: 'x86_64-pc-windows-msvc'
             rust-toolchain: 'stable'
-            llvm-archive-url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/11.x/windows-amd64.tar.gz'
+            # llvm_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/11.x/windows-amd64.tar.gz'
+            llvm_choco_version: 13.0.0
       fail-fast: true
 
     runs-on: ${{ matrix.target.os }}
@@ -82,16 +83,30 @@ jobs:
           pyenv install --list | grep '^  ${{ matrix.python }}' | tail -n 1 | tr -d '[:space:]' > .python-version
           pyenv install --skip-existing "$(cat .python-version)"
 
-      - name: Set up LLVM for `wasmer_compiler_llvm`
-        if: matrix.target.id != 'windows-amd64' # This is disabled in the `just` file, skip it to save data.
+      - name: Install LLVM (Choco - Windows)
+        if: matrix.target.llvm_choco_version
         shell: bash
         run: |
-          curl --proto '=https' --tlsv1.2 -sSfL ${{ matrix.target.llvm-archive-url }} -o llvm.tar.gz
-          mkdir -p ${{ env.LLVM_DIR }}
-          tar xzvf llvm.tar.gz -C ${{ env.LLVM_DIR }}
-          echo ${{ env.LLVM_DIR }}/bin >> $GITHUB_PATH
+          choco install llvm --version ${{ matrix.target.llvm_choco_version }} --allow-downgrade
+          cd 'C:\Program Files\LLVM\'
+          LLVM_DIR=$(pwd)
+          echo "LLVM_SYS_120_PREFIX=${LLVM_DIR}" >> $GITHUB_ENV
+      - name: Install LLVM (macOS Apple Silicon)
+        if: matrix.target.os == 'macos-latest' && !matrix.target.llvm_url
+        run: |
+          brew install llvm
+      - name: Install LLVM
+        if: matrix.target.llvm_url
+        shell: bash
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf ${{ matrix.target.llvm_url }} -L -o llvm.tar.xz
+          LLVM_DIR=$(pwd)/${{ env.LLVM_DIR }}
+          mkdir ${LLVM_DIR}
+          tar xf llvm.tar.xz --strip-components=1 -C ${LLVM_DIR}
+          echo "${LLVM_DIR}/bin" >> $GITHUB_PATH
+          echo "LLVM_SYS_120_PREFIX=${LLVM_DIR}" >> $GITHUB_ENV
         env:
-          LLVM_DIR: ${{ github.workspace }}/llvm
+          LLVM_DIR: .llvm
 
       - name: Set up utilities
         shell: bash
