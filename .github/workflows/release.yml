@@ -46,6 +46,13 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
+      - name: Install dependencies
+        if: matrix.target.id == 'linux-amd64'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install libtinfo5
+          echo "LD_LIBRARY_PATH=/lib/x86_64-linux-gnu" >> $GITHUB_ENV
+
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
