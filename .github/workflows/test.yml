@@ -255,3 +255,16 @@ jobs:
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
           just publish testpypi $(ls artifacts/wheels-*/*.whl | tr '/' '\t' | sort -k 3 | uniq -f 2 | tr '\t' '/' | grep --invert-match aarch64)
+
+  build-status:
+    if: always() && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: [test]
+
+    steps:
+      - name: Mark the job as succeeded
+        if: needs.test.result == 'success'
+        run: exit 0
+      - name: Mark the job as failed
+        if: needs.test.result != 'success'
+        run: exit 1
