@@ -1,17 +1,4 @@
-status = [
-    "Test (ubuntu-latest, 3.7)",
-    "Test (ubuntu-latest, 3.8)",
-    "Test (ubuntu-latest, 3.9)",
-    "Test (ubuntu-latest, 3.10)",
-    "Test (macos-latest, 3.7)",
-    "Test (macos-latest, 3.8)",
-    "Test (macos-latest, 3.9)",
-    "Test (macos-latest, 3.10)",
-    "Test (windows-latest, 3.7)",
-    "Test (windows-latest, 3.8)",
-    "Test (windows-latest, 3.9)",
-    "Test (windows-latest, 3.10)",
-]
+status = ["Build and Test %"]
 required_approvals = 0
 timeout_sec = 900
-delete_merged_branches = true 
+delete_merged_branches = true
