@@ -14,7 +14,7 @@ Features:
     different engines or compiler.
 
 **Documentation**: [browse the detailed API
-documentation](https://wasmerio.github.io/wasmer-python/api/wasmer/) full of
+documentation](https://wasmerio.github.io/wasmer-python/api/wasmer/wasmer.html) full of
 examples.
 
 **Examples** as tutorials: [browse the `examples/`
@@ -55,7 +55,7 @@ We generally recommend `wasmer_compiler_cranelift` for development
 purposes and `wasmer_compiler_llvm` in production.
 
 Learn more by reading [the documentation of the `wasmer.engine`
-submodule](https://wasmerio.github.io/wasmer-python/api/engine/index.html).
+submodule](https://wasmerio.github.io/wasmer-python/api/wasmer/wasmer.html#engine).
 
 ## Install
 

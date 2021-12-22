@@ -169,8 +169,7 @@ impl ImportObject {
         let mut io = ImportObject::new();
         for (namespace_name, namespace_dict) in dict.into_iter() {
             let namespace_name = namespace_name.to_string();
-            let namespace_dict = namespace_dict
-                .downcast::<PyDict>()?;
+            let namespace_dict = namespace_dict.downcast::<PyDict>()?;
             io.register(&namespace_name, namespace_dict)?;
         }
         Ok(io)
@@ -223,9 +222,7 @@ impl ImportObject {
                 }
             };
             let namespace_dict = match dict.get_item(&namespace) {
-                Some(namespace_dict) => {
-                    namespace_dict
-                },
+                Some(namespace_dict) => namespace_dict,
                 None => {
                     let namespace_dict = PyDict::new(py);
                     dict.set_item(&namespace, namespace_dict)?;

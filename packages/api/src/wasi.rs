@@ -342,7 +342,7 @@ impl StateBuilder {
     ///
     /// ## Example
     ///
-    /// ```py,ignore
+    /// ```py
     /// from wasmer import wasi
     ///
     /// wasi_state_builder = \
