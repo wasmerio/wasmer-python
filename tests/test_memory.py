@@ -92,7 +92,7 @@ def test_get_integer_out_of_range_too_large():
 
     exception = context_manager.value
     assert str(exception) == (
-        'Out of bound: Maximum index 1114113 is larger than the memory size 1114112'
+        'Out of bound: Index 1114113 is larger than the view size 1114112'
     )
 
 def test_get_integer_out_of_range_negative():
@@ -124,15 +124,12 @@ def test_get_slice_out_of_range_empty():
         'Slice `2:1` cannot be empty'
     )
 
-def test_get_slice_out_of_range_invalid_step():
-    with pytest.raises(IndexError) as context_manager:
-        memory = instance().exports.memory.uint8_view()
-        memory[1:7:2]
-
-    exception = context_manager.value
-    assert str(exception) == (
-        'Slice must have a step of 1 for now; given 2'
-    )
+def test_get_slice_with_step():
+    memory = instance().exports.memory.uint8_view()
+    memory[1] = 1
+    memory[3] = 2
+    memory[5] = 3
+    assert memory[1:7:2] == [1, 2, 3]
 
 def test_get_invalid_index():
     with pytest.raises(ValueError) as context_manager:
@@ -172,7 +169,7 @@ def test_set_bytearray():
 def test_set_values_with_slice_and_step():
     memory = instance().exports.memory.uint8_view()
 
-    memory[7:12:2] = [1, 2, 3, 4, 5]
+    memory[7:12:2] = [1, 2, 3]
     assert memory[7:12] == [1, 0, 2, 0, 3]
 
 def test_set_out_of_range():
@@ -182,7 +179,7 @@ def test_set_out_of_range():
 
     exception = context_manager.value
     assert str(exception) == (
-        'Out of bound: Absolute index 1114113 is larger than the memory size 1114112'
+        'Out of bound: Index 1114113 is larger than the view size 1114112'
     )
 
 def test_hello_world():
