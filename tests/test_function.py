@@ -136,7 +136,7 @@ def test_early_exit():
 
     try:
         instance.exports.run(1, 2)
-    except RuntimeError as err:
+    except Exception as err:
         assert 'oops' in str(err)
     else:
         assert False

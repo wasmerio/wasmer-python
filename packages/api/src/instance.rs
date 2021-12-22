@@ -1,3 +1,4 @@
+use crate::errors::runtime_error_to_py_err;
 use crate::{
     errors::to_py_err, exports::Exports, import_object::ImportObject, module::Module,
     wasmer_inner::wasmer,
@@ -141,7 +142,13 @@ impl Instance {
     #[new]
     fn new(py: Python, module: &Module, import_object: Option<&PyAny>) -> PyResult<Self> {
         Instance::raw_new(py, &module, import_object).map_err(|error| match error {
-            InstanceError::InstantiationError(error) => to_py_err::<PyRuntimeError, _>(error),
+            InstanceError::InstantiationError(error) => {
+                if let wasmer::InstantiationError::Start(error) = error {
+                    runtime_error_to_py_err(error)
+                } else {
+                    to_py_err::<PyRuntimeError, _>(error)
+                }
+            }
             InstanceError::PyErr(error) => error,
         })
     }
