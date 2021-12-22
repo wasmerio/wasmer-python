@@ -261,10 +261,10 @@ Notes:
 
 Wheels are all built for the following Python versions:
 
-* Python 3.6,
 * Python 3.7,
 * Python 3.8.
 * Python 3.9.
+* Python 3.10,
 
 <details>
 <summary>Learn about the “fallback” <code>py3-none-any</code> wheel</summary>

@@ -34,6 +34,12 @@ def test_wasi_import_object():
     env = wasi.StateBuilder("foo").finalize()
 
     import_object = env.generate_import_object(Store(), wasi.Version.LATEST)
+    assert isinstance(import_object, ImportObject)
+
+def test_wasi_imports():
+    env = wasi.StateBuilder("foo").finalize()
+
+    import_object = env.generate_imports(Store(), wasi.Version.LATEST)
     assert isinstance(import_object, dict)
     assert sorted(import_object['wasi_snapshot_preview1'].keys()) == [
         'args_get',
