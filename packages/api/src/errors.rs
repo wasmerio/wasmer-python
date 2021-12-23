@@ -1,4 +1,4 @@
-use pyo3::{prelude::*, type_object::PyTypeObject, exceptions::PyRuntimeError};
+use pyo3::{exceptions::PyRuntimeError, prelude::*, type_object::PyTypeObject};
 use std::string::ToString;
 use wasmer::RuntimeError;
 

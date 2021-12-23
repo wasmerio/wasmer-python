@@ -26,7 +26,9 @@ mod values;
 mod wasi;
 mod wat;
 
-/// # <img height="48" src="https://wasmer.io/static/icons/favicon-96x96.png" alt="Wasmer logo" valign="middle"> Wasmer Python [![PyPI version](https://badge.fury.io/py/wasmer.svg?)](https://badge.fury.io/py/wasmer) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-read-green)](https://wasmerio.github.io/wasmer-python/api/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer)](https://pypi.org/project/wasmer/) [![Wasmer Slack Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
+/// # Wasmer Python API
+///
+/// [![PyPI version](https://badge.fury.io/py/wasmer.svg?)](https://badge.fury.io/py/wasmer) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-read-green)](https://wasmerio.github.io/wasmer-python/api/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer)](https://pypi.org/project/wasmer/) [![Wasmer Slack Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
 ///
 /// A complete and mature WebAssembly runtime for Python based on [Wasmer](https://github.com/wasmerio/wasmer).
 ///
@@ -210,7 +212,7 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
 ///
 /// Create a Universal engine with the LLVM compiler:
 ///
-/// ```py,ignore
+/// ```py
 /// from wasmer import engine
 /// from wasmer_compiler_llvm import Compiler
 ///
@@ -245,7 +247,7 @@ fn engine(_py: Python, module: &PyModule) -> PyResult<()> {
 ///
 /// ## Example
 ///
-/// ```py,ignore
+/// ```py
 /// from wasmer import engine, target, Store, Module
 /// from wasmer_compiler_cranelift import Compiler
 ///

@@ -6,7 +6,7 @@ prelude:
 	pip3 install virtualenv
 	virtualenv .env
 	if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-	pip3 install maturin pytest pytest-benchmark twine git+https://github.com/Hywan/pdoc@submodule-for-extension
+	pip3 install maturin pytest pytest-benchmark twine pdoc
 
 	which maturin
 	maturin --version
@@ -21,14 +21,14 @@ prelude:
 build_features := ""
 
 # Compile and install all the Python packages.
-build-all rust_target='':
+build-all rust_target=`rustc -vV | awk '/^host/ { print $2 }'`:
 	just build api {{rust_target}}
 	just build compiler-cranelift {{rust_target}}
 	just build compiler-llvm {{rust_target}}
 	just build compiler-singlepass {{rust_target}}
 
 # Compile and install the Python package. Run with `--set build_features` to compile with specific Cargo features.
-build package='api' rust_target='':
+build package='api' rust_target=`rustc -vV | awk '/^host/ { print $2 }'`:
         #!/usr/bin/env bash
         export PYTHON_SYS_EXECUTABLE=$(which python)
 
@@ -128,7 +128,9 @@ benchmark files='benchmarks':
 
 # Generate the documentation.
 doc:
-	@pdoc --html --output-dir docs/api --force \
+	@pdoc --output-dir docs/api \
+		--logo https://raw.githubusercontent.com/wasmerio/wasmer/master/assets/logo.png \
+		--logo-link https://wasmer.io/ \
 		wasmer \
 		wasmer_compiler_cranelift \
 		wasmer_compiler_llvm \
