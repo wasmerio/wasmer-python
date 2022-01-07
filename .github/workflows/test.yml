@@ -66,7 +66,8 @@ jobs:
           override: true
           target: ${{ matrix.target.target-name }}
 
-      - uses: Swatinem/rust-cache@v1
+      # Caching is disabled because it interferes with artifact creation
+      #- uses: Swatinem/rust-cache@v1
 
       - name: Set current Python version
         shell: bash
@@ -133,7 +134,7 @@ jobs:
         if: startsWith(github.ref, 'refs/heads/prepare-')
         shell: bash
         run: |
-          scripts/update-version.sh "$(scripts/update-version.sh --get)-${{ github.run_id }}"
+          scripts/update-version.sh "$(scripts/update-version.sh --get)-rc${{ github.run_id }}"
 
       - name: Install the prelude
         shell: bash
@@ -230,7 +231,8 @@ jobs:
           pyenv install --list | grep '^  3.9' | tail -n 1 | tr -d '[:space:]' > .python-version
           pyenv install --skip-existing "$(cat .python-version)"
 
-      - uses: Swatinem/rust-cache@v1
+      # Caching is disabled because it interferes with artifact creation
+      #- uses: Swatinem/rust-cache@v1
 
       - name: Set up just
         shell: bash

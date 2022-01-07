@@ -13,7 +13,7 @@ fi
 
 : "${SED:=sed}"
 
-CURRENT_VERSION="1.0.0"
+CURRENT_VERSION="1.1.0"
 
 if [[ -z "$1" ]]
 then
@@ -45,4 +45,5 @@ echo "manually check changes to \`Cargo.toml\`"
 ${FD} setup.py --exec ${SED} -i '{}' -e "s/version='${CURRENT_VERSION}',\?$/version='${NEW_VERSION}',/"
 echo "manually check changes to \`setup.py\`"
 
-echo "now, update the \`CURRENT_VERSION\` variable in \`update-version.sh\`"
+${FD} update-version.sh --exec ${SED} -i '{}' -e "s/CURRENT_VERSION='${CURRENT_VERSION}',\?$/CURRENT_VERSION='${NEW_VERSION}',/"
+echo "manually check changes to \`update-version.sh\`"
