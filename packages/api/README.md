@@ -63,8 +63,8 @@ To install the `wasmer` Python package, and let's say the
 `wasmer_compiler_cranelift` compiler, just run those commands in your shell:
 
 ```sh
-$ pip install wasmer==1.0.0
-$ pip install wasmer_compiler_cranelift==1.0.0
+$ pip install wasmer==1.1.0
+$ pip install wasmer_compiler_cranelift==1.1.0
 ```
 
 And you're ready to get fun!

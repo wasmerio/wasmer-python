@@ -225,7 +225,8 @@ jobs:
           pyenv install --list | grep '^  3.9' | tail -n 1 | tr -d '[:space:]' > .python-version
           pyenv install --skip-existing "$(cat .python-version)"
 
-      - uses: Swatinem/rust-cache@v1
+      # Caching is disabled because it interferes with artifact creation
+      #- uses: Swatinem/rust-cache@v1
 
       - name: Set up utilities
         shell: bash

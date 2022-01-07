@@ -91,10 +91,10 @@
                                 <a class="variable" href="#Global.type">type</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Global.mutable">mutable</a>
+                                <a class="variable" href="#Global.value">value</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Global.value">value</a>
+                                <a class="variable" href="#Global.mutable">mutable</a>
                         </li>
                 </ul>
 
@@ -142,10 +142,10 @@
                                 <a class="variable" href="#Memory.type">type</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Memory.size">size</a>
+                                <a class="variable" href="#Memory.data_size">data_size</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Memory.data_size">data_size</a>
+                                <a class="variable" href="#Memory.size">size</a>
                         </li>
                         <li>
                                 <a class="variable" href="#Memory.buffer">buffer</a>
@@ -349,10 +349,10 @@
                                 <a class="variable" href="#Module.exports">exports</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Module.name">name</a>
+                                <a class="variable" href="#Module.imports">imports</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Module.imports">imports</a>
+                                <a class="variable" href="#Module.name">name</a>
                         </li>
                 </ul>
 
@@ -364,10 +364,10 @@
                                 <a class="function" href="#Store.__init__">Store</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Store.engine_name">engine_name</a>
+                                <a class="variable" href="#Store.compiler_name">compiler_name</a>
                         </li>
                         <li>
-                                <a class="variable" href="#Store.compiler_name">compiler_name</a>
+                                <a class="variable" href="#Store.engine_name">engine_name</a>
                         </li>
                 </ul>
 
@@ -379,10 +379,10 @@
                                 <a class="function" href="#ExportType.__init__">ExportType</a>
                         </li>
                         <li>
-                                <a class="variable" href="#ExportType.name">name</a>
+                                <a class="variable" href="#ExportType.type">type</a>
                         </li>
                         <li>
-                                <a class="variable" href="#ExportType.type">type</a>
+                                <a class="variable" href="#ExportType.name">name</a>
                         </li>
                 </ul>
 
@@ -394,10 +394,10 @@
                                 <a class="function" href="#FunctionType.__init__">FunctionType</a>
                         </li>
                         <li>
-                                <a class="variable" href="#FunctionType.results">results</a>
+                                <a class="variable" href="#FunctionType.params">params</a>
                         </li>
                         <li>
-                                <a class="variable" href="#FunctionType.params">params</a>
+                                <a class="variable" href="#FunctionType.results">results</a>
                         </li>
                 </ul>
 
@@ -409,10 +409,10 @@
                                 <a class="function" href="#GlobalType.__init__">GlobalType</a>
                         </li>
                         <li>
-                                <a class="variable" href="#GlobalType.mutable">mutable</a>
+                                <a class="variable" href="#GlobalType.type">type</a>
                         </li>
                         <li>
-                                <a class="variable" href="#GlobalType.type">type</a>
+                                <a class="variable" href="#GlobalType.mutable">mutable</a>
                         </li>
                 </ul>
 
@@ -442,13 +442,13 @@
                                 <a class="function" href="#MemoryType.__init__">MemoryType</a>
                         </li>
                         <li>
+                                <a class="variable" href="#MemoryType.maximum">maximum</a>
+                        </li>
+                        <li>
                                 <a class="variable" href="#MemoryType.minimum">minimum</a>
                         </li>
                         <li>
                                 <a class="variable" href="#MemoryType.shared">shared</a>
-                        </li>
-                        <li>
-                                <a class="variable" href="#MemoryType.maximum">maximum</a>
                         </li>
                 </ul>
 
@@ -460,13 +460,13 @@
                                 <a class="function" href="#TableType.__init__">TableType</a>
                         </li>
                         <li>
-                                <a class="variable" href="#TableType.maximum">maximum</a>
+                                <a class="variable" href="#TableType.minimum">minimum</a>
                         </li>
                         <li>
                                 <a class="variable" href="#TableType.type">type</a>
                         </li>
                         <li>
-                                <a class="variable" href="#TableType.minimum">minimum</a>
+                                <a class="variable" href="#TableType.maximum">maximum</a>
                         </li>
                 </ul>
 
@@ -613,7 +613,7 @@ buffer protocol with <code><a href="#Buffer">Buffer</a></code>.</li>
                 <section id="__version__">
                                 <div class="attr variable"><a class="headerlink" href="#__version__">#&nbsp;&nbsp</a>
 
-        <span class="name">__version__</span><span class="default_value"> = &#39;1.0.0&#39;</span>
+        <span class="name">__version__</span><span class="default_value"> = &#39;1.1.0&#39;</span>
     </div>
 
     
@@ -622,7 +622,7 @@ buffer protocol with <code><a href="#Buffer">Buffer</a></code>.</li>
                 <section id="__core_version__">
                                 <div class="attr variable"><a class="headerlink" href="#__core_version__">#&nbsp;&nbsp</a>
 
-        <span class="name">__core_version__</span><span class="default_value"> = &#39;1.0.0&#39;</span>
+        <span class="name">__core_version__</span><span class="default_value"> = &#39;1.1.0&#39;</span>
     </div>
 
     
@@ -1006,27 +1006,6 @@ whether it is mutable.</p>
 
 
                             </div>
-                            <div id="Global.mutable" class="classattr">
-                                            <div class="attr variable"><a class="headerlink" href="#Global.mutable">#&nbsp;&nbsp</a>
-
-        <span class="name">mutable</span>
-    </div>
-
-            <div class="docstring"><p>Checks whether the global is mutable.</p>
-
-<h2 id="example">Example</h2>
-
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">wasmer</span> <span class="kn">import</span> <span class="n">Store</span><span class="p">,</span> <span class="n">Global</span><span class="p">,</span> <span class="n">Value</span>
-
-<span class="n">store</span> <span class="o">=</span> <span class="n">Store</span><span class="p">()</span>
-<span class="n">global_</span> <span class="o">=</span> <span class="n">Global</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">Value</span><span class="o">.</span><span class="n">i32</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="k">assert</span> <span class="n">global_</span><span class="o">.</span><span class="n">mutable</span> <span class="o">==</span> <span class="kc">True</span>
-</code></pre></div>
-</div>
-
-
-                            </div>
                             <div id="Global.value" class="classattr">
                                             <div class="attr variable"><a class="headerlink" href="#Global.value">#&nbsp;&nbsp</a>
 
@@ -1047,6 +1026,27 @@ whether it is mutable.</p>
 <span class="n">global_</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">153</span>
 
 <span class="k">assert</span> <span class="n">global_</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">153</span>
+</code></pre></div>
+</div>
+
+
+                            </div>
+                            <div id="Global.mutable" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#Global.mutable">#&nbsp;&nbsp</a>
+
+        <span class="name">mutable</span>
+    </div>
+
+            <div class="docstring"><p>Checks whether the global is mutable.</p>
+
+<h2 id="example">Example</h2>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">wasmer</span> <span class="kn">import</span> <span class="n">Store</span><span class="p">,</span> <span class="n">Global</span><span class="p">,</span> <span class="n">Value</span>
+
+<span class="n">store</span> <span class="o">=</span> <span class="n">Store</span><span class="p">()</span>
+<span class="n">global_</span> <span class="o">=</span> <span class="n">Global</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">Value</span><span class="o">.</span><span class="n">i32</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span> <span class="n">mutable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">global_</span><span class="o">.</span><span class="n">mutable</span> <span class="o">==</span> <span class="kc">True</span>
 </code></pre></div>
 </div>
 
@@ -1342,28 +1342,6 @@ and the <code><a href="#Memory.uint8_view">Memory.uint8_view</a></code> method t
 
 
                             </div>
-                            <div id="Memory.size" class="classattr">
-                                            <div class="attr variable"><a class="headerlink" href="#Memory.size">#&nbsp;&nbsp</a>
-
-        <span class="name">size</span>
-    </div>
-
-            <div class="docstring"><p>Returns the size (in pages) of the <code><a href="#Memory">Memory</a></code>.</p>
-
-<h2 id="example">Example</h2>
-
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">wasmer</span> <span class="kn">import</span> <span class="n">Store</span><span class="p">,</span> <span class="n">Memory</span><span class="p">,</span> <span class="n">MemoryType</span>
-
-<span class="n">store</span> <span class="o">=</span> <span class="n">Store</span><span class="p">()</span>
-<span class="n">memory_type</span> <span class="o">=</span> <span class="n">MemoryType</span><span class="p">(</span><span class="n">minimum</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">memory</span> <span class="o">=</span> <span class="n">Memory</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">memory_type</span><span class="p">)</span>
-
-<span class="k">assert</span> <span class="n">memory</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">3</span>
-</code></pre></div>
-</div>
-
-
-                            </div>
                             <div id="Memory.data_size" class="classattr">
                                             <div class="attr variable"><a class="headerlink" href="#Memory.data_size">#&nbsp;&nbsp</a>
 
@@ -1381,6 +1359,28 @@ and the <code><a href="#Memory.uint8_view">Memory.uint8_view</a></code> method t
 <span class="n">memory</span> <span class="o">=</span> <span class="n">Memory</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">memory_type</span><span class="p">)</span>
 
 <span class="k">assert</span> <span class="n">memory</span><span class="o">.</span><span class="n">data_size</span> <span class="o">==</span> <span class="mi">196608</span>
+</code></pre></div>
+</div>
+
+
+                            </div>
+                            <div id="Memory.size" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#Memory.size">#&nbsp;&nbsp</a>
+
+        <span class="name">size</span>
+    </div>
+
+            <div class="docstring"><p>Returns the size (in pages) of the <code><a href="#Memory">Memory</a></code>.</p>
+
+<h2 id="example">Example</h2>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">wasmer</span> <span class="kn">import</span> <span class="n">Store</span><span class="p">,</span> <span class="n">Memory</span><span class="p">,</span> <span class="n">MemoryType</span>
+
+<span class="n">store</span> <span class="o">=</span> <span class="n">Store</span><span class="p">()</span>
+<span class="n">memory_type</span> <span class="o">=</span> <span class="n">MemoryType</span><span class="p">(</span><span class="n">minimum</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">memory</span> <span class="o">=</span> <span class="n">Memory</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">memory_type</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">memory</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">3</span>
 </code></pre></div>
 </div>
 
@@ -2770,6 +2770,25 @@ the WebAssembly bytecode.</p>
 
 
                             </div>
+                            <div id="Module.imports" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#Module.imports">#&nbsp;&nbsp</a>
+
+        <span class="name">imports</span>
+    </div>
+
+            <div class="docstring"><p>Returns a list of <code><a href="#ImportType">ImportType</a></code> objects, which represents all
+the imports of this module.</p>
+
+<p>The order of the imports is guaranteed to be the same as in
+the WebAssembly bytecode.</p>
+
+<h2 id="example">Example</h2>
+
+<p>See the <code><a href="#ImportType">ImportType</a></code> class to learn more.</p>
+</div>
+
+
+                            </div>
                             <div id="Module.name" class="classattr">
                                             <div class="attr variable"><a class="headerlink" href="#Module.name">#&nbsp;&nbsp</a>
 
@@ -2800,25 +2819,6 @@ compilers, but can be also overwritten.</p>
 <span class="n">module</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;hello&#39;</span>
 <span class="k">assert</span> <span class="n">module</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;hello&#39;</span>
 </code></pre></div>
-</div>
-
-
-                            </div>
-                            <div id="Module.imports" class="classattr">
-                                            <div class="attr variable"><a class="headerlink" href="#Module.imports">#&nbsp;&nbsp</a>
-
-        <span class="name">imports</span>
-    </div>
-
-            <div class="docstring"><p>Returns a list of <code><a href="#ImportType">ImportType</a></code> objects, which represents all
-the imports of this module.</p>
-
-<p>The order of the imports is guaranteed to be the same as in
-the WebAssembly bytecode.</p>
-
-<h2 id="example">Example</h2>
-
-<p>See the <code><a href="#ImportType">ImportType</a></code> class to learn more.</p>
 </div>
 
 
@@ -2885,19 +2885,19 @@ mode.</p>
     
 
                             </div>
-                            <div id="Store.engine_name" class="classattr">
-                                            <div class="attr variable"><a class="headerlink" href="#Store.engine_name">#&nbsp;&nbsp</a>
+                            <div id="Store.compiler_name" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#Store.compiler_name">#&nbsp;&nbsp</a>
 
-        <span class="name">engine_name</span>
+        <span class="name">compiler_name</span>
     </div>
 
     
 
                             </div>
-                            <div id="Store.compiler_name" class="classattr">
-                                            <div class="attr variable"><a class="headerlink" href="#Store.compiler_name">#&nbsp;&nbsp</a>
+                            <div id="Store.engine_name" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#Store.engine_name">#&nbsp;&nbsp</a>
 
-        <span class="name">compiler_name</span>
+        <span class="name">engine_name</span>
     </div>
 
     
@@ -2973,17 +2973,6 @@ an export of an instance). It is usually built from the
     
 
                             </div>
-                            <div id="ExportType.name" class="classattr">
-                                            <div class="attr variable"><a class="headerlink" href="#ExportType.name">#&nbsp;&nbsp</a>
-
-        <span class="name">name</span>
-    </div>
-
-            <div class="docstring"><p>The name of the export.</p>
-</div>
-
-
-                            </div>
                             <div id="ExportType.type" class="classattr">
                                             <div class="attr variable"><a class="headerlink" href="#ExportType.type">#&nbsp;&nbsp</a>
 
@@ -2992,6 +2981,17 @@ an export of an instance). It is usually built from the
 
             <div class="docstring"><p>The type of the export. Possible values are: <code><a href="#FunctionType">FunctionType</a></code>,
 <code><a href="#GlobalType">GlobalType</a></code>, <code><a href="#TableType">TableType</a></code> and <code><a href="#MemoryType">MemoryType</a></code>.</p>
+</div>
+
+
+                            </div>
+                            <div id="ExportType.name" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#ExportType.name">#&nbsp;&nbsp</a>
+
+        <span class="name">name</span>
+    </div>
+
+            <div class="docstring"><p>The name of the export.</p>
 </div>
 
 
@@ -3036,17 +3036,6 @@ in WebAssembly module or exposed to WebAssembly by the host.</p>
     
 
                             </div>
-                            <div id="FunctionType.results" class="classattr">
-                                            <div class="attr variable"><a class="headerlink" href="#FunctionType.results">#&nbsp;&nbsp</a>
-
-        <span class="name">results</span>
-    </div>
-
-            <div class="docstring"><p>Results, i.e. outputs, of the function.</p>
-</div>
-
-
-                            </div>
                             <div id="FunctionType.params" class="classattr">
                                             <div class="attr variable"><a class="headerlink" href="#FunctionType.params">#&nbsp;&nbsp</a>
 
@@ -3054,6 +3043,17 @@ in WebAssembly module or exposed to WebAssembly by the host.</p>
     </div>
 
             <div class="docstring"><p>Parameters, i.e. inputs, of the function.</p>
+</div>
+
+
+                            </div>
+                            <div id="FunctionType.results" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#FunctionType.results">#&nbsp;&nbsp</a>
+
+        <span class="name">results</span>
+    </div>
+
+            <div class="docstring"><p>Results, i.e. outputs, of the function.</p>
 </div>
 
 
@@ -3092,17 +3092,6 @@ in WebAssembly module or exposed to WebAssembly by the host.</p>
     
 
                             </div>
-                            <div id="GlobalType.mutable" class="classattr">
-                                            <div class="attr variable"><a class="headerlink" href="#GlobalType.mutable">#&nbsp;&nbsp</a>
-
-        <span class="name">mutable</span>
-    </div>
-
-            <div class="docstring"><p>A flag indicating whether the value may change at runtime.</p>
-</div>
-
-
-                            </div>
                             <div id="GlobalType.type" class="classattr">
                                             <div class="attr variable"><a class="headerlink" href="#GlobalType.type">#&nbsp;&nbsp</a>
 
@@ -3110,6 +3099,17 @@ in WebAssembly module or exposed to WebAssembly by the host.</p>
     </div>
 
             <div class="docstring"><p>The type of the value stored in the global.</p>
+</div>
+
+
+                            </div>
+                            <div id="GlobalType.mutable" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#GlobalType.mutable">#&nbsp;&nbsp</a>
+
+        <span class="name">mutable</span>
+    </div>
+
+            <div class="docstring"><p>A flag indicating whether the value may change at runtime.</p>
 </div>
 
 
@@ -3259,6 +3259,17 @@ contiguous chunks of addressable memory.</p>
     
 
                             </div>
+                            <div id="MemoryType.maximum" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#MemoryType.maximum">#&nbsp;&nbsp</a>
+
+        <span class="name">maximum</span>
+    </div>
+
+            <div class="docstring"><p>The maximum number of pages in the memory. It is optional.</p>
+</div>
+
+
+                            </div>
                             <div id="MemoryType.minimum" class="classattr">
                                             <div class="attr variable"><a class="headerlink" href="#MemoryType.minimum">#&nbsp;&nbsp</a>
 
@@ -3277,17 +3288,6 @@ contiguous chunks of addressable memory.</p>
     </div>
 
             <div class="docstring"><p>Whether the memory may be shared between multiple threads.</p>
-</div>
-
-
-                            </div>
-                            <div id="MemoryType.maximum" class="classattr">
-                                            <div class="attr variable"><a class="headerlink" href="#MemoryType.maximum">#&nbsp;&nbsp</a>
-
-        <span class="name">maximum</span>
-    </div>
-
-            <div class="docstring"><p>The maximum number of pages in the memory. It is optional.</p>
 </div>
 
 
@@ -3330,13 +3330,13 @@ functions.</p>
     
 
                             </div>
-                            <div id="TableType.maximum" class="classattr">
-                                            <div class="attr variable"><a class="headerlink" href="#TableType.maximum">#&nbsp;&nbsp</a>
+                            <div id="TableType.minimum" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#TableType.minimum">#&nbsp;&nbsp</a>
 
-        <span class="name">maximum</span>
+        <span class="name">minimum</span>
     </div>
 
-            <div class="docstring"><p>The maximum number of elements in the table.</p>
+            <div class="docstring"><p>The minimum number of elements in the table.</p>
 </div>
 
 
@@ -3352,13 +3352,13 @@ functions.</p>
 
 
                             </div>
-                            <div id="TableType.minimum" class="classattr">
-                                            <div class="attr variable"><a class="headerlink" href="#TableType.minimum">#&nbsp;&nbsp</a>
+                            <div id="TableType.maximum" class="classattr">
+                                            <div class="attr variable"><a class="headerlink" href="#TableType.maximum">#&nbsp;&nbsp</a>
 
-        <span class="name">minimum</span>
+        <span class="name">maximum</span>
     </div>
 
-            <div class="docstring"><p>The minimum number of elements in the table.</p>
+            <div class="docstring"><p>The maximum number of elements in the table.</p>
 </div>
 
 

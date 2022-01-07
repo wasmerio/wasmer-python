@@ -4,12 +4,36 @@ All notable changes to this project will be documented in this file.
 
 ## Table of Contents
 
-* [1.0.0-beta1](#100-beta1---2020-12-03)
+* [1.1.0](#100---2022-01-05)
+* [1.0.0](#100---2021-01-18)
 * [0.4.1](#041---2020-02-02)
 * [0.3.0](#030---2019-07-16)
 * [0.2.0](#020---2019-04-16)
 
-## [1.0.0-beta1] - 2020-12-03
+## [1.1.0] - 2022-01-05
+
+## Added
+
+* `Exports` can now be iterated over.
+* Host functions can now type-hint results with `None` and tuples.
+* Added `int64` and `float32`/`float64` views of memory.
+* Imports can now be specified using a `dict` instead of an `ImportObject`.
+
+## Changed
+
+* Wasmer has been updated to version 2.1.0.
+* Python exceptions can now be thrown across Wasm calls.
+
+## Fixed
+
+* Memory view lengths are now returned correctly.
+* Unsigned values that fit in `u32`/`u64` no longer cause overflow errors when
+  passed in/out of Wasm.
+* Indexing a memory view with a slice now always returns a list of values.
+* Indexing a memory view with a slice can use steps.
+* Indexing a memory view with an empty slice no longer returns an error.
+
+## [1.0.0] - 2021-01-18
 
 ### Changed
 
@@ -381,7 +405,8 @@ All notable changes to this project will be documented in this file.
 
 ## [0.2.0] - 2019-04-16
 
-[1.0.0-beta1]: https://github.com/wasmerio/wasmer-python/compare/0.4.1...1.0.0-beta1
+[1.1.0]: https://github.com/wasmerio/wasmer-python/compare/1.0.0...1.1.0
+[1.0.0]: https://github.com/wasmerio/wasmer-python/compare/0.4.1...1.0.0
 [0.4.1]: https://github.com/wasmerio/wasmer-python/compare/0.3.0...0.4.1
 [0.3.0]: https://github.com/wasmerio/wasmer-python/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/wasmerio/wasmer-python/compare/0.1.0...0.2.0
