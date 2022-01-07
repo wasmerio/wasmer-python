@@ -134,7 +134,7 @@ jobs:
         if: startsWith(github.ref, 'refs/heads/prepare-')
         shell: bash
         run: |
-          scripts/update-version.sh "$(scripts/update-version.sh --get)-${{ github.run_id }}"
+          scripts/update-version.sh "$(scripts/update-version.sh --get)-rc${{ github.run_id }}"
 
       - name: Install the prelude
         shell: bash
