@@ -39,9 +39,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.51"
+version = "1.0.53"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b26702f315f53b6071259e15dd9d64528213b44d61de1ec926eca7715d62203"
+checksum = "94a45b455c14666b85fc40a019e8ab9eb75e3a124e05494f5397122bc9eb06e0"
 
 [[package]]
 name = "autocfg"
@@ -977,9 +977,9 @@ dependencies = [
 
 [[package]]
 name = "rkyv"
-version = "0.7.28"
+version = "0.7.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "631f7d2a2854abb66724f492ce5256e79685a673dc210ac022194cedd5c914d3"
+checksum = "439655b8d657bcb28264da8e5380d55549e34ffc4149bea9e3521890a122a7bd"
 dependencies = [
  "bytecheck",
  "hashbrown",
@@ -991,9 +991,9 @@ dependencies = [
 
 [[package]]
 name = "rkyv_derive"
-version = "0.7.28"
+version = "0.7.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c067e650861a749720952aed722fb344449bc95de33e6456d426f5c7d44f71c0"
+checksum = "cded413ad606a80291ca84bedba137093807cf4f5b36be8c60f57a7e790d48f6"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1095,9 +1095,9 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.132"
+version = "1.0.136"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b9875c23cf305cd1fd7eb77234cbb705f21ea6a72c637a5c6db5fe4b8e7f008"
+checksum = "ce31e24b01e1e524df96f1c2fdd054405f8d7376249a5110886fb4b658484789"
 dependencies = [
  "serde_derive",
 ]
@@ -1113,9 +1113,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.132"
+version = "1.0.136"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ecc0db5cb2556c0e558887d9bbdcf6ac4471e83ff66cf696e5419024d1606276"
+checksum = "08597e7152fcd306f41838ed3e37be9eaeed2b61c42e2117266a554fab4662f9"
 dependencies = [
  "proc-macro2",
  "quote",
