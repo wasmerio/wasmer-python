@@ -1,25 +1,72 @@
-# <img height="48" src="https://raw.githubusercontent.com/wasmerio/wasmer/master/assets/logo.png" alt="Wasmer logo" valign="middle"> Wasmer Python [![PyPI version](https://img.shields.io/pypi/v/wasmer)](https://badge.fury.io/py/wasmer) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-read-green)](https://wasmerio.github.io/wasmer-python/api/wasmer/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer)](https://pypi.org/project/wasmer/) [![Wasmer Slack Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
+# <img height="48" src="https://raw.githubusercontent.com/wasmerio/wasmer/master/assets/logo.png" alt="Wasmer logo" valign="middle"> Wasmer Python [![PyPI version](https://img.shields.io/pypi/v/wasmer)](https://badge.fury.io/py/wasmer) [![Wasmer Python Documentation](https://img.shields.io/badge/docs-read-green)](https://wasmerio.github.io/wasmer-python/api/wasmer/) [![Wasmer PyPI downloads](https://pepy.tech/badge/wasmer)](https://pypi.org/project/wasmer/) [![Wasmer Slack #python Channel](https://img.shields.io/static/v1?label=chat&message=on%20Slack&color=green)](https://slack.wasmer.io)
 
 A complete and mature WebAssembly runtime for Python based on
 [Wasmer](https://github.com/wasmerio/wasmer).
 
-Features:
+### Features
 
-  * **Easy to use**: The `wasmer` API mimics the standard WebAssembly API,
-  * **Fast**: `wasmer` executes the WebAssembly modules as fast as
-    possible, close to **native speed**,
-  * **Safe**: All calls to WebAssembly will be fast, but more
-    importantly, completely safe and sandboxed,
-  * **Modular**: `wasmer` can compile the WebAssembly modules with
-    different engines or compiler.
+* Secure by default. No file, network, or environment access, unless explicitly enabled.
+* Supports [WASI](https://github.com/WebAssembly/WASI) and [Emscripten](https://emscripten.org/) out of the box.
+* Fast. Run WebAssembly at near-native speeds.
+* Embeddable in [multiple programming languages](https://github.com/wasmerio/wasmer/#-language-integrations)
+* Compliant with latest WebAssembly Proposals (SIMD, Reference Types, Threads, ...)
+
+## Install
+
+To install the `wasmer` Python package, and let's say the
+`wasmer_compiler_cranelift` compiler, just run those commands in your shell:
+
+```sh
+$ pip install wasmer wasmer_compiler_cranelift
+```
+
+And you're ready to get fun!
 
 **Documentation**: [browse the detailed API
 documentation](https://wasmerio.github.io/wasmer-python/api/wasmer/wasmer.html) full of
 examples.
 
-**Examples** as tutorials: [browse the `examples/`
+**Examples**: as tutorials: [browse the `examples/`
 directory](https://github.com/wasmerio/wasmer-python/tree/master/examples),
 it's the best place for a complete introduction!
+
+## Usage
+
+```python
+from wasmer import engine, Store, Module, Instance
+
+store = Store()
+
+# Let's compile the module to be able to execute it!
+module = Module(store, """
+(module
+  (type (func (param i32 i32) (result i32)))
+  (func (export "sum") (type 0) (param i32) (param i32) (result i32)
+    local.get 0
+    local.get 1
+    i32.add))
+""")
+
+# Now the module is compiled, we can instantiate it.
+instance = Instance(module)
+
+# Call the exported `sum` function.
+result = instance.exports.sum(5, 37)
+
+print(result) # 42!
+```
+
+And then, finally, enjoy by running:
+
+```sh
+$ python examples/appendices/simple.py
+```
+
+We highly recommend to read the
+[`examples/`](https://github.com/wasmerio/wasmer-python/tree/master/examples)
+directory, which contains a sequence of examples/tutorials. It's the
+best place to learn by reading examples.
+
 
 ## Quick Introduction
 
@@ -36,7 +83,7 @@ engine can only execute a WebAssembly module, i.e. a module that has
 previously been compiled, or compiled, serialized and deserialized. By
 default, the `wasmer` package comes with 2 headless engines:
 
-1. `wasmer.engine.JIT`, the compiled machine code lives in memory,
+1. `wasmer.engine.Universal`, the compiled machine code lives in memory,
 2. `wasmer.engine.Native`, the compiled machine code lives in a shared
    object file (`.so`, `.dylib`, or `.dll`), and is natively executed.
 
@@ -57,102 +104,6 @@ purposes and `wasmer_compiler_llvm` in production.
 Learn more by reading [the documentation of the `wasmer.engine`
 submodule](https://wasmerio.github.io/wasmer-python/api/wasmer/wasmer.html#engine).
 
-## Install
-
-To install the `wasmer` Python package, and let's say the
-`wasmer_compiler_cranelift` compiler, just run those commands in your shell:
-
-```sh
-$ pip install wasmer==1.1.0
-$ pip install wasmer_compiler_cranelift==1.1.0
-```
-
-And you're ready to get fun!
-
-## Example
-
-We highly recommend to read the
-[`examples/`](https://github.com/wasmerio/wasmer-python/tree/master/examples)
-directory, which contains a sequence of examples/tutorials. It's the
-best place to learn by reading examples.
-
-But for the most eager of you, and we know you're numerous you
-mischievous, there is a quick toy program in
-`examples/appendices/simple.rs`, written in Rust:
-
-```rust
-#[no_mangle]
-pub extern fn sum(x: i32, y: i32) -> i32 {
-    x + y
-}
-```
-
-After compilation to WebAssembly, the
-[`examples/appendices/simple.wasm`](https://github.com/wasmerio/wasmer-python/blob/master/examples/appendices/simple.wasm)
-binary file is generated. ([Download
-it](https://github.com/wasmerio/wasmer-python/raw/master/examples/appendices/simple.wasm)).
-
-Then, we can execute it in Python:
-
-```python
-from wasmer import engine, Store, Module, Instance
-from wasmer_compiler_cranelift import Compiler
-
-# Let's define the store, that holds the engine, that holds the compiler.
-store = Store(engine.JIT(Compiler))
-
-# Let's compile the module to be able to execute it!
-module = Module(store, open('simple.wasm', 'rb').read())
-
-# Now the module is compiled, we can instantiate it.
-instance = Instance(module)
-
-# Call the exported `sum` function.
-result = instance.exports.sum(5, 37)
-
-print(result) # 42!
-```
-
-And then, finally, enjoy by running:
-
-```sh
-$ python examples/appendices/simple.py
-```
-
-# Development
-
-The Python extension is written in [Rust], with [`pyo3`] and
-[`maturin`].
-
-First, you need to install Rust and Python. We will not make you the
-affront to explain to you how to install Python (if you really need,
-check [`pyenv`](https://github.com/pyenv/pyenv/)). For Rust though, we
-advise to use [`rustup`](https://rustup.rs/), then:
-
-```sh
-$ rustup install stable
-```
-
-To set up your environment, you'll need [`just`], and then, install
-the prelude of this project:
-
-```sh
-$ cargo install just
-$ just --list # to learn about all the available recipes
-$ just prelude
-```
-
-It will install `pyo3` and `maturin` for Python and for Rust. It will
-also install [`virtualenv`].
-
-Then, simply run:
-
-```sh
-$ source .env/bin/activate
-$ just build api
-$ just build compiler-cranelift
-$ python examples/appendices/simple.py
-```
 
 ## Supported platforms
 
@@ -281,6 +232,41 @@ reading the [PEP 425, Compatibility Tags for Built
 Distributions](https://www.python.org/dev/peps/pep-0425/)).
 
 </details>
+
+# Development
+
+The Python extension is written in [Rust], with [`pyo3`] and
+[`maturin`].
+
+First, you need to install Rust and Python. We will not make you the
+affront to explain to you how to install Python (if you really need,
+check [`pyenv`](https://github.com/pyenv/pyenv/)). For Rust though, we
+advise to use [`rustup`](https://rustup.rs/), then:
+
+```sh
+$ rustup install stable
+```
+
+To set up your environment, you'll need [`just`], and then, install
+the prelude of this project:
+
+```sh
+$ cargo install just
+$ just --list # to learn about all the available recipes
+$ just prelude
+```
+
+It will install `pyo3` and `maturin` for Python and for Rust. It will
+also install [`virtualenv`].
+
+Then, simply run:
+
+```sh
+$ source .env/bin/activate
+$ just build api
+$ just build compiler-cranelift
+$ python examples/appendices/simple.py
+```
 
 ## Testing
 
