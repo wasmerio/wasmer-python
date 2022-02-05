@@ -6,10 +6,16 @@ A complete and mature WebAssembly runtime for Python based on
 ### Features
 
 * Secure by default. No file, network, or environment access, unless explicitly enabled.
-* Supports [WASI](https://github.com/WebAssembly/WASI) and [Emscripten](https://emscripten.org/) out of the box.
 * Fast. Run WebAssembly at near-native speeds.
-* Embeddable in [multiple programming languages](https://github.com/wasmerio/wasmer/#-language-integrations)
 * Compliant with latest WebAssembly Proposals (SIMD, Reference Types, Threads, ...)
+
+**Documentation**: [browse the detailed API
+documentation](https://wasmerio.github.io/wasmer-python/api/wasmer/wasmer.html) full of
+examples.
+
+**Examples and tutorials**: [browse the `examples/`
+directory](https://github.com/wasmerio/wasmer-python/tree/master/examples),
+it's the best place for a complete introduction!
 
 ## Install
 
@@ -19,16 +25,6 @@ To install the `wasmer` Python package, and let's say the
 ```sh
 $ pip install wasmer wasmer_compiler_cranelift
 ```
-
-And you're ready to get fun!
-
-**Documentation**: [browse the detailed API
-documentation](https://wasmerio.github.io/wasmer-python/api/wasmer/wasmer.html) full of
-examples.
-
-**Examples**: as tutorials: [browse the `examples/`
-directory](https://github.com/wasmerio/wasmer-python/tree/master/examples),
-it's the best place for a complete introduction!
 
 ## Usage
 
