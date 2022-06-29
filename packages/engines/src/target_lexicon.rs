@@ -4,7 +4,7 @@ use std::str::FromStr;
 
 /// Represents a `Triple` + `CpuFeatures` pair.
 ///
-/// If the `CpuFeatures` is ommited, an empty set of CPU feature will
+/// If the `CpuFeatures` is omitted, an empty set of CPU feature will
 /// be assumed.
 ///
 /// ## Example

@@ -192,7 +192,7 @@ fn wasmer(py: Python, module: &PyModule) -> PyResult<()> {
 ///
 /// Both engines receive an optional compiler. If absent, engines will
 /// run in headless mode, i.e. they won't be able to compile (create)
-/// an artifact), they will only be able to run (laod) an artifact.
+/// an artifact), they will only be able to run (load) an artifact.
 ///
 /// Compilers are distributed as individual Python packages:
 ///
