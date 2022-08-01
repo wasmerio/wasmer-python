@@ -1,7 +1,7 @@
 # `wasmer-compiler-llvm-any`
 
 A special `wasmer-$(version)-py3-none-any` wheel is built as a
-fallback. The `wasmer` libray will be installable, but it will raise
+fallback. The `wasmer` library will be installable, but it will raise
 an `ImportError` exception saying that “Wasmer is not available on
 this system”.
 

@@ -47,7 +47,7 @@ instance = Instance(module)
 results = instance.exports.sum(1, 2)
 
 # But this is not always ideal. Keep in mind that a `Function` object
-# is created everytime you call `Exports.__getattr__`. Hence the
+# is created every time you call `Exports.__getattr__`. Hence the
 # following solution to store the function inside a variable.
 sum = instance.exports.sum
 

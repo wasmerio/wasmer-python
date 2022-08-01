@@ -322,7 +322,7 @@ impl PyObjectProtocol for GlobalType {
 /// table_type = TableType(Type.I32, minimum=7, maximum=42)
 /// ```
 #[pyclass]
-#[pyo3(text_signature = "(type, minium, maximum)")]
+#[pyo3(text_signature = "(type, minimum, maximum)")]
 pub struct TableType {
     /// The type of data stored in elements of the table.
     #[pyo3(get)]
