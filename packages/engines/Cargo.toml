@@ -13,5 +13,5 @@ publish = false
 [dependencies]
 wasmer = { version = "2.1.1", default-features = false, features = ["wat", "universal", "dylib", "compiler"] }
 wasmer-compiler = "2.1.1"
-pyo3 = { version = "0.14", features = ["extension-module"] }
+pyo3 = { version = "0.17", features = ["extension-module"] }
 enumset = "1.0.6"
