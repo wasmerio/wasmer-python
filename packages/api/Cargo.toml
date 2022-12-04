@@ -19,7 +19,7 @@ crate-type = ["cdylib"]
 wasmer = { version = "2.1.1", default-features = false, features = ["wat", "universal", "dylib", "compiler"] }
 wasmer-engines = { path = "../engines/" }
 wasmer-types = "2.1.1"
-wasmer-wasi = "2.1.1"
+wasmer-wasi = "3.0.2"
 pyo3 = { version = "0.14", features = ["extension-module", "auto-initialize"] }
 wat = "1.0"
 wasmprinter = "0.2"
