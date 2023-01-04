@@ -266,6 +266,9 @@ $ python examples/appendices/simple.py
 
 ## Testing
 
+To build all tests you'll need LLVM 12.0 in your system. We recommend either installing prepackaged
+libraries with [llvm.sh](https://apt.llvm.org/llvm.sh) or building it yourself with [llvmenv](https://crates.io/crates/llvmenv).
+
 Build all the packages and run the tests:
 
 ```sh
