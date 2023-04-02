@@ -84,19 +84,20 @@ checksum = "8f1e260c3a9040a7c19a12468758f4c16f31a81a1fe087482be9570ec864bb6c"
 
 [[package]]
 name = "bytecheck"
-version = "0.6.7"
+version = "0.6.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "314889ea31cda264cb7c3d6e6e5c9415a987ecb0e72c17c00d36fbb881d34abe"
+checksum = "13fe11640a23eb24562225322cd3e452b93a3d4091d62fab69c70542fcd17d1f"
 dependencies = [
  "bytecheck_derive",
  "ptr_meta",
+ "simdutf8",
 ]
 
 [[package]]
 name = "bytecheck_derive"
-version = "0.6.7"
+version = "0.6.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a2b3b92c135dae665a6f760205b89187638e83bed17ef3e44e83c712cf30600"
+checksum = "e31225543cb46f81a7e224762764f4a6a0f097b1db0b175f69e8065efaa42de5"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -394,6 +395,12 @@ name = "hashbrown"
 version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ab5ef0d4909ef3724cc8cce6ccc8572c5c817592e9285f5464f8e86f8bd3726e"
+
+[[package]]
+name = "hashbrown"
+version = "0.12.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8a9ee70c43aaf417c914396645a0fa852624801b24ebb7ae78fe8272889ac888"
 dependencies = [
  "ahash",
 ]
@@ -420,7 +427,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bc633605454125dec4b66843673f01c7df2b89479b32e0ed634e43a91cff62a5"
 dependencies = [
  "autocfg",
- "hashbrown",
+ "hashbrown 0.11.2",
  "serde",
 ]
 
@@ -977,21 +984,21 @@ dependencies = [
 
 [[package]]
 name = "rend"
-version = "0.3.6"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "79af64b4b6362ffba04eef3a4e10829718a4896dac19daa741851c86781edf95"
+checksum = "581008d2099240d37fb08d77ad713bcaec2c4d89d50b5b21a8bb1996bbab68ab"
 dependencies = [
  "bytecheck",
 ]
 
 [[package]]
 name = "rkyv"
-version = "0.7.28"
+version = "0.7.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "631f7d2a2854abb66724f492ce5256e79685a673dc210ac022194cedd5c914d3"
+checksum = "21499ed91807f07ae081880aabb2ccc0235e9d88011867d984525e9a4c3cfa3e"
 dependencies = [
  "bytecheck",
- "hashbrown",
+ "hashbrown 0.12.3",
  "ptr_meta",
  "rend",
  "rkyv_derive",
@@ -1000,9 +1007,9 @@ dependencies = [
 
 [[package]]
 name = "rkyv_derive"
-version = "0.7.28"
+version = "0.7.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c067e650861a749720952aed722fb344449bc95de33e6456d426f5c7d44f71c0"
+checksum = "ac1c672430eb41556291981f45ca900a0239ad007242d1cb4b4167af842db666"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1147,6 +1154,12 @@ name = "sha1"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2579985fda508104f7587689507983eadd6a6e84dd35d6d115361f530916fa0d"
+
+[[package]]
+name = "simdutf8"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f27f6278552951f1f2b8cf9da965d10969b2efdea95a6ec47987ab46edfe263a"
 
 [[package]]
 name = "smallvec"
