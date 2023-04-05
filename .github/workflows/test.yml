@@ -11,16 +11,21 @@ on:
     branches:
       - '**'
 
+# Allow one concurrent deployment
+concurrency:
+  group: ${{ github.ref }}-test
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Build and Test
 
     strategy:
       matrix:
-        python: ["3.7", "3.8", "3.9", "3.10"]
+        python: ["3.7", "3.8", "3.9", "3.10", "3.11"]
         target:
           - id: 'linux-amd64'
-            os: 'ubuntu-18.04'
+            os: 'ubuntu-latest'
             target-name: 'x86_64-unknown-linux-gnu'
             rust-toolchain: 'stable'
             llvm_url: 'https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/clang+llvm-13.0.0-x86_64-linux-gnu-ubuntu-16.04.tar.xz'
@@ -67,7 +72,9 @@ jobs:
           target: ${{ matrix.target.target-name }}
 
       # Caching is disabled because it interferes with artifact creation
-      #- uses: Swatinem/rust-cache@v1
+      # - uses: Swatinem/rust-cache@v2
+      #   with:
+      #     shared-key: "rust-cache"
 
       - name: Set current Python version
         shell: bash
@@ -76,7 +83,7 @@ jobs:
 
       - name: Set up Python ${{ matrix.python }} (amd64)
         if: matrix.target.id != 'linux-aarch64'
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
 
@@ -99,10 +106,7 @@ jobs:
           cd 'C:\Program Files\LLVM\'
           LLVM_DIR=$(pwd)
           echo "LLVM_SYS_120_PREFIX=${LLVM_DIR}" >> $GITHUB_ENV
-      - name: Install LLVM (macOS Apple Silicon)
-        if: matrix.target.os == 'macos-latest' && !matrix.target.llvm_url
-        run: |
-          brew install llvm
+
       - name: Install LLVM
         if: matrix.target.llvm_url
         shell: bash
@@ -190,7 +194,7 @@ jobs:
   prerelease:
     name: Pre-Release
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/heads/prepare-')
 
     needs: [test]
@@ -212,13 +216,13 @@ jobs:
       - name: Set current Python version
         shell: bash
         run: |
-          echo "3.9" > .python-version
+          echo "3.11" > .python-version
 
       - name: Set up Python ${{ matrix.python }} (amd64)
         if: matrix.target.id != 'linux-aarch64'
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: 3.11
 
       - name: Set up Python ${{ matrix.python }} (aarch64)
         if: matrix.target.id == 'linux-aarch64'
@@ -228,7 +232,7 @@ jobs:
           export PATH="$HOME/.pyenv/bin:$PATH"
           eval "$(pyenv init -)"
           eval "$(pyenv virtualenv-init -)"
-          pyenv install --list | grep '^  3.9' | tail -n 1 | tr -d '[:space:]' > .python-version
+          pyenv install --list | grep '^  3.11' | tail -n 1 | tr -d '[:space:]' > .python-version
           pyenv install --skip-existing "$(cat .python-version)"
 
       # Caching is disabled because it interferes with artifact creation
