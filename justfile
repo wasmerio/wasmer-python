@@ -6,7 +6,7 @@ prelude:
 	pip3 install virtualenv
 	virtualenv .env
 	if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
-	pip3 install maturin==0.12.20 pytest pytest-benchmark twine pdoc
+	pip3 install maturin==0.14.17 pytest pytest-benchmark twine pdoc
 
 	which maturin
 	maturin --version
@@ -65,7 +65,7 @@ build package='api' rust_target=`rustc -vV | awk '/^host/ { print $2 }'`:
 
         cd packages/{{package}}/
 
-        maturin develop --binding-crate pyo3 --release --strip --cargo-extra-args="${build_args}"
+        maturin develop --binding-crate pyo3 --release --strip
 
 # Build all the wheels.
 build-all-wheels python_version rust_target:
@@ -108,7 +108,7 @@ build-wheel package python_version rust_target:
 
         cd packages/{{package}}
 
-        maturin build --bindings pyo3 --release --target "{{ rust_target }}" --strip --cargo-extra-args="${build_args}" --interpreter "{{python_version}}"
+        maturin build --bindings pyo3 --release --target "{{ rust_target }}" --strip --interpreter "{{python_version}}"
 
 # Create a distribution of wasmer that can be installed anywhere (it will fail on import)
 build-any-wheel:

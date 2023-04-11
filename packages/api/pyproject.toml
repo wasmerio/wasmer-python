@@ -1,0 +1,38 @@
+[project]
+name = "wasmer"
+version = "1.1.0"
+description = "Python extension to run WebAssembly binaries"
+readme = "README.md"
+repository = "https://github.com/wasmerio/wasmer-python"
+keywords = ["python", "extension", "webassembly"]
+categories = ["wasm"]
+build = "build.rs"
+
+[package]
+edition = "2018"
+
+[build-system]
+requires = ["maturin>=0.14,<0.15"]
+build-backend = "maturin"
+
+[tool.maturin.metadata]
+category = ["Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Rust",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Compilers",
+    "Topic :: Software Development :: Interpreters",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"]
+
+
+[tool.maturin.project-url]
+"Source Code" = "https://github.com/wasmerio/wasmer-python/"
+"Bug Tracker" = "https://github.com/wasmerio/wasmer-python/issues"
+"Documentation" = "https://github.com/wasmerio/wasmer-python/"
