@@ -109,6 +109,11 @@ jobs:
           }
           $pythonVersion
         shell: pwsh
+      - name: Print python version (verbose)
+        run: |
+          python -VV
+        shell: pwsh
+
 
       - name: Install LLVM (Choco - Windows)
         if: matrix.target.llvm_choco_version
