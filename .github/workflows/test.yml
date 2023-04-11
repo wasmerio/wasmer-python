@@ -173,7 +173,7 @@ jobs:
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           if test -d .env/bin/; then source .env/bin/activate; else source .env/Scripts/activate; fi
           maturin list-python
-          PYTHON_INTERPRETER=$(maturin list-python | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
+          PYTHON_INTERPRETER=$(maturin list-python 2>&1 | grep -o "CPython $(cat .python-version | grep -o -E '^[^\.]+\.[^\.]+').* at .*" | cut -d' ' -f 4 | tr '\\' '/')
           echo "Selected interpreter: ${PYTHON_INTERPRETER}"
           just build-all "${{ matrix.target.target-name }}"
 
