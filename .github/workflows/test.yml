@@ -99,6 +99,16 @@ jobs:
           pyenv install --list | grep '^  ${{ matrix.python }}' | tail -n 1 | tr -d '[:space:]' > .python-version
           pyenv install --skip-existing "$(cat .python-version)"
 
+      - name: Validate python version
+        run: |
+          $pythonVersion = (python --version)
+          if ("Python ${{ matrix.python }}" -ne "$pythonVersion"){
+            Write-Host "The current version is $pythonVersion; expected version is ${{ matrix.python }}"
+            exit 1
+          }
+          $pythonVersion
+        shell: pwsh
+
       - name: Install LLVM (Choco - Windows)
         if: matrix.target.llvm_choco_version
         shell: bash
