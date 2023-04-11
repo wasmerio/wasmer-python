@@ -162,8 +162,6 @@ jobs:
           export PATH="$HOME/.cargo/bin:$PATH"
           export PATH="$HOME/.pyenv/versions/$(cat .python-version)/bin:$PATH"
           just prelude
-      - name: shell
-        uses: lhotari/action-upterm@v1
 
 
       - name: Compile the library
