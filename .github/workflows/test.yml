@@ -101,7 +101,8 @@ jobs:
 
       - name: Validate python version
         run: |
-          $pythonVersion = (python --version)
+          $pythonVersionFull = (python --version)
+          $pythonVersion = $pythonVersionFull -replace '\.(\d+)$',''
           if ("Python ${{ matrix.python }}" -ne "$pythonVersion"){
             Write-Host "The current version is $pythonVersion; expected version is ${{ matrix.python }}"
             exit 1
