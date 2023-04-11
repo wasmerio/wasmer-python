@@ -114,9 +114,6 @@ jobs:
           python -VV
         shell: pwsh
 
-      - name: shell
-        uses: lhotari/action-upterm@v1
-
       - name: Install LLVM (Choco - Windows)
         if: matrix.target.llvm_choco_version
         shell: bash
