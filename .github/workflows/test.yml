@@ -48,7 +48,7 @@ jobs:
             rust-toolchain: 'stable'
             # llvm_url: 'https://github.com/wasmerio/llvm-custom-builds/releases/download/11.x/windows-amd64.tar.gz'
             llvm_choco_version: 13.0.0
-      fail-fast: true
+      fail-fast: false
 
     runs-on: ${{ matrix.target.os }}
 
