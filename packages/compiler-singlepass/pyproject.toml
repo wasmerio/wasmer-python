@@ -1,5 +1,5 @@
 [project]
-name = "wasmer"
+name = "wasmer_compiler_singlepass"
 version = "1.1.0"
 description = "Python extension to run WebAssembly binaries"
 readme = "README.md"
