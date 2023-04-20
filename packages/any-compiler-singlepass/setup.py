@@ -10,7 +10,7 @@ with open(readme_path, encoding='utf-8') as readme:
 
 setup(
     name='wasmer-compiler-singlepass',
-    version='1.1.0',
+    version='1.2.0',
     author='The Wasmer Engineering Team',
     author_email='engineering@wasmer.io',
     license='MIT',
