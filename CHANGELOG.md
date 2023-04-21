@@ -15,18 +15,18 @@ All notable changes to this project will be documented in this file.
 
 ## Added
 
-* Added support for Python 3.11 (#696)
-* Added support for Python 3.10 (#680)
+* Added support for Python 3.11 ([#696](https://github.com/wasmerio/wasmer-python/issues/696))
+* Added support for Python 3.10 ([#680](https://github.com/wasmerio/wasmer-python/issues/680))
 * Improvements to the documentation ([e880e25](https://github.com/wasmerio/wasmer-python/commit/e880e25))
 
 ## Changed
 
-* Updated to the latest version of Maturin (0.14.17) to fix failing Windows builds (#715)
+* Updated to the latest version of Maturin (0.14.17) to fix failing Windows builds ([#715](https://github.com/wasmerio/wasmer-python/issues/715))
 
 ## Fixed
-* Fixed compatibility issues with Python 3.11 (#696)
-* Fixed compatibility issues with Python 3.10 (#680)
-* Fixed typos in the documentation (#639, #681)
+* Fixed compatibility issues with Python 3.11 ([#696](https://github.com/wasmerio/wasmer-python/issues/696))
+* Fixed compatibility issues with Python 3.10 ([#680](https://github.com/wasmerio/wasmer-python/issues/680))
+* Fixed typos in the documentation ([#639](https://github.com/wasmerio/wasmer-python/issues/639), [#681](https://github.com/wasmerio/wasmer-python/issues/681))
 
 ## [1.1.0] - 2022-01-05
 
