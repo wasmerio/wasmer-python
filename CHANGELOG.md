@@ -4,11 +4,29 @@ All notable changes to this project will be documented in this file.
 
 ## Table of Contents
 
+* [1.2.0](#100---2023-04-20)
 * [1.1.0](#100---2022-01-05)
 * [1.0.0](#100---2021-01-18)
 * [0.4.1](#041---2020-02-02)
 * [0.3.0](#030---2019-07-16)
 * [0.2.0](#020---2019-04-16)
+
+## [1.2.0] - 2023-04-20
+
+## Added
+
+* Added support for Python 3.11 ([#696](https://github.com/wasmerio/wasmer-python/issues/696))
+* Added support for Python 3.10 ([#680](https://github.com/wasmerio/wasmer-python/issues/680))
+* Improvements to the documentation ([e880e25](https://github.com/wasmerio/wasmer-python/commit/e880e25))
+
+## Changed
+
+* Updated to the latest version of Maturin (0.14.17) to fix failing Windows builds ([#715](https://github.com/wasmerio/wasmer-python/issues/715))
+
+## Fixed
+* Fixed compatibility issues with Python 3.11 ([#696](https://github.com/wasmerio/wasmer-python/issues/696))
+* Fixed compatibility issues with Python 3.10 ([#680](https://github.com/wasmerio/wasmer-python/issues/680))
+* Fixed typos in the documentation ([#639](https://github.com/wasmerio/wasmer-python/issues/639), [#681](https://github.com/wasmerio/wasmer-python/issues/681))
 
 ## [1.1.0] - 2022-01-05
 
@@ -42,24 +60,24 @@ All notable changes to this project will be documented in this file.
   ```python
   from wasmer import engine, wat2wasm, Module, Store, Instance
   from wasmer_compiler_cranelift import Compiler
-  
+
   # Create an Engine
   jit = engine.JIT(Compiler)
-  
+
   # Create a store.
   store = Store(jit)
-  
+
   # Let's compile the Wasm module.
   module = Module(store, wasm_bytes)
-  
+
   # Create an empty import object.
   import_object = {}
-  
+
   # Let's instantiate the Wasm module.
   instance = Instance(module, import_object)
   ```
 
-  Please refer to the [examples](examples) and 
+  Please refer to the [examples](examples) and
   [documentation](https://docs.wasmer.io/integrations/python) to learn more about the changes.
 
 ## [0.4.1] - 2020-02-02
@@ -69,15 +87,15 @@ All notable changes to this project will be documented in this file.
 * New `Buffer` class to read memory fast
   ([#125](https://github.com/wasmerio/wasmer-python/pull/125) by
   [@Hywan])
-  
+
   To get the memory buffer, use the `Memory.buffer` getter. A `Buffer`
   implements the [Python Buffer
   Protocol](https://docs.python.org/3/c-api/buffer.html). The goal is
   to get faster reading operations than the existing memory views API.
-  
+
   `bytearray(instance.memory.buffer)` is 15x faster than `instance.memory.int8_view()`.
   `memoryview(instance.memory.buffer)` is 14x faster than `instance.memory.int8_view()`.
-  
+
   ```python
   # Get the memory buffer.
   buffer = Instance(wasm_bytes).memory.buffer
@@ -95,7 +113,7 @@ All notable changes to this project will be documented in this file.
 * Support exported globals through the `Instance.globals` API
   ([#120](https://github.com/wasmerio/wasmer-python/pull/120) by
   [@Hywan])
-  
+
   ```python
   instance = Instance(wasm_bytes)
   x = instance.globals.x
@@ -111,7 +129,7 @@ All notable changes to this project will be documented in this file.
 * Implement a WebAssembly custom section query API
   ([#118](https://github.com/wasmerio/wasmer-python/pull/118) by
   [@Hywan])
-  
+
   `Module.custom_section_names` is used to list all the custom section
   names.
 

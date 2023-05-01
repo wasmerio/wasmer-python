@@ -1,6 +1,6 @@
 [package]
 name = "wasmer_compiler_llvm"
-version = "1.1.0"
+version = "1.2.0"
 authors = ["Wasmer Engineering Team <engineering@wasmer.io>"]
 edition = "2018"
 description = "Python extension to run WebAssembly binaries"
