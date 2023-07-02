@@ -16,5 +16,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasmer-engines = { path = "../engines/" }
-wasmer-compiler-llvm = "2.1.1"
+wasmer-compiler-llvm = "4.0.0"
 pyo3 = { version = "0.14", features = ["extension-module"] }
